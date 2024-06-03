@@ -1,0 +1,271 @@
+const httpStatus = require("http-status");
+const PortofolioReportDao = require("../dao/PortofolioReportDao");
+const StudentReportDao = require("../dao/StudentReportDao");
+const responseHandler = require("../helper/responseHandler");
+const logger = require("../config/logger");
+const { userConstant } = require("../config/constant");
+const fs = require("fs").promises;
+const { PDFDocument } = require("pdf-lib");
+const path = require("path");
+
+const dir = "./files/portofolio_reports/";
+
+class PortofolioReportService {
+  constructor() {
+    this.portofolioReportDao = new PortofolioReportDao();
+    this.studentReportDao = new StudentReportDao();
+  }
+
+  createPortofolioReport = async (reqBody) => {
+    try {
+      let message = "Portofolio report successfully added.";
+
+      let data = await this.portofolioReportDao.create(reqBody);
+
+      if (!data) {
+        message = "Failed to create portofolio report.";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
+
+      return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
+    } catch (e) {
+      logger.error(e);
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Something went wrong!"
+      );
+    }
+  };
+
+  updatePortofolioReport = async (id, body) => {
+    const message = "Portofolio report successfully updated!";
+
+    let rel = await this.portofolioReportDao.findById(id);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Student Task not found!",
+        {}
+      );
+    }
+
+    const updateData = await this.portofolioReportDao.updateById(body, id);
+
+    //delete file if exist
+    const rData = rel.dataValues;
+
+    if (rData.file_path) {
+      // console.log(rData.cover);
+      if (body.file_path) {
+        fs.unlink(rData.file_path, (err) => {
+          if (err) {
+            return responseHandler.returnError(
+              httpStatus.NOT_FOUND,
+              "Cannot delete attachment!"
+            );
+          }
+          console.log("Delete File successfully.");
+        });
+      }
+    }
+
+    if (updateData) {
+      return responseHandler.returnSuccess(httpStatus.OK, message, body);
+    }
+  };
+
+  showPortofolioReport = async (id) => {
+    const message = "Portofolio report successfully retrieved!";
+
+    let rel = await this.portofolioReportDao.findById(id);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Portofolio report not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  showPortofolioReportByStudentReportId = async (id, type) => {
+    const message = "Portofolio report successfully retrieved!";
+
+    let rel = await this.portofolioReportDao.getByStudentReportId(id, type);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Portofolio report not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  showAllPortofolioReportByStudentReportId = async (id, type) => {
+    const message = "Portofolio report successfully retrieved!";
+
+    let rel = await this.portofolioReportDao.getAllByStudentReportId(id, type);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Portofolio report not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  mergePortofolioReport = async (id) => {
+    const message = "Portofolio report successfully merged!";
+
+    const datas = await this.portofolioReportDao.findByWhere({
+      student_report_id: id,
+    });
+
+    let pdf1 = "";
+    let pdf2 = "";
+
+    for (const data of datas) {
+      // console.log(data);
+
+      if (data.type == "Orang Tua") {
+        pdf1 = data.file_path;
+      }
+
+      if (data.type == "Guru") {
+        pdf2 = data.file_path;
+      }
+    }
+
+    if (pdf1 && pdf2) {
+      var mergedPDF = await this.mergePDFs(pdf1, pdf2);
+      //check if student report has a comments
+      const commentData = await this.studentReportDao.findById(id);
+      if (commentData) {
+        mergedPDF = await this.mergePDFs(
+          mergedPDF,
+          commentData.por_comments_path
+        );
+      }
+
+      let check = await this.portofolioReportDao.getByStudentReportId(
+        id,
+        "Merged"
+      );
+
+      if (check) {
+        fs.unlink(check.file_path, (err) => {
+          if (err) {
+            return responseHandler.returnError(
+              httpStatus.NOT_FOUND,
+              "Cannot delete attachment!"
+            );
+          }
+          console.log("Delete File successfully.");
+        });
+      }
+      if (!check) {
+        check = await this.portofolioReportDao.create({
+          student_report_id: id,
+          type: "Merged",
+          file_path: mergedPDF,
+        });
+        await this.studentReportDao.updateWhere(
+          { portofolio_path: mergedPDF },
+          { id }
+        );
+      } else {
+        await this.portofolioReportDao.updateById(
+          { type: "Merged", file_path: mergedPDF },
+          check.id
+        );
+        await this.studentReportDao.updateWhere(
+          { portofolio_path: mergedPDF },
+          { id }
+        );
+      }
+    } else {
+      message =
+        "Failed to merge Portofolio report. One or more pdf file is missing !";
+    }
+    return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
+  };
+
+  mergePDFs = async (pdf1, pdf2) => {
+    try {
+      const pdfBytes1 = await fs.readFile(pdf1);
+      const pdfBytes2 = await fs.readFile(pdf2);
+
+      const pdfDoc1 = await PDFDocument.load(pdfBytes1);
+      const pdfDoc2 = await PDFDocument.load(pdfBytes2);
+
+      const mergedPdf = await PDFDocument.create();
+
+      const [copiedPages1, copiedPages2] = await Promise.all([
+        mergedPdf.copyPages(pdfDoc1, pdfDoc1.getPageIndices()),
+        mergedPdf.copyPages(pdfDoc2, pdfDoc2.getPageIndices()),
+      ]);
+
+      copiedPages1.forEach((page) => mergedPdf.addPage(page));
+      copiedPages2.forEach((page) => mergedPdf.addPage(page));
+
+      const outputPath = path.join(dir, `${Date.now()}_merged.pdf`);
+      const mergedPdfBytes = await mergedPdf.save();
+
+      await fs.writeFile(outputPath, mergedPdfBytes);
+
+      console.log(
+        `PDF files merged successfully. Merged PDF saved at: ${outputPath}`
+      );
+      return outputPath;
+    } catch (error) {
+      console.error("Error merging PDFs:", error);
+      throw error; // Re-throw the error for the caller to handle
+    }
+  };
+
+  deletePortofolioReport = async (id) => {
+    const message = "Portofolio report successfully deleted!";
+
+    let rel = await this.portofolioReportDao.deleteByWhere({ id });
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Portofolio report not found!"
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  filteredPortofolioReport = async (academic, semester, classId) => {
+    const message = "Portofolio report successfully retrieved!";
+
+    let rel = await this.portofolioReportDao.filteredByParams(
+      academic,
+      semester,
+      classId
+    );
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Portofolio report not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+}
+
+module.exports = PortofolioReportService;

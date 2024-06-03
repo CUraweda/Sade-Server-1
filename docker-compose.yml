@@ -1,0 +1,36 @@
+version: '3'
+services:
+   db-sade-sit:
+      image: mariadb:10.9.4
+      container_name: db-sade-sit
+      restart: unless-stopped
+      environment:
+        MYSQL_ROOT_PASSWORD: d3vs4de#2023
+        MYSQL_DATABASE: sade
+      volumes:
+      - ./../db:/var/lib/mysql
+      ports:
+        - 3306
+   app-sade-sit:
+      build: .
+      container_name: app-sade-sit
+      restart: unless-stopped
+      depends_on:
+         - db-sade-sit
+      volumes:
+      - ./../data/files:/app/files
+      - ./../data/images:/app/images
+      ports:
+        - 7000:7000
+   myadmin-sade-sit:
+      image: phpmyadmin
+      container_name: myadmin-sade-sit
+      restart: unless-stopped
+      environment:
+        PMA_HOST: db-sade-sit
+      ports:
+        - 1007:80
+networks:
+   default:
+      external:
+         name: sade-networks

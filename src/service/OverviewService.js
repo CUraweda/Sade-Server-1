@@ -1,151 +1,145 @@
-const httpStatus = require("http-status");
-const OverviewDao = require("../dao/OverviewDao");
-const responseHandler = require("../helper/responseHandler");
-const logger = require("../config/logger");
-const { userConstant } = require("../config/constant");
+const httpStatus = require('http-status');
+const OverviewDao = require('../dao/OverviewDao');
+const responseHandler = require('../helper/responseHandler');
+const logger = require('../config/logger');
+const { userConstant } = require('../config/constant');
 
 class OverviewService {
-  constructor() {
-    this.overviewDao = new OverviewDao();
-  }
-
-  createOverview = async (reqBody) => {
-    try {
-      let message = "Overview successfully added.";
-
-      let data = await this.overviewDao.create(reqBody);
-
-      if (!data) {
-        message = "Failed to create overview.";
-        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
-      }
-
-      if (data.status === "Aktif") {
-        await this.overviewDao.setActive(data.id);
-      }
-
-      return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
-    } catch (e) {
-      logger.error(e);
-      return responseHandler.returnError(
-        httpStatus.BAD_REQUEST,
-        "Something went wrong!"
-      );
-    }
-  };
-
-  updateOverview = async (id, body) => {
-    const message = "Overview successfully updated!";
-
-    let rel = await this.overviewDao.findById(id);
-
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Overview not found!",
-        {}
-      );
+    constructor() {
+        this.overviewDao = new OverviewDao();
     }
 
-    const updateData = await this.overviewDao.updateById(body, id);
+    createOverview = async (reqBody) => {
+        try {
+            let message = 'Overview successfully added.';
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
-    }
-    if (body.status === "Aktif") {
-      await this.overviewDao.setActive(id);
-    }
-  };
+            const data = await this.overviewDao.create(reqBody);
 
-  showOverview = async (id) => {
-    const message = "Overview successfully retrieved!";
+            if (!data) {
+                message = 'Failed to create overview.';
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+            }
 
-    let rel = await this.overviewDao.findById(id);
+            if (data.status === 'Aktif') {
+                await this.overviewDao.setActive(data.id);
+            }
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Overview not found!",
-        {}
-      );
-    }
+            return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
+        } catch (e) {
+            logger.error(e);
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Something went wrong!');
+        }
+    };
 
-    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
-  };
+    updateOverview = async (id, body) => {
+        const message = 'Overview successfully updated!';
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.overviewDao.getCount(search);
-    const totalPage = Math.ceil(totalRows / limit);
+        const rel = await this.overviewDao.findById(id);
 
-    const result = await this.overviewDao.getOverviewPage(
-      search,
-      offset,
-      limit
-    );
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!', {});
+        }
 
-    return responseHandler.returnSuccess(
-      httpStatus.OK,
-      "Religion successfully retrieved.",
-      {
-        result: result,
-        page: page,
-        limit: limit,
-        totalRows: totalRows,
-        totalPage: totalPage,
-      }
-    );
-  }
+        const updateData = await this.overviewDao.updateById(body, id);
 
-  showOverviewActive = async (id) => {
-    const message = "Overview successfully retrieved!";
+        if (updateData) {
+            return responseHandler.returnSuccess(httpStatus.OK, message, {});
+        }
+        if (body.status === 'Aktif') {
+            await this.overviewDao.setActive(id);
+        }
+    };
 
-    let rel = await this.overviewDao.getActive();
+    showOverview = async (id) => {
+        const message = 'Overview successfully retrieved!';
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Overview not found!",
-        {}
-      );
-    }
+        const rel = await this.overviewDao.findById(id);
 
-    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
-  };
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!', {});
+        }
 
-  setActiveOverview = async (id) => {
-    const message = "Overview successfully updated!";
+        return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+    };
 
-    let rel = await this.overviewDao.findById(id);
+    showAllOverview = async () => {
+        const message = 'Overview successfully retrieved!';
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Overview not found!",
-        {}
-      );
-    }
+        const rel = await this.overviewDao.findAll();
 
-    const updateData = await this.overviewDao.setActive(id);
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!', {});
+        }
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
-    }
-  };
+        return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+    };
 
-  deleteOverview = async (id) => {
-    const message = "Overview successfully deleted!";
+    showAllByStudentID = async (id) => {
+        const message = 'Overview successfully retrieved!';
 
-    let rel = await this.overviewDao.deleteByWhere({ id });
+        const rel = await this.overviewDao.getAllByStudentID(id);
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Overview not found!"
-      );
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!', {});
+        }
+
+        return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+    };
+
+    async showPage(page, limit, search, offset) {
+        const totalRows = await this.overviewDao.getCount(search);
+        const totalPage = Math.ceil(totalRows / limit);
+
+        const result = await this.overviewDao.getOverviewPage(search, offset, limit);
+
+        return responseHandler.returnSuccess(httpStatus.OK, 'Religion successfully retrieved.', {
+            result,
+            page,
+            limit,
+            totalRows,
+            totalPage,
+        });
     }
 
-    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
-  };
+    showOverviewActive = async (id) => {
+        const message = 'Overview successfully retrieved!';
+
+        const rel = await this.overviewDao.getActive();
+
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!', {});
+        }
+
+        return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+    };
+
+    setActiveOverview = async (id) => {
+        const message = 'Overview successfully updated!';
+
+        const rel = await this.overviewDao.findById(id);
+
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!', {});
+        }
+
+        const updateData = await this.overviewDao.setActive(id);
+
+        if (updateData) {
+            return responseHandler.returnSuccess(httpStatus.OK, message, {});
+        }
+    };
+
+    deleteOverview = async (id) => {
+        const message = 'Overview successfully deleted!';
+
+        const rel = await this.overviewDao.deleteByWhere({ id });
+
+        if (!rel) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Overview not found!');
+        }
+
+        return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+    };
 }
 
 module.exports = OverviewService;

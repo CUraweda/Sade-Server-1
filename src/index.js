@@ -1,28 +1,28 @@
-const app = require("./app");
-const config = require("./config/config");
+const app = require('./app');
+const config = require('./config/config');
 
 // console.log('Hello Node-Express-Mysql with Sequelize Boilerplate!!');
-require("./cronJobs");
+require('./cronJobs');
 // eslint-disable-next-line import/order
-const https = require("https");
-const fs = require("fs");
+const https = require('https');
+const fs = require('fs');
 
-var key = fs.readFileSync("./certs/sade.key");
-var cert = fs.readFileSync("./certs/sade.crt");
-var options = {
-  key: key,
-  cert: cert,
+const key = fs.readFileSync('./certs/sade.key');
+const cert = fs.readFileSync('./certs/sade.crt');
+const options = {
+    key,
+    cert,
 };
 
 // socket initialization
 const server = https.createServer(options, app);
 // eslint-disable-next-line import/order
-const io = require("socket.io")(server, { cors: { origin: "*" } });
+const io = require('socket.io')(server, { cors: { origin: '*' } });
 
 global.io = io;
-require("./config/rootSocket")(io);
+require('./config/rootSocket')(io);
 
 server.listen(config.port, () => {
-  console.log("SERVER");
-  console.log(`Listening to port ${config.port}`);
+    console.log('SERVER');
+    console.log(`Listening to port ${config.port}`);
 });

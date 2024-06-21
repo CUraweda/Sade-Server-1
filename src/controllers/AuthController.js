@@ -71,22 +71,22 @@ class AuthController {
 
   me = async (req, res) => {
     try {
-			const user = await this.userService.getUserByUuid(req.user.uuid);
-			if (user == null) {
-				return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
-			}
+      const user = await this.userService.getUserByUuid(req.user.uuid);
+      if (user == null) {
+        return res.status(httpStatus.NOT_FOUND).send("User Not Found!");
+      }
 
-			res.status(httpStatus.OK).json({
-				status: true,
-				code: 200,
-				message: "User information retrieved",
-				data: user,
-			});
-		} catch (e) {
-			logger.error(e);
-			res.status(httpStatus.BAD_GATEWAY).send(e);
-		}
-  }
+      res.status(httpStatus.OK).json({
+        status: true,
+        code: 200,
+        message: "User information retrieved",
+        data: user,
+      });
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
 
   refreshTokens = async (req, res) => {
     try {
@@ -124,7 +124,7 @@ class AuthController {
 
   verifyMail = async (req, res) => {
     try {
-      var uuid = req.params.id;
+      const uuid = req.params.id;
 
       const responseData = await this.userService.getAccountByUuid(uuid);
       res.status(responseData.statusCode).send(responseData.response);
@@ -138,7 +138,7 @@ class AuthController {
     try {
       await uploadAvatar(req, res);
 
-      var id = req.params.id;
+      const { id } = req.params;
       console.log(req.file);
       const responseData = await this.userService.updateUser(id, req);
 
@@ -179,7 +179,9 @@ class AuthController {
 
   showByRoles = async (req, res) => {
     try {
-      const ids = req.query.ids.split(",").map((id) => parseInt(id));
+      const ids = req.query.ids.split(",").map((id) => {
+        return parseInt(id);
+      });
 
       const resData = await this.userService.showUsersByRoles(ids);
 

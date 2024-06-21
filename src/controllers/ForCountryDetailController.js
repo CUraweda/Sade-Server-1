@@ -1,209 +1,209 @@
-const httpStatus = require("http-status");
-const ForCountryDetailService = require("../service/ForCountryDetailService");
-const logger = require("../config/logger");
-const uploadForCountry = require("../middlewares/uploadForCountry");
-
-const Joi = require("joi");
-const path = require("path");
-const fs = require("fs");
+const httpStatus = require('http-status');
+const Joi = require('joi');
+const path = require('path');
+const fs = require('fs');
+const ForCountryDetailService = require('../service/ForCountryDetailService');
+const logger = require('../config/logger');
+const uploadForCountry = require('../middlewares/uploadForCountry');
 
 const schema = Joi.object({
-  for_country_id: Joi.number().required(),
-  activity: Joi.string().required(),
-  duration: Joi.number().precision(1).allow("", null),
-  certificate_path: Joi.string().allow("", null),
+    for_country_id: Joi.number().required(),
+    activity: Joi.string().required(),
+    duration: Joi.number().precision(1).allow('', null),
+    certificate_path: Joi.string().allow('', null),
 });
 
 class ForCountryDetailController {
-  constructor() {
-    this.forCountryDetailService = new ForCountryDetailService();
-  }
-
-  create = async (req, res) => {
-    try {
-      let resData = {};
-      await uploadForCountry(req, res);
-
-      var certificate_path = req.file ? req.file.path : null;
-
-      const formData = { ...req.body, certificate_path };
-      //   console.log(formData);
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
-
-      if (error) {
-        const errorMessage = error.details
-          .map((details) => {
-            return details.message;
-          })
-          .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage); // Send error response and return
-      }
-
-      resData = await this.forCountryDetailService.createForCountryDetail(
-        formData
-      );
-
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
+    constructor() {
+        this.forCountryDetailService = new ForCountryDetailService();
     }
-  };
 
-  update = async (req, res) => {
-    try {
-      await uploadForCountry(req, res);
+    create = async (req, res) => {
+        try {
+            let resData = {};
+            await uploadForCountry(req, res);
 
-      var certificate_path = req.file ? req.file.path : null;
-      let formData;
+            const certificate_path = req.file ? req.file.path : null;
 
-      if (certificate_path) formData = { ...req.body, certificate_path };
-      else formData = { ...req.body };
+            const formData = { ...req.body, certificate_path };
+            //   console.log(formData);
+            const { error } = schema.validate(formData, {
+                abortEarly: false,
+                allowUnknown: true,
+                stripUnknown: true,
+            });
 
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
+            if (error) {
+                const errorMessage = error.details
+                    .map((details) => {
+                        return details.message;
+                    })
+                    .join(', ');
+                return res.status(httpStatus.BAD_REQUEST).send(errorMessage); // Send error response and return
+            }
 
-      if (error) {
-        const errorMessage = error.details
-          .map((details) => {
-            return details.message;
-          })
-          .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage); // Send error response and return
-      }
+            resData = await this.forCountryDetailService.createForCountryDetail(formData);
 
-      var id = req.params.id;
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 
-      const resData = await this.forCountryDetailService.updateForCountryDetail(
-        id,
-        formData
-      );
+    update = async (req, res) => {
+        try {
+            await uploadForCountry(req, res);
 
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
-    }
-  };
+            const certificate_path = req.file ? req.file.path : null;
+            let formData;
 
-  show = async (req, res) => {
-    try {
-      var id = req.params.id;
+            if (certificate_path) {
+                formData = { ...req.body, certificate_path };
+            } else {
+                formData = { ...req.body };
+            }
 
-      const resData = await this.forCountryDetailService.showForCountryDetail(
-        id
-      );
+            const { error } = schema.validate(formData, {
+                abortEarly: false,
+                allowUnknown: true,
+                stripUnknown: true,
+            });
 
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
-    }
-  };
+            if (error) {
+                const errorMessage = error.details
+                    .map((details) => {
+                        return details.message;
+                    })
+                    .join(', ');
+                return res.status(httpStatus.BAD_REQUEST).send(errorMessage); // Send error response and return
+            }
 
-  showByUserId = async (req, res) => {
-    try {
-      const id = req.params.id;
-      const academic = req.query.academic || "";
+            const { id } = req.params;
 
-      const resData =
-        await this.forCountryDetailService.showForCountryDetailByUserId(
-          id,
-          academic
-        );
+            const resData = await this.forCountryDetailService.updateForCountryDetail(id, formData);
 
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
-    }
-  };
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 
-  showAll = async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 0;
-      const limit = parseInt(req.query.limit) || 10;
-      const search = req.query.search_query || "";
-      const offset = limit * page;
+    show = async (req, res) => {
+        try {
+            const { id } = req.params;
 
-      const resData = await this.forCountryDetailService.showPage(
-        page,
-        limit,
-        search,
-        offset
-      );
+            const resData = await this.forCountryDetailService.showForCountryDetail(id);
 
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
-    }
-  };
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 
-  delete = async (req, res) => {
-    try {
-      var id = req.params.id;
+    showByUserId = async (req, res) => {
+        try {
+            const { id } = req.params;
+            const academic = req.query.academic || '';
 
-      const resData = await this.forCountryDetailService.deleteForCountryDetail(
-        id
-      );
+            const resData = await this.forCountryDetailService.showForCountryDetailByUserId(
+                id,
+                academic,
+            );
 
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
-    }
-  };
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 
-  downloadForCountryDetail = async (req, res) => {
-    try {
-      const filePath = req.query.filepath; // Assuming the full file path is provided in the query parameter
+    showByCountryId = async (req, res) => {
+        try {
+            const { id } = req.params;
+            const resData = await this.forCountryDetailService.showForCountryDetailByCountryId(id);
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
 
-      // Check if file path is provided
-      if (!filePath) {
-        return res.status(httpStatus.BAD_REQUEST).send({
-          status: false,
-          code: httpStatus.BAD_REQUEST,
-          message: "File path not provided.",
-        });
-      }
+    showAll = async (req, res) => {
+        try {
+            const page = parseInt(req.query.page) || 0;
+            const limit = parseInt(req.query.limit) || 10;
+            const search = req.query.search_query || '';
+            const offset = limit * page;
 
-      // Check if file exists
-      if (fs.existsSync(filePath)) {
-        // Set appropriate headers
-        const filename = path.basename(filePath);
-        res.setHeader("Content-Type", "application/octet-stream");
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${filename}"`
-        );
+            const resData = await this.forCountryDetailService.showPage(
+                page,
+                limit,
+                search,
+                offset,
+            );
 
-        // Create read stream and pipe to response
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.pipe(res);
-      } else {
-        res.status(httpStatus.NOT_FOUND).send({
-          status: false,
-          code: httpStatus.NOT_FOUND,
-          message: "File not found.",
-        });
-      }
-    } catch (e) {
-      console.error(e);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
-        status: false,
-        code: httpStatus.INTERNAL_SERVER_ERROR,
-        message: e.message,
-      });
-    }
-  };
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
+    delete = async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const resData = await this.forCountryDetailService.deleteForCountryDetail(id);
+
+            res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
+    downloadForCountryDetail = async (req, res) => {
+        try {
+            const filePath = req.query.filepath; // Assuming the full file path is provided in the query parameter
+
+            // Check if file path is provided
+            if (!filePath) {
+                return res.status(httpStatus.BAD_REQUEST).send({
+                    status: false,
+                    code: httpStatus.BAD_REQUEST,
+                    message: 'File path not provided.',
+                });
+            }
+
+            // Check if file exists
+            if (fs.existsSync(filePath)) {
+                // Set appropriate headers
+                const filename = path.basename(filePath);
+                res.setHeader('Content-Type', 'application/octet-stream');
+                res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+                // Create read stream and pipe to response
+                const fileStream = fs.createReadStream(filePath);
+                fileStream.pipe(res);
+            } else {
+                res.status(httpStatus.NOT_FOUND).send({
+                    status: false,
+                    code: httpStatus.NOT_FOUND,
+                    message: 'File not found.',
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+                status: false,
+                code: httpStatus.INTERNAL_SERVER_ERROR,
+                message: e.message,
+            });
+        }
+    };
 }
 
 module.exports = ForCountryDetailController;

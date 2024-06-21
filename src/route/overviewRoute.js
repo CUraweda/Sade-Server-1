@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const express = require("express");
 const OverviewController = require("../controllers/OverviewController");
 const OverviewValidator = require("../validator/OverviewValidator");
@@ -27,7 +28,16 @@ router.get(
   auth([1, 2, 3, 4, 5, 6, 7, 8]),
   overviewController.show
 );
-
+router.get(
+  "/show",
+  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  overviewController.showAll
+);
+router.get(
+  "/show-student/:student_id",
+  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  overviewController.showAllByStudentID
+);
 router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), overviewController.showAll);
 
 router.get(

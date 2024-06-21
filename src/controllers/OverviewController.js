@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const httpStatus = require("http-status");
 const OverviewService = require("../service/OverviewService");
 const logger = require("../config/logger");
@@ -20,7 +21,7 @@ class OverviewController {
 
   update = async (req, res) => {
     try {
-      var id = req.params.id;
+      const { id } = req.params;
 
       const resData = await this.overviewService.updateOverview(id, req.body);
 
@@ -33,7 +34,7 @@ class OverviewController {
 
   show = async (req, res) => {
     try {
-      var id = req.params.id;
+      const { id } = req.params;
 
       const resData = await this.overviewService.showOverview(id);
 
@@ -46,8 +47,8 @@ class OverviewController {
 
   showAll = async (req, res) => {
     try {
-      const page = parseInt(req.query.page) || 0;
-      const limit = parseInt(req.query.limit) || 10;
+      const page = parseInt(req.query.page, 10) || 0;
+      const limit = parseInt(req.query.limit, 10) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
 
@@ -65,6 +66,17 @@ class OverviewController {
     }
   };
 
+  showAllByStudentID = async (req, res) => {
+    try {
+      const id  = req.params.student_id;
+      const resData = await this.overviewService.showAllByStudentID(id);
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e); 
+    }
+  }
+
   showActive = async (req, res) => {
     try {
       const resData = await this.overviewService.showOverviewActive();
@@ -77,7 +89,7 @@ class OverviewController {
 
   setActive = async (req, res) => {
     try {
-      var id = req.params.id;
+      const { id } = req.params;
 
       const resData = await this.overviewService.setActiveOverview(id);
 
@@ -90,7 +102,7 @@ class OverviewController {
 
   delete = async (req, res) => {
     try {
-      var id = req.params.id;
+      const { id } = req.params;
 
       const resData = await this.overviewService.deleteOverview(id);
 

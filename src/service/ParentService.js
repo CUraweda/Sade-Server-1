@@ -61,15 +61,15 @@ class ParentService {
     }
   };
 
-  updateReligion = async (id, body) => {
-    const message = "Religion successfully updated!";
+  updateParent = async (id, body) => {
+    const message = "Parent successfully updated!";
 
     let rel = await this.parentDao.findById(id);
 
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
-        "Religion year not found!",
+        "Parent not found!",
         {}
       );
     }

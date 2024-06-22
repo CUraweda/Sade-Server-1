@@ -46,8 +46,8 @@ class AnnouncementService {
     const updateData = await this.announcementDao.updateWhere(
       {
         date_start: body.date_start,
-        date_end: body.date_start,
-        annuncement_desc: body.annuncement_desc,
+        date_end: body.date_end,
+        announcement_desc: body.announcement_desc,
       },
       { id }
     );

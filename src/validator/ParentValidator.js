@@ -21,7 +21,9 @@ class ParentValidator {
 			last_education: Joi.string().optional(),
 			salary: Joi.string().optional(),
 			field_of_work: Joi.string().optional(),
-      user_id: Joi.number().integer().optional()
+      user_id: Joi.number().integer().optional(),
+      latitude: Joi.number().optional(),
+      longitude: Joi.number().optional()
 		});
 
     // schema options

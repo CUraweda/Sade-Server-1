@@ -91,6 +91,9 @@ class ParentService {
         last_education: body.last_education,
         salary: body.salary,
         field_of_work: body.field_of_work,
+        user_id: body.user_id,
+        latitude: body.latitude,
+        longitude: body.longitude
       },
       { id }
     );

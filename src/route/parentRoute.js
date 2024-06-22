@@ -26,6 +26,8 @@ router.put(
 
 router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), parentController.show);
 
+router.get("/show-by-userid/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), parentController.showByUserId);
+
 router.get(
   "/show-by-student/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8]),

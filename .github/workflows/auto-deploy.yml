@@ -1,0 +1,33 @@
+name: Deploy To Server Ischool
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build
+      run: echo "Build step for Pull Request"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    
+    - name: Debug info
+      run: |
+        echo "Event name: ${{ github.event_name }}"
+        echo "Is pull request merged: ${{ github.event_name }}"
+        

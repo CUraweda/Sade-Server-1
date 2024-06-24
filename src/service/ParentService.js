@@ -61,15 +61,15 @@ class ParentService {
     }
   };
 
-  updateReligion = async (id, body) => {
-    const message = "Religion successfully updated!";
+  updateParent = async (id, body) => {
+    const message = "Parent successfully updated!";
 
     let rel = await this.parentDao.findById(id);
 
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
-        "Religion year not found!",
+        "Parent not found!",
         {}
       );
     }
@@ -91,6 +91,9 @@ class ParentService {
         last_education: body.last_education,
         salary: body.salary,
         field_of_work: body.field_of_work,
+        user_id: body.user_id,
+        latitude: body.latitude,
+        longitude: body.longitude
       },
       { id }
     );
@@ -131,6 +134,22 @@ class ParentService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
+
+  showByUserId = async (user_id) => {
+    const message = "Parent successfully retrieved!";
+
+    let dt = await this.parentDao.findOneByWhere({ user_id })
+
+    if (!dt) {
+      return responseHandler.returnSuccess(
+        httpStatus.NOT_FOUND,
+        "Parent not found!",
+        {}
+      )
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt)
+  }
 
   async showPage(page, limit, search, offset) {
     const totalRows = await this.parentDao.getCount(search);

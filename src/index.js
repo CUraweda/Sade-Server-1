@@ -15,9 +15,6 @@ var options = {
   cert: cert,
 };
 
-// socket initialization
-// socket initialization
-// socket initialization
 
 const server = http.createServer(options, app);
 

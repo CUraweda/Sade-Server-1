@@ -3,26 +3,28 @@ const httpStatus = require('http-status');
 const ApiError = require('../helper/ApiError');
 
 class ParentValidator {
-    // eslint-disable-next-line class-methods-use-this
-    async parentCreateUpdateValidator(req, res, next) {
-        // create schema object
-        const schema = Joi.object({
-            student_id: Joi.string().required(),
-            parent_type: Joi.string().required(),
-            name: Joi.string().required(),
-            citizen: Joi.string().required(),
-            religion: Joi.string().required(),
-            marriage_to: Joi.string().required(),
-            in_age: Joi.string().required(),
-            relationship_to_student: Joi.string().required(),
-            address: Joi.string().required(),
-            phone: Joi.string().required(),
-            email: Joi.string().required(),
-            com_priority: Joi.string().required(),
-            last_education: Joi.string().required(),
-            salary: Joi.string().required(),
-            field_of_work: Joi.string().required(),
-        });
+  async parentCreateUpdateValidator(req, res, next) {
+    // create schema object
+    const schema = Joi.object({
+			student_id: Joi.string().optional(),
+			parent_type: Joi.string().optional(),
+			name: Joi.string().required(),
+			nationality: Joi.string().optional(),
+			religion: Joi.string().optional(),
+			marriage_to: Joi.number().integer().optional(),
+			in_age: Joi.number().integer().optional(),
+			relationship_to_student: Joi.string().optional(),
+			address: Joi.string().optional(),
+			phone: Joi.string().optional(),
+			email: Joi.string().optional(),
+			com_priority: Joi.string().optional(),
+			last_education: Joi.string().optional(),
+			salary: Joi.string().optional(),
+			field_of_work: Joi.string().optional(),
+      user_id: Joi.number().integer().optional(),
+      latitude: Joi.number().optional(),
+      longitude: Joi.number().optional()
+		});
 
         // schema options
         const options = {

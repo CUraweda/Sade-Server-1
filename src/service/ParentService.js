@@ -55,35 +55,42 @@ class ParentService {
         }
     };
 
-    updateReligion = async (id, body) => {
-        const message = 'Religion successfully updated!';
+  updateParent = async (id, body) => {
+    const message = "Parent successfully updated!";
 
         const rel = await this.parentDao.findById(id);
 
-        if (!rel) {
-            return responseHandler.returnSuccess(httpStatus.OK, 'Religion year not found!', {});
-        }
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Parent not found!",
+        {}
+      );
+    }
 
-        const updateData = await this.parentDao.updateWhere(
-            {
-                student_id: body.student_id,
-                parent_type: body.parent_type,
-                name: body.name,
-                nationality: body.nationality,
-                religion: body.religion,
-                marriage_to: body.marriage_to,
-                in_age: body.in_age,
-                relationship_to_student: body.relationship_to_student,
-                address: body.address,
-                phone: body.phone,
-                email: body.email,
-                com_priority: body.com_priority,
-                last_education: body.last_education,
-                salary: body.salary,
-                field_of_work: body.field_of_work,
-            },
-            { id },
-        );
+    const updateData = await this.parentDao.updateWhere(
+      {
+        student_id: body.student_id,
+        parent_type: body.parent_type,
+        name: body.name,
+        nationality: body.nationality,
+        religion: body.religion,
+        marriage_to: body.marriage_to,
+        in_age: body.in_age,
+        relationship_to_student: body.relationship_to_student,
+        address: body.address,
+        phone: body.phone,
+        email: body.email,
+        com_priority: body.com_priority,
+        last_education: body.last_education,
+        salary: body.salary,
+        field_of_work: body.field_of_work,
+        user_id: body.user_id,
+        latitude: body.latitude,
+        longitude: body.longitude
+      },
+      { id }
+    );
 
         if (updateData) {
             return responseHandler.returnSuccess(httpStatus.OK, message, {});
@@ -111,8 +118,24 @@ class ParentService {
             return responseHandler.returnSuccess(httpStatus.OK, 'Parents not found!', {});
         }
 
-        return responseHandler.returnSuccess(httpStatus.OK, message, dt);
-    };
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt);
+  };
+
+  showByUserId = async (user_id) => {
+    const message = "Parent successfully retrieved!";
+
+    let dt = await this.parentDao.findOneByWhere({ user_id })
+
+    if (!dt) {
+      return responseHandler.returnSuccess(
+        httpStatus.NOT_FOUND,
+        "Parent not found!",
+        {}
+      )
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt)
+  }
 
     async showPage(page, limit, search, offset) {
         const totalRows = await this.parentDao.getCount(search);

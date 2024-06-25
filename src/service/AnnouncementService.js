@@ -36,14 +36,14 @@ class AnnouncementService {
             return responseHandler.returnSuccess(httpStatus.OK, 'Announcement not found!', {});
         }
 
-        const updateData = await this.announcementDao.updateWhere(
-            {
-                date_start: body.date_start,
-                date_end: body.date_start,
-                annuncement_desc: body.annuncement_desc,
-            },
-            { id },
-        );
+    const updateData = await this.announcementDao.updateWhere(
+      {
+        date_start: body.date_start,
+        date_end: body.date_end,
+        announcement_desc: body.announcement_desc,
+      },
+      { id }
+    );
 
         if (updateData) {
             return responseHandler.returnSuccess(httpStatus.OK, message, {});

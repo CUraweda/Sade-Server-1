@@ -69,6 +69,25 @@ class AuthController {
     res.status(httpStatus.NO_CONTENT).send();
   };
 
+  me = async (req, res) => {
+    try {
+			const user = await this.userService.getUserByUuid(req.user.uuid);
+			if (user == null) {
+				return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
+			}
+
+			res.status(httpStatus.OK).json({
+				status: true,
+				code: 200,
+				message: "User information retrieved",
+				data: user,
+			});
+		} catch (e) {
+			logger.error(e);
+			res.status(httpStatus.BAD_GATEWAY).send(e);
+		}
+  }
+
   refreshTokens = async (req, res) => {
     try {
       const refreshTokenDoc = await this.tokenService.verifyToken(

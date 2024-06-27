@@ -209,7 +209,10 @@ class PortofolioReportController {
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
+      res.status(httpStatus.BAD_GATEWAY).send({
+        level: 'error',
+        message: e.message
+      });
     }
   };
 

@@ -11,7 +11,7 @@ const portofolioReportValidator = new PortofolioReportValidator();
 router.post(
   "/create",
   auth([1, 3, 6, 8]),
-  //   portofolioReportValidator.portofolioReportCreateUpdateValidator,
+    // portofolioReportValidator.portofolioReportCreateUpdateValidator,
   portofolioReportController.create
 );
 

@@ -124,79 +124,70 @@ class PortofolioReportService {
   };
 
   mergePortofolioReport = async (id) => {
-    const message = "Portofolio report successfully merged!";
-
-    const datas = await this.portofolioReportDao.findByWhere({
-      student_report_id: id,
-    });
-
-    let pdf1 = "";
-    let pdf2 = "";
-
-    for (const data of datas) {
-      // console.log(data);
-
-      if (data.type == "Orang Tua") {
-        pdf1 = data.file_path;
+    try {
+      let message = "Portofolio report successfully merged!";
+  
+      const datas = await this.portofolioReportDao.findByWhere({
+        student_report_id: id,
+      });
+  
+      let pdf1 = "";
+      let pdf2 = "";
+  
+      for (const data of datas) {
+        if (data.type === "Orang Tua") {
+          pdf1 = data.file_path;
+        }
+        if (data.type === "Guru") {
+          pdf2 = data.file_path;
+        }
       }
-
-      if (data.type == "Guru") {
-        pdf2 = data.file_path;
-      }
-    }
-
-    if (pdf1 && pdf2) {
-      var mergedPDF = await this.mergePDFs(pdf1, pdf2);
-      //check if student report has a comments
-      const commentData = await this.studentReportDao.findById(id);
-      if (commentData) {
-        mergedPDF = await this.mergePDFs(
-          mergedPDF,
-          commentData.por_comments_path
-        );
-      }
-
-      let check = await this.portofolioReportDao.getByStudentReportId(
-        id,
-        "Merged"
-      );
-
-      if (check) {
-        fs.unlink(check.file_path, (err) => {
-          if (err) {
-            return responseHandler.returnError(
-              httpStatus.NOT_FOUND,
-              "Cannot delete attachment!"
-            );
-          }
-          console.log("Delete File successfully.");
-        });
-      }
-      if (!check) {
-        check = await this.portofolioReportDao.create({
-          student_report_id: id,
-          type: "Merged",
-          file_path: mergedPDF,
-        });
+  
+      if (pdf1 && pdf2) {
+        var mergedPDF = await this.mergePDFs(pdf1, pdf2);
+        const commentData = await this.studentReportDao.findById(id);
+        
+        if (commentData.por_comments_path == null) {
+          const message = "Portofolio comments is empty. Please make comment first"
+          return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+        }
+        if (commentData) {
+          mergedPDF = await this.mergePDFs(mergedPDF, commentData.por_comments_path);
+        }
+  
+        let check = await this.portofolioReportDao.getByStudentReportId(id, "Merged");
+  
+        if (check) {
+          await fs.promises.unlink(check.file_path);
+        }
+  
+        if (!check) {
+          check = await this.portofolioReportDao.create({
+            student_report_id: id,
+            type: "Merged",
+            file_path: mergedPDF,
+          });
+        } else {
+          await this.portofolioReportDao.updateById(
+            { type: "Merged", file_path: mergedPDF },
+            check.id
+          );
+        }
+  
         await this.studentReportDao.updateWhere(
           { portofolio_path: mergedPDF },
           { id }
         );
       } else {
-        await this.portofolioReportDao.updateById(
-          { type: "Merged", file_path: mergedPDF },
-          check.id
-        );
-        await this.studentReportDao.updateWhere(
-          { portofolio_path: mergedPDF },
-          { id }
-        );
+        message = "Failed to merge Portofolio report. One or more PDF file is missing!";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-    } else {
-      message =
-        "Failed to merge Portofolio report. One or more pdf file is missing !";
+  
+      return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
+    } catch (error) {
+      logger.error("Error merging portfolio report:", error);
+      return responseHandler.returnError(httpStatus.BAD_REQUEST, error.message);
     }
-    return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
   };
 
   mergePDFs = async (pdf1, pdf2) => {

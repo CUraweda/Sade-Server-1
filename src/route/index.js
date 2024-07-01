@@ -58,6 +58,7 @@ const taskDetailRoute = require("./taskDetailRoute");
 const templatesRoute = require("./templatesRoute");
 const notificationRoute = require("./notificationRoute");
 const studentDataRoute = require("./studentDataRoute")
+const studentPaymentPostRoute = require("./studentPaymentPostRoute")
 
 const router = express.Router();
 
@@ -297,6 +298,10 @@ const defaultRoutes = [
   {
     path: "/student-data",
     route: studentDataRoute,
+  },
+  {
+    path: "/student-payment-post",
+    route: studentPaymentPostRoute,
   },
 ];
 

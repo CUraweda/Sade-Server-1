@@ -18,6 +18,7 @@ class StudentReportValidator {
       por_parent_comments: Joi.string().max(3000).allow("", null),
       nar_comments_path: Joi.string().max(3000).allow("", null),
       por_comments_path: Joi.string().max(3000).allow("", null),
+      student_access: Joi.boolean().default(false)
     });
 
     // schema options
@@ -60,6 +61,7 @@ class StudentReportValidator {
       por_parent_comments: Joi.string().max(3000).allow("", null),
       nar_comments_path: Joi.string().max(3000).allow("", null),
       por_comments_path: Joi.string().max(3000).allow("", null),
+      student_access: Joi.boolean().default(false)
     });
 
     // schema options

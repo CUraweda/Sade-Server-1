@@ -3,20 +3,10 @@ const config = require("./config/config");
 
 // console.log('Hello Node-Express-Mysql with Sequelize Boilerplate!!');
 require("./cronJobs");
-// eslint-disable-next-line import/order
-const https = require("https");
+
 const http = require("http");
-const fs = require("fs");
 
-var key = fs.readFileSync("./certs/sade.key");
-var cert = fs.readFileSync("./certs/sade.crt");
-var options = {
-  key: key,
-  cert: cert,
-};
-
-
-const server = https.createServer(options, app);
+const server = http.createServer(app);
 
 // eslint-disable-next-line import/order
 const io = require("socket.io")(server, { cors: { origin: "*" } });

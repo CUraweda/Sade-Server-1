@@ -5,6 +5,7 @@ const config = require("./config/config");
 require("./cronJobs");
 // eslint-disable-next-line import/order
 const https = require("https");
+const http = require("http");
 const fs = require("fs");
 
 var key = fs.readFileSync("./certs/sade.key");
@@ -14,8 +15,9 @@ var options = {
   cert: cert,
 };
 
-// socket initialization
+
 const server = https.createServer(options, app);
+
 // eslint-disable-next-line import/order
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 

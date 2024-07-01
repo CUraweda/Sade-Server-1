@@ -36,7 +36,7 @@
     "pdfkit-table": "^0.1.99",
     "redis": "^4.0.6",
     "sequelize": "^6.6.5",
-    "sequelize-cli": "^6.2.0",
+    "sequelize-cli": "^6.6.2",
     "socket.io": "^4.4.1",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5",

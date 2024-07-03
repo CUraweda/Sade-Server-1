@@ -15,8 +15,11 @@ var options = {
   cert: cert,
 };
 
+// deployment 
+// const server = https.createServer(options, app);
 
-const server = https.createServer(options, app);
+// development
+const server = http.createServer(app);
 
 // eslint-disable-next-line import/order
 const io = require("socket.io")(server, { cors: { origin: "*" } });

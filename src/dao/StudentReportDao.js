@@ -27,7 +27,12 @@ class StudentReportDao extends SuperDao {
             },
           },
           {
-            parent_comments: {
+            nar_parent_comments: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            student_access: {
               [Op.like]: "%" + search + "%",
             },
           },
@@ -46,7 +51,12 @@ class StudentReportDao extends SuperDao {
             },
           },
           {
-            parent_comments: {
+            nar_parent_comments: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            student_access: {
               [Op.like]: "%" + search + "%",
             },
           },
@@ -58,10 +68,11 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getByClassId(id) {
+  async getByClassId(id, student_access) {
     return StudentReport.findAll({
       where: {
         "$studentclass.class_id$": id,
+        student_access: student_access
       },
       include: [
         {

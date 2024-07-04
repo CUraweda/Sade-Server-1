@@ -27,7 +27,7 @@ class StudentReportDao extends SuperDao {
             },
           },
           {
-            parent_comments: {
+            nar_parent_comments: {
               [Op.like]: "%" + search + "%",
             },
           },
@@ -51,7 +51,7 @@ class StudentReportDao extends SuperDao {
             },
           },
           {
-            parent_comments: {
+            nar_parent_comments: {
               [Op.like]: "%" + search + "%",
             },
           },

@@ -72,13 +72,17 @@ class StudentClassController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const classId = req.query.class_id || "";
+      const academicYear = req.query.academic || "";
       const offset = limit * page;
 
       const resData = await this.studentClassService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        classId,
+        academicYear
       );
 
       res.status(resData.statusCode).send(resData.response);

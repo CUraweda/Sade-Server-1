@@ -50,6 +50,22 @@ class StudentReportService {
     }
   };
 
+  updateStudentReportAccess = async (id) => {
+    const message = 'Student report access successfully updated!';
+
+    let rel = await this.studentReportDao.findById(id);
+
+		if (!rel) {
+			return responseHandler.returnSuccess(httpStatus.OK, 'Student report not found!', {});
+		}
+
+    const updateData = await this.studentReportDao.updateById({ student_access: !rel.student_access }, id);
+
+    if (updateData) {
+      return responseHandler.returnSuccess(httpStatus.OK, message, {});
+    }
+  }
+
   updateStudentReport = async (id, body) => {
     const message = "Student report successfully updated!";
 

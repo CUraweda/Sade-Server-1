@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const StudentClass = models.studentclass;
 const Students = models.students;
 const Classes = models.classes;
+const Reports = models.studentreports;
 
 class StudentClassDao extends SuperDao {
   constructor() {
@@ -80,6 +81,11 @@ class StudentClassDao extends SuperDao {
         {
           model: Classes,
         },
+        {
+          model: Reports,
+          attributes: ['id', 'student_access', 'semester'],
+          separate: true,
+        }
       ],
     });
   }
@@ -129,6 +135,11 @@ class StudentClassDao extends SuperDao {
         {
           model: Classes,
         },
+        {
+          model: Reports,
+          attributes: ['id', 'student_access', 'semester'],
+          separate: true,
+        }
       ],
     });
   }

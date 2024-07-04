@@ -36,6 +36,19 @@ class StudentReportController {
     }
   };
 
+  updateAccess = async (req, res) => {
+    try {
+			var id = req.params.id;
+
+			const resData = await this.studentReportService.updateStudentReportAccess(id);
+
+			res.status(resData.statusCode).send(resData.response);
+		} catch (e) {
+			logger.error(e);
+			res.status(httpStatus.BAD_GATEWAY).send(e);
+		}
+  }
+
   show = async (req, res) => {
     try {
       var id = req.params.id;

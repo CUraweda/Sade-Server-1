@@ -28,6 +28,10 @@ module.exports = {
       class: {
         type: Sequelize.STRING
       },
+      grade: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -39,6 +43,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('StudentData');
+    await queryInterface.dropTable('tbl_student_data');
   }
 };

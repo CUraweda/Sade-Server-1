@@ -18,12 +18,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: DataTypes.STRING,
       desc: DataTypes.STRING,
+      billing_cycle: DataTypes.STRING
     },
     {
       sequelize,
       modelName: "paymentpost",
       tableName: "ref_payment_post",
-      timestamps: false,
       underscored: true,
     }
   );

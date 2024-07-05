@@ -28,6 +28,11 @@ router.get(
     auth([1, 3, 6]),
     studentPaymentCategoryController.showAll
 )
+router.get(
+    "/get-by-id/:id",
+    auth([1, 3, 6]),
+    studentPaymentCategoryController.showById
+)
 
 router.delete(
     "/delete/:id",

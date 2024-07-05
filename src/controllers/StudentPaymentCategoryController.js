@@ -51,6 +51,20 @@ class StudentPaymentCategoryController {
         res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+    showById = async (req, res) => {
+      try {
+        var id = req.params.id;
+  
+        const resData = await this.studentPaymentCategoryService.showStudentPaymentCategoryById(
+          id
+        );
+  
+        res.status(resData.statusCode).send(resData.response);
+      } catch (e) {
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+      }
+    };
     delete = async (req, res) => {
         try {
           var id = req.params.id;

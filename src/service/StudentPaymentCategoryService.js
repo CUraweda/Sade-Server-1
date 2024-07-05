@@ -64,6 +64,21 @@ class StudentPaymentCategoryService {
         }
       );
     }
+    showStudentPaymentCategoryById = async (id) => {
+      const message = "Student Payment Category successfully retrieved!";
+  
+      let cl = await this.studentpaymentcategory.getById(id);
+  
+      if (!cl) {
+        return responseHandler.returnSuccess(
+          httpStatus.OK,
+          "Student Data not found!",
+          {}
+        );
+      }
+  
+      return responseHandler.returnSuccess(httpStatus.OK, message, cl);
+    };
     deleteStudentPaymentCategory = async (id) => {
         const message = "Student Payment Category successfully deleted!";
     

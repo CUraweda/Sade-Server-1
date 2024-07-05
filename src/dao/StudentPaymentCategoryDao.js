@@ -10,6 +10,14 @@ class StudentPaymentCategoryDao extends SuperDao {
     constructor() {
         super(StudentPaymentCategory)
     }
+    async getById(id) {
+        return StudentPaymentCategory.findAll({
+          where: {
+            id: id,
+          },
+          order: [["id", "DESC"]],
+        });
+    }
     
     async getCount(search) {
         return StudentPaymentCategory.count({

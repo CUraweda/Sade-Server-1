@@ -138,14 +138,16 @@ class StudentClassService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.studentClassDao.getCount(search);
+  async showPage(page, limit, search, offset, classId, academicYear) {
+    const totalRows = await this.studentClassDao.getCount(search, classId, academicYear);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentClassDao.getStudentClassPage(
       search,
       offset,
-      limit
+      limit,
+      classId,
+      academicYear
     );
 
     return responseHandler.returnSuccess(

@@ -57,6 +57,9 @@ const taskRoute = require("./taskRoute");
 const taskDetailRoute = require("./taskDetailRoute");
 const templatesRoute = require("./templatesRoute");
 const notificationRoute = require("./notificationRoute");
+const studentDataRoute = require("./studentDataRoute")
+const studentPaymentPostRoute = require("./studentPaymentPostRoute")
+const studentPaymentCategoryRoute = require("./studentPaymentCategoryRoute")
 
 const router = express.Router();
 
@@ -292,6 +295,18 @@ const defaultRoutes = [
   {
     path: "/notification",
     route: notificationRoute,
+  },
+  {
+    path: "/student-data",
+    route: studentDataRoute,
+  },
+  {
+    path: "/student-payment-post",
+    route: studentPaymentPostRoute,
+  },
+  {
+    path: "/student-payment-category",
+    route: studentPaymentCategoryRoute,
   },
 ];
 

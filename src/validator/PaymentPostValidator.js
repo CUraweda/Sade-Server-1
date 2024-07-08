@@ -8,6 +8,7 @@ class PaymentPostValidator {
     const schema = Joi.object({
       name: Joi.string().required(),
       desc: Joi.string().required(),
+      billing_cycle: Joi.string().valid('Bulanan', 'Tahunan', 'Sekali').required()
     });
 
     // schema options

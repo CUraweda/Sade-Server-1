@@ -47,6 +47,7 @@ class PaymentPostService {
       {
         name: body.name,
         desc: body.desc,
+        billing_cycle: body.billing_cycle
       },
       { id }
     );

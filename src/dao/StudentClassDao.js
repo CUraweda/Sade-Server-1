@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const StudentClass = models.studentclass;
 const Students = models.students;
 const Classes = models.classes;
+const Reports = models.studentreports;
 
 class StudentClassDao extends SuperDao {
   constructor() {
@@ -37,37 +38,42 @@ class StudentClassDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, classId, academic) {
+    const where = {
+      [Op.or]: [
+        {
+          "$class.class_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          academic_year: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          is_active: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (classId) where['class_id'] = parseInt(classId);
+		if (academic) where['academic_year'] = academic;
+
     return StudentClass.count({
-      where: {
-        [Op.or]: [
-          {
-            "$class.class_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            is_active: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: Students,
@@ -75,41 +81,53 @@ class StudentClassDao extends SuperDao {
         {
           model: Classes,
         },
+        {
+          model: Reports,
+          attributes: ['id', 'student_access', 'semester'],
+          separate: true,
+        }
       ],
     });
   }
 
-  async getStudentClassPage(search, offset, limit) {
+  async getStudentClassPage(search, offset, limit, classId, academic) {
+    const where = {
+      [Op.or]: [
+        {
+          "$class.class_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          academic_year: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          is_active: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (classId) where['class_id'] = parseInt(classId)
+    if (academic) where['academic_year'] = academic;
+    
     return StudentClass.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$class.class_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            is_active: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
+      offset: offset,
+      limit: limit,
       include: [
         {
           model: Students,
@@ -117,6 +135,11 @@ class StudentClassDao extends SuperDao {
         {
           model: Classes,
         },
+        {
+          model: Reports,
+          attributes: ['id', 'student_access', 'semester'],
+          separate: true,
+        }
       ],
     });
   }

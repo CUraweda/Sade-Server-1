@@ -4,7 +4,6 @@ const config = require("./config/config");
 // console.log('Hello Node-Express-Mysql with Sequelize Boilerplate!!');
 require("./cronJobs");
 
-const http = require("http");
 
 const server = http.createServer(app);
 

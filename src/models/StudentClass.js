@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
       StudentClass.hasMany(models.nonmonthly, {
         foreignKey: "student_class_id",
       });
+      StudentClass.hasMany(models.studentreports, {
+				foreignKey: 'student_class_id',
+			});
     }
   }
   StudentClass.init(

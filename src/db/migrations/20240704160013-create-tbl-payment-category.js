@@ -3,46 +3,45 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('tbl_student_data', {
+    await queryInterface.createTable('tbl_payment_categrory', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      student_id: {
+      payment_post_id: {
         type: Sequelize.INTEGER,
         onDelete: "CASCADE",
         references: {
-          model: 'tbl_students', 
+          model: 'ref_payment_post', 
           key: 'id',
         },
         allowNull: false,
       },
-      name: {
+      description: {
         type: Sequelize.STRING
       },
-      nis: {
+      post: {
         type: Sequelize.STRING
       },
-      class: {
-        type: Sequelize.STRING
+      due_date: {
+        type: Sequelize.DATE
       },
-      grade: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      total: {
+        type: Sequelize.DOUBLE
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('tbl_student_data');
+    await queryInterface.dropTable('tbl_payment_post');
   }
 };

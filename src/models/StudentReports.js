@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       por_parent_comments: DataTypes.TEXT,
       nar_comments_path: DataTypes.STRING,
       por_comments_path: DataTypes.STRING,
+      student_access: DataTypes.BOOLEAN
     },
     {
       sequelize,

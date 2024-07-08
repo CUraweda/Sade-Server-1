@@ -22,6 +22,12 @@ router.put(
   studentReportController.update
 );
 
+router.put(
+	'/update-access/:id',
+	auth([1, 2, 3, 4]),
+	studentReportController.updateAccess
+);
+
 router.get(
   "/show/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8]),

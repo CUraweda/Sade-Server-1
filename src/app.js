@@ -27,7 +27,7 @@ passport.use("jwt", jwtStrategy);
 
 
 app.get("/stg-server1", async (req, res) => {
-  res.status(200).send("Congratulations! API is working!");
+  res.status(200).send(`Congratulations! API is working in port ${process.env.PORT}`);
 });
 app.use("/stg-server1/api", routes);
 

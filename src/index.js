@@ -15,7 +15,6 @@ var options = {
   cert: cert,
 }
 const server = http.createServer(app);
-console.log("Test Server")
 
 // eslint-disable-next-line import/order
 const io = require("socket.io")(server, { cors: { origin: "*" } });

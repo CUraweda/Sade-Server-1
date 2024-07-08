@@ -27,13 +27,7 @@ passport.use("jwt", jwtStrategy);
 
 app.get("/", async (req, res) => {
   res.status(200).send("Congratulations! API is working!");
-  res.send('OK');
 });
-app.get("/hello", async (req, res) => {
-  res.status(200).send("Hello Curaweda!");
-  res.send('Hello Curaweda!');
-});
-
 app.use("/api", routes);
 
 // send back a 404 error for any unknown api request

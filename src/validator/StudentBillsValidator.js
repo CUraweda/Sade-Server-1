@@ -7,8 +7,8 @@ class StudentBillsValidator {
         const schema = Joi.object({
             student_id: Joi.number().required(),
             payment_bill_id: Joi.number().required(),
-            evidence_path: Joi.string().required(),
-            paidoff_att: Joi.string().required(),
+            evidence_path: Joi.string().allow("", null),
+            paidoff_att: Joi.string().allow("", null),
             status: Joi.string().required()
         })
         // schema options

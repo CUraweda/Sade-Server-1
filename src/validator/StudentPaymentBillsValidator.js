@@ -10,7 +10,7 @@ class StudentPaymentBillsValidator {
             level: Joi.string().required(),
             academic_year: Joi.string().required(),
             class_id: Joi.number().required(),
-            student_id: Joi.number().required(),
+            student_id: Joi.number().optional(),
             total: Joi.number().required(),
             due_date: Joi.date().required(),
         })

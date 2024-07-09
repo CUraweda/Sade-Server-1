@@ -8,7 +8,7 @@ class StudentBillsValidator {
             student_id: Joi.number().required(),
             payment_bill_id: Joi.number().required(),
             evidence_path: Joi.string().allow("", null),
-            paidoff_att: Joi.string().allow("", null),
+            paidoff_at: Joi.string().allow("", null),
             status: Joi.string().required()
         })
         // schema options

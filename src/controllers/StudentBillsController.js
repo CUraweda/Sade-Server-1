@@ -38,12 +38,14 @@ class StudentBillsController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
+        const billId = req.query.bill_id || ""
 
         const resData = await this.studentBillsService.showPage(
             page,
             limit,
             search,
-            offset
+            offset,
+            billId
         );
 
         res.status(resData.statusCode).send(resData.response);

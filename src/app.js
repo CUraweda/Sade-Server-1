@@ -25,10 +25,11 @@ app.use(express.json());
 app.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
 
-app.get("/", async (req, res) => {
-  res.status(200).send("Congratulations! API is working!");
+
+app.get("/stg-server1", async (req, res) => {
+  res.status(200).send(`Congratulations! API is working in port ${process.env.PORT}`);
 });
-app.use("/api", routes);
+app.use("/stg-server1/api", routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

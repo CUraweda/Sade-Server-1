@@ -16,6 +16,17 @@ class StudentBillsController {
             res.status(httpStatus.BAD_GATEWAY).send(e)            
         }
     }
+
+    bulkCreate = async (req, res) => {
+        try {
+            const resData = await this.studentBillsService.bulkCreateStudentBills(req.body)
+            res.status(resData.statusCode).send(resData.response)
+        } catch (e) {
+            logger.error(e)
+            res.status(httpStatus.BAD_GATEWAY).send(e)            
+        }
+    }
+
     update = async (req, res) => {
         try {
           var id = req.params.id;

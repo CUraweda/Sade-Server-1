@@ -53,7 +53,7 @@ class StudentBillsDao extends SuperDao {
                     [Op.or]: [
                         {"$student.full_name$": {[Op.like]: "%" + search + "%"}},
                         {evidence_path: {[Op.like]: "%" + search + "%"}},
-                        {paidoff_att: {[Op.like]: "%" + search + "%"}},
+                        {paidoff_at: {[Op.like]: "%" + search + "%"}},
                         {status: {[Op.like]: "%" + search + "%"}},
                     ]
                 },
@@ -66,10 +66,11 @@ class StudentBillsDao extends SuperDao {
                     {
                         model: PaymentBills,
                         as: 'studentpaymentbill',
-                        attributes: ["id","student_id"]
+                        attributes: ["id", "name"]
                     }
                 ]
             })
+            return result
         } catch (error) {
             console.error('Error in getStudentPaymentBillsPage:', error);
             throw error;

@@ -46,7 +46,7 @@ class StudentPaymentBillsService {
     showStudentPaymentBillsById = async (id) => {
       const message = "Student Payment Bills successfully retrieved!";
   
-      let rel = await this.studentPaymentBillsDao.findById(id);
+      let rel = await this.studentPaymentBillsDao.findOneByWhere({id});
   
       if (!rel) {
         return responseHandler.returnSuccess(

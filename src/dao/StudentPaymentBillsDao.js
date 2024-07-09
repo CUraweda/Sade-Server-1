@@ -39,22 +39,10 @@ class StudentPaymentBillsDao extends SuperDao {
       return StudentPaymentBills.count({
           where: {
               [Op.or]: [
-                { "$student.full_name$": { [Op.like]: "%" + search + "%"}},
                 { "$paymentpost.name$": { [Op.like]: "%" + search + "%"}},
-                { "$class.level$": { [Op.like]: "%" + search + "%", }},
               ],
           },
           include: [
-              {
-                  model: Students,
-                  as: 'student',
-                  attributes: ["id", "nis", "full_name", "class"],
-              },
-              {
-                  model: Classes,
-                  as: 'class',
-                  attributes: ["id", "level", "class_name"],
-              },
               {
                   model: PaymentPosts,
                   as: 'paymentpost',
@@ -65,28 +53,15 @@ class StudentPaymentBillsDao extends SuperDao {
   }
   async getStudentPaymentBillsPage(search, offset, limit) {
       try {
-
           const result = await StudentPaymentBills.findAll({
               where: {
                   [Op.or]: [
-                    { "$student.full_name$": { [Op.like]: "%" + search + "%"}},
                     { "$paymentpost.name$": { [Op.like]: "%" + search + "%"}},
-                    { "$class.level$": { [Op.like]: "%" + search + "%", }},
                     { total: { [Op.like]: `%${search}%` } },
                     { due_date: { [Op.like]: `%${search}%` } },
                   ],
               },
               include: [
-                {
-                    model: Students,
-                    as: 'student',
-                    attributes: ["id", "nis", "full_name", "class"],
-                },
-                {
-                    model: Classes,
-                    as: 'class',
-                    attributes: ["id", "level", "class_name"],
-                },
                 {
                     model: PaymentPosts,
                     as: 'paymentpost',

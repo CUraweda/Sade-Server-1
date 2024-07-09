@@ -82,6 +82,7 @@ class StudentBillsDao extends SuperDao {
                 ],
                 offset: offset,
                 limit: limit,
+                order: [["id", "DESC"]],
             })
             return result
         } catch (error) {

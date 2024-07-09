@@ -52,7 +52,6 @@ class StudentDataDao extends SuperDao {
     }
     async getStudentDataPage(search, offset, limit) {
         try {
-            console.log("Dao", search);
     
             const result = await StudentData.findAll({
                 where: {

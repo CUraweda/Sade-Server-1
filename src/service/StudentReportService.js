@@ -68,6 +68,7 @@ class StudentReportService {
 
   updateStudentReport = async (id, body) => {
     const message = "Student report successfully updated!";
+    console.log("SERPIS ANJING", id)
 
     let rel = await this.studentReportDao.findById(id);
 

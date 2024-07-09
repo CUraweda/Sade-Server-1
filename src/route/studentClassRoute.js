@@ -39,7 +39,7 @@ router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), studentClassController.showAll);
 router.delete("/delete/:id", auth([1, 3, 6]), studentClassController.delete);
 
 router.get(
-  "/show-by-level",
+  "/show-by-level/:level",
   auth([1, 2, 3, 4, 5, 6, 7, 8]),
   studentClassController.showLevel
 );

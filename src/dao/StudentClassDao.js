@@ -38,6 +38,25 @@ class StudentClassDao extends SuperDao {
     });
   }
 
+  async getByLevel(level, academic_year) {
+    return StudentClass.findAll({
+      where: {
+        "$class.level$": level,
+        academic_year: academic_year,
+        is_active: "Ya",
+      },
+      include: [
+        {
+          model: Students,
+        },
+        {
+          model: Classes
+        }
+      ],
+      order: [["id", "ASC"]],
+    });
+  }
+
   async getCount(search, classId, academic) {
     const where = {
       [Op.or]: [

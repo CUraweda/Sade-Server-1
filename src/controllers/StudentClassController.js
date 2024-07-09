@@ -107,10 +107,12 @@ class StudentClassController {
 
   showLevel = async (req, res) => {
     try {
-      const level = req.query.level;
+      const level = req.params.level;
+      const academic = req.query.academic || '';
 
       const resData = await this.studentClassService.showStudentClassByLevel(
-        level
+        level,
+        academic
       );
 
       res.status(resData.statusCode).send(resData.response);

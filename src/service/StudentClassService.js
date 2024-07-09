@@ -106,10 +106,10 @@ class StudentClassService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentClassByLevel = async (lvl) => {
+  showStudentClassByLevel = async (lvl, academic_year) => {
     const message = "Student Class successfully retrieved!";
 
-    let data = await this.studentClassDao.getByLevel(lvl);
+    let data = await this.studentClassDao.getByLevel(lvl, academic_year);
 
     if (!data) {
       return responseHandler.returnSuccess(

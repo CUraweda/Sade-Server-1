@@ -16,6 +16,17 @@ class StudentBillsController {
             res.status(httpStatus.BAD_GATEWAY).send(e)            
         }
     }
+
+    bulkCreate = async (req, res) => {
+        try {
+            const resData = await this.studentBillsService.bulkCreateStudentBills(req.body)
+            res.status(resData.statusCode).send(resData.response)
+        } catch (e) {
+            logger.error(e)
+            res.status(httpStatus.BAD_GATEWAY).send(e)            
+        }
+    }
+
     update = async (req, res) => {
         try {
           var id = req.params.id;
@@ -38,12 +49,14 @@ class StudentBillsController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
+        const billId = req.query.bill_id || ""
 
         const resData = await this.studentBillsService.showPage(
             page,
             limit,
             search,
-            offset
+            offset,
+            billId
         );
 
         res.status(resData.statusCode).send(resData.response);

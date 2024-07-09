@@ -26,6 +26,47 @@ class StudentBillsService {
             )
         }
     }
+
+    bulkCreateStudentBills = async (reqBody) => {
+        try {
+            let message = "Stuent Bills successfully added"
+
+            const dataList = reqBody.student_ids.map(sid => {
+              return {
+								student_id: sid,
+								payment_bill_id: reqBody.payment_bill_id,
+								status: 'Belum Lunas',
+							};
+            })
+
+            const existingData = await this.studentBillsDao.findAll({
+							where: {
+									payment_bill_id: reqBody.payment_bill_id,
+							},
+						});
+
+						const dataToCreate = dataList.filter((dat) => {
+							return !existingData.some(
+								(eDat) =>
+									eDat.payment_bill_id === dat.payment_bill_id && eDat.student_id === dat.student_id
+							);
+						});
+
+						let data = await this.studentBillsDao.bulkCreate(dataToCreate);
+
+            if (!data) {
+                message = "Failed to create student bills"
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, message)
+            }
+            return responseHandler.returnSuccess(httpStatus.CREATED, message, data)
+        } catch (e) {
+            logger.error(e)
+            return responseHandler.returnError(
+                httpStatus.BAD_REQUEST,
+                "Something went wrong!"
+            )
+        }
+    }
     showStudentBillsByStudentId = async (id) => {
         const message = "Student Bills successfully retrieved!";
     
@@ -73,14 +114,15 @@ class StudentBillsService {
             return responseHandler.returnSuccess(httpStatus.OK, message, {})
         }
     }
-    async showPage(page, limit, search, offset) {
-        const totalRows = await this.studentBillsDao.getCount(search);
+    async showPage(page, limit, search, offset, billId) {
+        const totalRows = await this.studentBillsDao.getCount(search, billId);
         const totalPage = Math.ceil(totalRows / limit);
     
         const result = await this.studentBillsDao.getStudentBillsPage(
           search,
           offset,
-          limit
+          limit,
+          billId
         );
     
         return responseHandler.returnSuccess(

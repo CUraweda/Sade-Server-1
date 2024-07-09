@@ -16,6 +16,13 @@ router.post(
     studentBillsController.create
 )
 
+router.post(
+	'/bulk-create',
+	auth([1, 2, 3, 6]),
+	studentBillsValidator.studentBillsBulkCreateValidator,
+	studentBillsController.bulkCreate
+);
+
 router.put(
     "/update/:id",
     auth([1, 2, 3, 6]),

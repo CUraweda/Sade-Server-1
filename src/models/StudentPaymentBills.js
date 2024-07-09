@@ -7,12 +7,6 @@ module.exports = (sequelize, DataTypes) => {
 			StudentPaymentBills.belongsTo(models.paymentpost, {
 				foreignKey: 'payment_post_id',
 			});
-			StudentPaymentBills.belongsTo(models.classes, {
-				foreignKey: 'class_id',
-			});
-			StudentPaymentBills.belongsTo(models.students, {
-				foreignKey: 'student_id',
-			});
 		}
 	}
 	StudentPaymentBills.init(

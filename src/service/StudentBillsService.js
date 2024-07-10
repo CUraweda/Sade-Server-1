@@ -2,6 +2,8 @@ const httpStatus = require("http-status")
 const StudentBillsDao = require("../dao/StudentBillsDao")
 const responseHandler = require("../helper/responseHandler")
 const logger = require("../config/logger")
+const { formatDateForSQL } = require("../helper/utils")
+const { Op } = require("sequelize")
 
 class StudentBillsService {
     constructor() {
@@ -114,6 +116,19 @@ class StudentBillsService {
             return responseHandler.returnSuccess(httpStatus.OK, message, {})
         }
     }
+
+    upEvidenceStudentBills = async (ids, body) => {
+      if (!body.evidence_path) {
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Evidence image not provided', {})
+      }
+
+			const updateData = await this.studentBillsDao.updateWhere({ ...body, paidoff_at: formatDateForSQL(new Date()) }, { id: {[Op.in]: ids}  });
+
+			if (updateData) {
+				return responseHandler.returnSuccess(httpStatus.OK, 'Student evidence successfully uploaded', updateData);
+			}
+    }
+
     async showPage(page, limit, search, offset, billId) {
         const totalRows = await this.studentBillsDao.getCount(search, billId);
         const totalPage = Math.ceil(totalRows / limit);

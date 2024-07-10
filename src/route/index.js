@@ -61,7 +61,7 @@ const studentDataRoute = require("./studentDataRoute")
 const studentPaymentPostRoute = require("./studentPaymentPostRoute")
 const studentPaymentCategoryRoute = require("./studentPaymentCategoryRoute")
 const studentPaymentBillsRoute = require("./studentPaymentBillsRoute")
-const studentBillsRoute = require("./StudentBillsRoute")
+const studentBillsRoute = require("./studentBillsRoute")
 const studentArrearsRoute = require("./studentArrearsRoute")
 
 const router = express.Router();

@@ -5,6 +5,7 @@ const { Op, where } = require("sequelize");
 const StudentBills = models.studentbills
 const Students = models.students;
 const PaymentBills = models.studentpaymentbills
+const PaymentPosts = models.paymentpost;
 
 class StudentBillsDao extends SuperDao {
     constructor() {
@@ -16,6 +17,20 @@ class StudentBillsDao extends SuperDao {
             student_id: student_id,
           },
           order: [["id", "DESC"]],
+          include: [
+                {
+                    model: PaymentBills,
+                    as: 'studentpaymentbill',
+                    attributes: ["id", "name", "academic_year", "total", "due_date"],
+                    include: [
+                        {
+                            model: PaymentPosts,
+                            as: 'paymentpost',
+                            attributes: ["id", "name", "desc", "billing_cycle"]
+                        }
+                    ]
+                }
+            ],
         });
     }
     async findById(id) {

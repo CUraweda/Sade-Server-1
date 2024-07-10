@@ -4,7 +4,7 @@ const path = require('node:path');
 
 const fs = require('fs');
 
-const dir = './images/payment-evidences';
+const dir = './public/images/payment-evidences';
 
 if (!fs.existsSync(dir)) {
 	fs.mkdirSync(dir, { recursive: true });

@@ -1,6 +1,7 @@
 const httpStatus = require("http-status")
 const StudentBillsService = require("../service/StudentBillsService")
 const logger = require("../config/logger")
+const uploadPaymentEvidence = require("../middlewares/uploadPaymentEvidence")
 
 class StudentBillsController {
     constructor() {
@@ -27,6 +28,21 @@ class StudentBillsController {
         }
     }
 
+    upEvidence = async (req, res) => {
+      try {
+        await uploadPaymentEvidence(req, res)
+        
+        const ids = req.params.ids?.split('-')
+        const body = { evidence_path: req.file?.path ?? null };
+
+				const resData = await this.studentBillsService.upEvidenceStudentBills(ids, body);
+				res.status(resData.statusCode).send(resData.response);
+			} catch (e) {
+				logger.error(e);
+				res.status(httpStatus.BAD_GATEWAY).send(e);
+			}
+    } 
+
     update = async (req, res) => {
         try {
           var id = req.params.id;
@@ -43,6 +59,24 @@ class StudentBillsController {
           res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+    confirmEvidence = async (req, res) => {
+        try {
+          var id = req.params.id;
+    
+          const resData =
+            await this.studentBillsService.updateStudentBills(
+              id,
+              { status: 'Lunas' }
+            );
+    
+          res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+          logger.error(e);
+          res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+
     showAll = async (req, res) => {
         try {
         const page = parseInt(req.query.page) || 0;

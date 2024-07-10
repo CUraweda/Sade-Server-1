@@ -30,6 +30,12 @@ router.put(
 )
 
 router.put(
+    '/confirm-evidence/:id', 
+    auth([1, 2, 3]), 
+    studentBillsController.confirmEvidence
+);
+
+router.put(
     "/update/:id",
     auth([1, 2, 3, 6]),
     studentBillsValidator.studentBillsCreateUpdateValidator,

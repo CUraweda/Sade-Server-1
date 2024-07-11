@@ -16,7 +16,7 @@ class ArrearsDao extends SuperDao{
             id: id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "paidoff_att"],
+        attributes: ["id", "paidoff_at"],
         include: [
             {
                 model: Students,

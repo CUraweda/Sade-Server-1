@@ -406,7 +406,7 @@ class NumberReportService {
     doc.text("Huruf", 350, 242, { align: "center", width: 200 });
 
     const rowsData = {}
-    await this.subjectDao.getAll("SD").then((data) => {
+    await this.subjectDao.getAll(data.level).then((data) => {
       data.forEach((subject, i) => {
         rowsData[subject.id] = [
           i + 1,

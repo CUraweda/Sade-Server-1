@@ -24,45 +24,45 @@ class ForCountryDao extends SuperDao {
     });
   }
 
-  //   async getCount(search) {
-  //     return ForCountry.count({
-  //       where: {
-  //         [Op.or]: [
-  //           {
-  //             code: {
-  //               [Op.like]: "%" + search + "%",
-  //             },
-  //           },
-  //           {
-  //             name: {
-  //               [Op.like]: "%" + search + "%",
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     });
-  //   }
+    async getCount(search) {
+      return ForCountry.count({
+        where: {
+          [Op.or]: [
+            {
+              code: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+      });
+    }
 
-  //   async getForCountryPage(search, offset, limit) {
-  //     return ForCountry.findAll({
-  //       where: {
-  //         [Op.or]: [
-  //           {
-  //             code: {
-  //               [Op.like]: "%" + search + "%",
-  //             },
-  //           },
-  //           {
-  //             name: {
-  //               [Op.like]: "%" + search + "%",
-  //             },
-  //           },
-  //         ],
-  //       },
-  //       offset: offset,
-  //       limit: limit,
-  //       order: [["id", "DESC"]],
-  //     });
-  //   }
+    async getForCountryPage(search, offset, limit) {
+      return ForCountry.findAll({
+        where: {
+          [Op.or]: [
+            {
+              code: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              name: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        },
+        offset: offset,
+        limit: limit,
+        order: [["id", "DESC"]],
+      });
+    }
 }
 module.exports = ForCountryDao;

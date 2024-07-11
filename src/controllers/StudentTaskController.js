@@ -6,6 +6,7 @@ const uploadStudentTask = require("../middlewares/uploadStudentTask");
 const Joi = require("joi");
 const path = require("path");
 const fs = require("fs");
+const StudentReportService = require("../service/StudentReportService");
 
 const schema = Joi.object({
   academic_year: Joi.string().allow("", null),
@@ -46,6 +47,7 @@ const schemaUpdate = Joi.object({
 class StudentTaskController {
   constructor() {
     this.studentTaskService = new StudentTaskService();
+    this.studentReportService = new StudentReportService()
   }
 
   create = async (req, res) => {
@@ -251,6 +253,25 @@ class StudentTaskController {
           code: httpStatus.BAD_REQUEST,
           message: "File path not provided.",
         });
+      }
+
+      if (filePath.includes("_reports")) {
+        let key = ""
+
+        if (filePath.includes("number_reports")) key = "number_path"
+        else if (filePath.includes("portofolio_reports")) key = "portofolio_path"
+        else if (filePath.includes("narrative_reports")) key = "narrative_path";
+
+        if (key) {
+          const checkAccess = await this.studentReportService.checkReportAccess(key, filePath)
+          if (!checkAccess) {
+            return res.status(httpStatus.FORBIDDEN).send({
+							status: false,
+							code: httpStatus.FORBIDDEN,
+							message: 'Report is locked',
+						});
+          }
+        }
       }
 
       // Check if file exists

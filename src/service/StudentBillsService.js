@@ -2,6 +2,8 @@ const httpStatus = require("http-status")
 const StudentBillsDao = require("../dao/StudentBillsDao")
 const responseHandler = require("../helper/responseHandler")
 const logger = require("../config/logger")
+const { formatDateForSQL } = require("../helper/utils")
+const { Op } = require("sequelize")
 
 class StudentBillsService {
     constructor() {
@@ -12,6 +14,47 @@ class StudentBillsService {
         try {
             let message = "Stuent Bills successfully added"
             let data = await this.studentBillsDao.create(reqBody)
+
+            if (!data) {
+                message = "Failed to create student bills"
+                return responseHandler.returnError(httpStatus.BAD_REQUEST, message)
+            }
+            return responseHandler.returnSuccess(httpStatus.CREATED, message, data)
+        } catch (e) {
+            logger.error(e)
+            return responseHandler.returnError(
+                httpStatus.BAD_REQUEST,
+                "Something went wrong!"
+            )
+        }
+    }
+
+    bulkCreateStudentBills = async (reqBody) => {
+        try {
+            let message = "Stuent Bills successfully added"
+
+            const dataList = reqBody.student_ids.map(sid => {
+              return {
+								student_id: sid,
+								payment_bill_id: reqBody.payment_bill_id,
+								status: 'Belum Lunas',
+							};
+            })
+
+            const existingData = await this.studentBillsDao.findAll({
+							where: {
+									payment_bill_id: reqBody.payment_bill_id,
+							},
+						});
+
+						const dataToCreate = dataList.filter((dat) => {
+							return !existingData.some(
+								(eDat) =>
+									eDat.payment_bill_id === dat.payment_bill_id && eDat.student_id === dat.student_id
+							);
+						});
+
+						let data = await this.studentBillsDao.bulkCreate(dataToCreate);
 
             if (!data) {
                 message = "Failed to create student bills"
@@ -73,14 +116,28 @@ class StudentBillsService {
             return responseHandler.returnSuccess(httpStatus.OK, message, {})
         }
     }
-    async showPage(page, limit, search, offset) {
-        const totalRows = await this.studentBillsDao.getCount(search);
+
+    upEvidenceStudentBills = async (ids, body) => {
+      if (!body.evidence_path) {
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Evidence image not provided', {})
+      }
+
+			const updateData = await this.studentBillsDao.updateWhere({ ...body, paidoff_at: formatDateForSQL(new Date()) }, { id: {[Op.in]: ids}  });
+
+			if (updateData) {
+				return responseHandler.returnSuccess(httpStatus.OK, 'Student evidence successfully uploaded', updateData);
+			}
+    }
+
+    async showPage(page, limit, search, offset, billId) {
+        const totalRows = await this.studentBillsDao.getCount(search, billId);
         const totalPage = Math.ceil(totalRows / limit);
     
         const result = await this.studentBillsDao.getStudentBillsPage(
           search,
           offset,
-          limit
+          limit,
+          billId
         );
     
         return responseHandler.returnSuccess(

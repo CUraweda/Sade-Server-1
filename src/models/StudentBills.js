@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     StudentBills.init(
         {
             evidence_path: DataTypes.STRING,
-            paidoff_att: DataTypes.STRING,
+            paidoff_at: DataTypes.STRING,
             status: DataTypes.STRING
         },
         {

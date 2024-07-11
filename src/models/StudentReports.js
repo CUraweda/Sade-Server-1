@@ -8,6 +8,25 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+
+      StudentReports.belongsTo(models.studentclass, {
+				foreignKey: 'student_class_id',
+			});
+
+			StudentReports.hasMany(models.numberreport, {
+				foreignKey: 'student_report_id',
+			});
+
+			StudentReports.hasMany(models.narrativereport, {
+				foreignKey: 'student_report_id',
+			});
+
+			StudentReports.hasMany(models.portofolioreports, {
+				foreignKey: 'student_report_id',
+			});
+			StudentReports.hasMany(models.narrativecomment, {
+				foreignKey: 'student_report_id',
+			});
     }
   }
   StudentReports.init(

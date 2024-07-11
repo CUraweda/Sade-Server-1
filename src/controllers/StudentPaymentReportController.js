@@ -1,17 +1,17 @@
 const httpStatus = require("http-status")
-const StudentArrearsService = require("../service/StudentArrearsService")
+const StudentPaymentReportService = require("../service/StudentPaymentReportService")
 const logger = require("../config/logger")
 const fs = require('fs-extra');
 
-class StudentArrearsController {
+class StudentPaymentReportController {
     constructor() {
-        this.studentArrearsService = new StudentArrearsService
+        this.studentPaymentReportService = new StudentPaymentReportService
     }
     showById = async (req, res) => {
       try {
         var id = req.params.id;
   
-        const resData = await this.studentArrearsService.showStudentArrearsById(
+        const resData = await this.studentPaymentReportService.showStudentPaymentReportById(
           id
         );
   
@@ -26,7 +26,7 @@ class StudentArrearsController {
       try {
         var id = req.params.id;
   
-        const resData = await this.studentArrearsService.showStudentArrearsByStudentId(
+        const resData = await this.studentPaymentReportService.showStudentPaymentReportByStudentId(
           id
         );
   
@@ -40,7 +40,7 @@ class StudentArrearsController {
       try {
         var id = req.params.id;
   
-        const resData = await this.studentArrearsService.showStudentArrearsByClassId(
+        const resData = await this.studentPaymentReportService.showStudentPaymentReportByClassId(
           id
         );
   
@@ -50,6 +50,21 @@ class StudentArrearsController {
         res.status(httpStatus.BAD_GATEWAY).send(e);
       }
     };
+    showByFilter = async (req, res) => {
+      try {
+          const { classes, student, start_date, end_date, payment_category, status } = req.query;
+  
+          const resData = await this.studentPaymentReportService.showStudentPaymentReportByFilter(
+              classes, student, start_date, end_date, payment_category, status
+          );
+  
+          res.status(resData.statusCode).send(resData.response);
+      } catch (e) {
+          logger.error(e);
+          res.status(httpStatus.BAD_GATEWAY).send(e);
+      }
+  };
+  
     
     showAll = async (req, res) => {
         try {
@@ -58,7 +73,7 @@ class StudentArrearsController {
         const search = req.query.search_query || "";
         const offset = limit * page;
 
-        const resData = await this.studentArrearsService.showPage(
+        const resData = await this.studentPaymentReportService.showPage(
             page,
             limit,
             search,
@@ -77,9 +92,9 @@ class StudentArrearsController {
           const limit = parseInt(req.query.limit) || 10;
           const offset = parseInt(req.query.offset) || 0;
   
-          const filePath = await this.studentArrearsService.exportPage(search, offset, limit);
+          const filePath = await this.studentPaymentReportService.exportPage(search, offset, limit);
   
-          res.download(filePath, 'daftar_tunggakan.xlsx', (err) => {
+          res.download(filePath, 'daftar_laporan.xlsx', (err) => {
               if (err) {
                   console.error('Error downloading the file:', err);
                   res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error downloading the file');
@@ -97,4 +112,4 @@ class StudentArrearsController {
     };
 }
 
-module.exports = StudentArrearsController
+module.exports = StudentPaymentReportController 

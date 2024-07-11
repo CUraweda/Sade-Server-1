@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
 
-      StudentReports.hasMany(models.studentpaymentcategory, {
-        foreignKey: "student_category_id",
-      });
-
       StudentReports.belongsTo(models.studentclass, {
 				foreignKey: 'student_class_id',
 			});

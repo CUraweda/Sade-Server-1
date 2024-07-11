@@ -63,6 +63,7 @@ const studentPaymentCategoryRoute = require("./studentPaymentCategoryRoute")
 const studentPaymentBillsRoute = require("./studentPaymentBillsRoute")
 const studentBillsRoute = require("./studentBillsRoute")
 const studentArrearsRoute = require("./studentArrearsRoute")
+const studentPaymentReportRoute = require("./studentPaymentReportRoute")
 
 const router = express.Router();
 
@@ -322,7 +323,11 @@ const defaultRoutes = [
   {
     path: "/student-arrears",
     route: studentArrearsRoute
-  }
+  },
+  {
+    path: "/student-payment-report",
+    route: studentPaymentReportRoute
+  },
 ];
 
 defaultRoutes.forEach((route) => {

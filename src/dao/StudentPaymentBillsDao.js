@@ -18,6 +18,23 @@ class StudentPaymentBillsDao extends SuperDao {
         student_id: student_id,
       },
       order: [["id", "DESC"]],
+      include: [
+        {
+            model: Students,
+            as: 'student',
+            attributes: ["id", "nis", "full_name", "class"],
+        },
+        {
+            model: Classes,
+            as: 'class',
+            attributes: ["id", "level", "class_name"],
+        },
+        {
+            model: PaymentPosts,
+            as: 'paymentpost',
+            attributes: ["id", "name", "desc", "billing_cycle"],
+        },
+      ],
     });
   }
 
@@ -26,6 +43,24 @@ class StudentPaymentBillsDao extends SuperDao {
         where: {
           class_id: class_id,
         },
+        order: [["id", "DESC"]],
+        include: [
+          {
+              model: Students,
+              as: 'student',
+              attributes: ["id", "nis", "full_name", "class"],
+          },
+          {
+              model: Classes,
+              as: 'class',
+              attributes: ["id", "level", "class_name"],
+          },
+          {
+              model: PaymentPosts,
+              as: 'paymentpost',
+              attributes: ["id", "name", "desc", "billing_cycle"],
+          },
+        ],
       });
   }
   async findById(id) {
@@ -33,6 +68,24 @@ class StudentPaymentBillsDao extends SuperDao {
       where: {
         id: id,
       },
+      order: [["id", "DESC"]],
+      include: [
+        {
+            model: Students,
+            as: 'student',
+            attributes: ["id", "nis", "full_name", "class"],
+        },
+        {
+            model: Classes,
+            as: 'class',
+            attributes: ["id", "level", "class_name"],
+        },
+        {
+            model: PaymentPosts,
+            as: 'paymentpost',
+            attributes: ["id", "name", "desc", "billing_cycle"],
+        },
+      ],
     });
   }
   async getCount(search) {

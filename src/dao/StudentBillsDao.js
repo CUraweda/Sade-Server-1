@@ -31,6 +31,18 @@ class StudentBillsDao extends SuperDao {
                     ]
                 }
             ],
+          include: [
+              {
+                  model: Students,
+                  as: 'student',
+                  attributes: ["id", "nis", "full_name", "class"]
+              },
+              {
+                  model: PaymentBills,
+                  as: 'studentpaymentbill',
+                  attributes: ["id","student_id"]
+              }
+          ]
         });
     }
     async findById(id) {
@@ -38,6 +50,19 @@ class StudentBillsDao extends SuperDao {
           where: {
             id: id,
           },
+          order: [["id", "DESC"]],
+          include: [
+              {
+                  model: Students,
+                  as: 'student',
+                  attributes: ["id", "nis", "full_name", "class"]
+              },
+              {
+                  model: PaymentBills,
+                  as: 'studentpaymentbill',
+                  attributes: ["id","student_id"]
+              }
+          ]
         });
     }
     async getCount(search, billId) {

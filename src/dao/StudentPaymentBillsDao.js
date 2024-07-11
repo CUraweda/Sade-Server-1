@@ -15,20 +15,10 @@ class StudentPaymentBillsDao extends SuperDao {
   async getByStudentId(student_id) {
     return StudentPaymentBills.findAll({
       where: {
-        student_id: student_id,
+        // student_id: student_id,
       },
       order: [["id", "DESC"]],
       include: [
-        {
-            model: Students,
-            as: 'student',
-            attributes: ["id", "nis", "full_name", "class"],
-        },
-        {
-            model: Classes,
-            as: 'class',
-            attributes: ["id", "level", "class_name"],
-        },
         {
             model: PaymentPosts,
             as: 'paymentpost',
@@ -41,20 +31,10 @@ class StudentPaymentBillsDao extends SuperDao {
   async findByClass(class_id) {
       return StudentPaymentBills.findAll({
         where: {
-          class_id: class_id,
+          // class_id: class_id,
         },
         order: [["id", "DESC"]],
         include: [
-          {
-              model: Students,
-              as: 'student',
-              attributes: ["id", "nis", "full_name", "class"],
-          },
-          {
-              model: Classes,
-              as: 'class',
-              attributes: ["id", "level", "class_name"],
-          },
           {
               model: PaymentPosts,
               as: 'paymentpost',
@@ -70,16 +50,6 @@ class StudentPaymentBillsDao extends SuperDao {
       },
       order: [["id", "DESC"]],
       include: [
-        {
-            model: Students,
-            as: 'student',
-            attributes: ["id", "nis", "full_name", "class"],
-        },
-        {
-            model: Classes,
-            as: 'class',
-            attributes: ["id", "level", "class_name"],
-        },
         {
             model: PaymentPosts,
             as: 'paymentpost',

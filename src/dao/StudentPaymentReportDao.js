@@ -16,7 +16,7 @@ class StudentPaymentReportDao extends SuperDao{
             id: id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "status", "paidoff_att",],
+        attributes: ["id", "status", "paidoff_at",],
         include: [
             {
                 model: Students,
@@ -39,7 +39,7 @@ class StudentPaymentReportDao extends SuperDao{
             student_id: student_id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "status", "paidoff_att",],
+        attributes: ["id", "status", "paidoff_at",],
         include: [
             {
                 model: Students,
@@ -62,7 +62,7 @@ class StudentPaymentReportDao extends SuperDao{
             "$studentpaymentbill.class_id$": class_id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "status", "paidoff_att",],
+        attributes: ["id", "status", "paidoff_at",],
         include: [
             {
                 model: Students,
@@ -84,14 +84,14 @@ class StudentPaymentReportDao extends SuperDao{
         if (classes) whereClause["$studentpaymentbill.class_id$"] = classes;
         if (student) whereClause["$student.full_name$"] = { [Op.like]: `%${student}%` };
         if (start_date) whereClause["$studentpaymentbill.due_date$"] = { [Op.gte]: new Date(start_date) };
-        if (end_date) whereClause["paidoff_att"] = { [Op.lte]: new Date(end_date) };
+        if (end_date) whereClause["paidoff_at"] = { [Op.lte]: new Date(end_date) };
         if (payment_category) whereClause["$studentpaymentbill.name$"] = payment_category;
         if (status) whereClause["status"] = status;
     
         return StudentBills.findAll({
             where: whereClause,
             order: [["id", "DESC"]],
-            attributes: ["id", "status", "paidoff_att"],
+            attributes: ["id", "status", "paidoff_at"],
             include: [
                 {
                     model: Students,
@@ -117,7 +117,7 @@ class StudentPaymentReportDao extends SuperDao{
                     {"$student.nis$": { [Op.like]: "%" + search + "%"}},
                     {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
                     {status: { [Op.like]: "%" + search + "%"}},
-                    {paidoff_att: { [Op.like]: "%" + search + "%"}},
+                    {paidoff_at: { [Op.like]: "%" + search + "%"}},
                     {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
                 ]
             },
@@ -144,11 +144,11 @@ class StudentPaymentReportDao extends SuperDao{
                         {"$student.nis$": { [Op.like]: "%" + search + "%"}},
                         {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
                         { status : { [Op.like]: "%" + search + "%"}},
-                        { paidoff_att: { [Op.like]: "%" + search + "%"}},
+                        { paidoff_at: { [Op.like]: "%" + search + "%"}},
                         {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
                     ]    
                 },
-                attributes: ["id", "status", "student_id", "payment_bill_id", "paidoff_att"],
+                attributes: ["id", "status", "student_id", "payment_bill_id", "paidoff_at"],
                 include: [
                     {
                         model: Students,
@@ -184,7 +184,7 @@ class StudentPaymentReportDao extends SuperDao{
                 'NIS': item.student.nis,
                 'Pembayaran': item.studentpaymentbill.name,
                 'Status': item.status,
-                'Tanggal Bayar': item.paidoff_att
+                'Tanggal Bayar': item.paidoff_at
             }));
 
             const workbook = xlsx.utils.book_new();

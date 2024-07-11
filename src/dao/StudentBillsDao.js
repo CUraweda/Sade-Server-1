@@ -16,6 +16,18 @@ class StudentBillsDao extends SuperDao {
             student_id: student_id,
           },
           order: [["id", "DESC"]],
+          include: [
+              {
+                  model: Students,
+                  as: 'student',
+                  attributes: ["id", "nis", "full_name", "class"]
+              },
+              {
+                  model: PaymentBills,
+                  as: 'studentpaymentbill',
+                  attributes: ["id","student_id"]
+              }
+          ]
         });
     }
     async findById(id) {
@@ -23,6 +35,19 @@ class StudentBillsDao extends SuperDao {
           where: {
             id: id,
           },
+          order: [["id", "DESC"]],
+          include: [
+              {
+                  model: Students,
+                  as: 'student',
+                  attributes: ["id", "nis", "full_name", "class"]
+              },
+              {
+                  model: PaymentBills,
+                  as: 'studentpaymentbill',
+                  attributes: ["id","student_id"]
+              }
+          ]
         });
     }
     async getCount(search) {
@@ -70,6 +95,7 @@ class StudentBillsDao extends SuperDao {
                     }
                 ]
             })
+            return result
         } catch (error) {
             console.error('Error in getStudentPaymentBillsPage:', error);
             throw error;

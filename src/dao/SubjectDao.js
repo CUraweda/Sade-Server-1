@@ -9,9 +9,24 @@ class SubjectDao extends SuperDao {
     super(Subject);
   }
 
+  async getAll(level) {
+    return Subject.findAll({
+      where: {
+        [Op.or]: [
+          {
+            level: {
+              [Op.like]: `%${level}%`
+            }
+          }
+        ]
+      },
+      order: [["id", "asc"]]
+    })
+  }
+
   async getCount(search) {
     return Subject.count({
-      where: {
+    where: {
         [Op.or]: [
           {
             level: {

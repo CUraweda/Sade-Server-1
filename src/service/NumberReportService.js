@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const NumberReportDao = require("../dao/NumberReportDao");
 const StudentReportDao = require("../dao/StudentReportDao");
+const SubjectDao = require('../dao/SubjectDao')
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
@@ -17,6 +18,7 @@ class NumberReportService {
   constructor() {
     this.numberReportDao = new NumberReportDao();
     this.studentReportDao = new StudentReportDao();
+    this.subjectDao = new SubjectDao()
   }
 
   createNumberReport = async (reqBody) => {
@@ -199,7 +201,6 @@ class NumberReportService {
     const message = "Number Report successfully exported!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester);
-    // console.log(rel);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -217,6 +218,8 @@ class NumberReportService {
       id,
       semester
     );
+
+
 
     const pdfFile = await this.generatePdf(rel, dir);
 
@@ -247,7 +250,8 @@ class NumberReportService {
 
     this.generateCover(doc, data);
     this.generateHeader(doc, data);
-    this.generateContents(doc, data);
+    await this.generateContents(doc, data);
+
     // this.generateCustomerInformation(doc, invoice);
     // this.generateInvoiceTable(doc, invoice);
     // this.generateFooter(doc);
@@ -401,20 +405,25 @@ class NumberReportService {
     doc.rect(350, posY, 200, 17).lineWidth(0.5).stroke(); // Huruf
     doc.text("Huruf", 350, 242, { align: "center", width: 200 });
 
-    // let i;
-    let rowsData = [];
-
-    for (let i = 0; i < data.number_reports.length; i++) {
-      const item = data.number_reports[i];
-      rowsData.push([
-        i + 1,
-        item.subject_name,
-        item.threshold,
-        item.grade,
-        item.grade_text,
-      ]);
+    const rowsData = {}
+    await this.subjectDao.getAll("SD").then((data) => {
+      data.forEach((subject, i) => {
+        rowsData[subject.id] = [
+          i + 1,
+          subject.name,
+          subject.threshold,
+          "0,00",
+          "nol"
+        ]
+      })
+    })
+    for (let item of data.number_reports) {
+      if(rowsData[item.subject_id]){
+        rowsData[item.subject_id][3] = item.grade,
+        rowsData[item.subject_id][4] = item.grade_text
+      }
     }
-
+    
     const dataTable = {
       headers: [
         {
@@ -456,7 +465,7 @@ class NumberReportService {
           headerColor: "#FFFFFF",
         },
       ],
-      rows: rowsData,
+      rows: Object.values(rowsData),
     };
 
     const tableX = 50;
@@ -478,13 +487,13 @@ class NumberReportService {
         // first line
         if (indexColumn === 0) {
           doc
-            .lineWidth(0.5)
-            .moveTo(x, y)
-            .lineTo(x, y + height)
-            .stroke();
-        }
-        doc
           .lineWidth(0.5)
+          .moveTo(x, y)
+          .lineTo(x, y + height)
+          .stroke();
+          }
+        doc
+        .lineWidth(0.5)
           .moveTo(x + width, y)
           .lineTo(x + width, y + height)
           .stroke();
@@ -492,7 +501,7 @@ class NumberReportService {
         doc.fontSize(9).fillColor("#292929").font("Helvetica");
       }, // {Function}
     });
-
+    
     posY += 23;
     doc.rect(50, posY, 30, 25).lineWidth(0.5).stroke(); // No
     doc.rect(80, posY, 180, 25).lineWidth(0.5).stroke(); // Kepribadian
@@ -508,7 +517,7 @@ class NumberReportService {
     doc.text("Hari", 490, posY, { align: "center", width: 60 });
 
     let rowsDataPersonalities = [];
-
+    
     for (let i = 0; i < data.personalities.length; i++) {
       const item = data.personalities[i];
       switch (i) {
@@ -539,12 +548,12 @@ class NumberReportService {
             data.attendances.tanpa_keterangan,
           ]);
           break;
+        }
+        // rowsDataPersonalities.push([i + 1, item.desc, item.grade, "", ""]);
       }
-      // rowsDataPersonalities.push([i + 1, item.desc, item.grade, "", ""]);
-    }
-
-    const dataTablePer = {
-      headers: [
+      
+      const dataTablePer = {
+        headers: [
         {
           label: "",
           property: "No",
@@ -586,7 +595,7 @@ class NumberReportService {
       ],
       rows: rowsDataPersonalities,
     };
-
+    
     posY += 11;
     const tableXPer = 50;
     const tableYPer = posY;
@@ -620,26 +629,26 @@ class NumberReportService {
         doc.fontSize(9).fillColor("#292929").font("Helvetica");
       }, // {Function}
     });
-
+    
     posY += 20;
     moment.locale("id"); // Set locale to Indonesian
     const formattedDate = moment(data.sign_at).format("DD MMMM YYYY");
     doc
-      .font("Helvetica")
-      .fontSize(9)
+    .font("Helvetica")
+    .fontSize(9)
       .text("Depok, " + formattedDate, 350, posY, {
         align: "center",
         width: 180,
       });
-
-    posY += 15;
+      
+      posY += 15;
     doc
       .font("Helvetica-Bold")
       .text("Kepala Sekolah", 50, posY, { align: "center", width: 180 })
       .text("Wali Kelas", 350, posY, { align: "center", width: 180 });
-
-    posY += 70;
-    doc
+      
+      posY += 70;
+      doc
       .font("Helvetica")
       .text(data.head, 50, 670, { align: "center", width: 180 })
       .text(data.form_teacher, 350, 670, { align: "center", width: 180 });

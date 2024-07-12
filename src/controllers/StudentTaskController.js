@@ -255,7 +255,7 @@ class StudentTaskController {
         });
       }
 
-      if (filePath.includes("_reports")) {
+      if (filePath.includes("_reports") && req.user?.dataValues?.role_id == 8) {
         let key = ""
 
         if (filePath.includes("number_reports")) key = "number_path"

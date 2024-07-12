@@ -53,14 +53,15 @@ class StudentArrearsService {
       return responseHandler.returnSuccess(httpStatus.OK, message, cl);
     };
 
-    async showPage(page, limit, search, offset) {
-        const totalRows = await this.studentArrearsDao.getCount(search);
+    async showPage(page, limit, search, offset, classId) {
+        const totalRows = await this.studentArrearsDao.getCount(search, classId);
         const totalPage = Math.ceil(totalRows / limit);
     
         const result = await this.studentArrearsDao.getStudentBillsPage(
           search,
           offset,
-          limit
+          limit,
+          classId
         );
     
         return responseHandler.returnSuccess(

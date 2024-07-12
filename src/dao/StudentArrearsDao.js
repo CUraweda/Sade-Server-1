@@ -8,6 +8,7 @@ const path = require('path');
 const Students = models.students
 const StudentBills = models.studentbills
 const PaymentBills = models.studentpaymentbills
+const StudentClass = models.studentclass
 
 class ArrearsDao extends SuperDao{
     async getById(id) {
@@ -77,15 +78,15 @@ class ArrearsDao extends SuperDao{
     })
     }
 
-    async getCount(search) {
+    async getCount(search, classId) {
         return StudentBills.count({
             
             where: {
+                status: { [Op.like]: "belum lunas" },
                 [Op.or]: [
                     {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
                     {"$student.nis$": { [Op.like]: "%" + search + "%"}},
                     {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
-                    {status: { [Op.like]: "%" + search + "%"}},
                     {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
                 ]
             },
@@ -103,18 +104,31 @@ class ArrearsDao extends SuperDao{
             ]
         })
     }
-    async getStudentBillsPage(search,offset,limit) {
+    async getStudentBillsPage(search,offset,limit, classId) {
+        const where = {
+            status: { [Op.like]: "belum lunas" },
+            [Op.or]: [
+                {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
+                {"$student.nis$": { [Op.like]: "%" + search + "%"}},
+                {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
+                {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
+            ]    
+        }
+        
+        if (classId) {
+            const students = await StudentClass.findAll({
+                where: {
+                    class_id: classId
+                }
+            })
+            where['student_id'] = {
+                [Op.in]: students.map(st => st.student_id)
+            }
+        }
+
         try {
             const result = await StudentBills.findAll({
-                where: {
-                    [Op.or]: [
-                        {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
-                        {"$student.nis$": { [Op.like]: "%" + search + "%"}},
-                        {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
-                        { status : { [Op.like]: "%" + search + "%"}},
-                        {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
-                    ]    
-                },
+                where,
                 attributes: ["id", "status", "student_id", "payment_bill_id"],
                 include: [
                     {
@@ -125,9 +139,12 @@ class ArrearsDao extends SuperDao{
                     {
                         model: PaymentBills,
                         as: 'studentpaymentbill',
-                        attributes: ["name","due_date", "class_id"]
+                        attributes: ["name","due_date"]
                     }
-                ]
+                ],
+                offset: offset,
+                limit: limit,
+                order: [["id", "DESC"]],
             })
 
             return result;

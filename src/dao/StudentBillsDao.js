@@ -54,7 +54,7 @@ class StudentBillsDao extends SuperDao {
               {
                   model: PaymentBills,
                   as: 'studentpaymentbill',
-                  attributes: ["id","student_id"]
+                //   attributes: ["id","student_id"]
               }
           ]
         });

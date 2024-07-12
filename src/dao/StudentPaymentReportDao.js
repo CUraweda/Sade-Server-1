@@ -158,9 +158,12 @@ class StudentPaymentReportDao extends SuperDao{
                     {
                         model: PaymentBills,
                         as: 'studentpaymentbill',
-                        attributes: ["name","due_date", "class_id"]
+                        attributes: ["name","due_date"]
                     }
-                ]
+                ],
+                offset: offset,
+                limit: limit,
+                order: [["id", "DESC"]],
             })
 
             return result;

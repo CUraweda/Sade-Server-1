@@ -19,14 +19,13 @@ class WasteOfficerController {
 
   update = async (req, res) => {
     try {
-      var id = req.params.id;
-
+      const id = req.params.id;
       const resData = await this.wasteOfficerService.updateWasteOfficer(id, req.body);
-
+  
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
+      res.status(httpStatus.BAD_GATEWAY).send({ error: e.message });
     }
   };
 
@@ -40,6 +39,17 @@ class WasteOfficerController {
     } catch (e) {
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+  showByDate = async (req, res) => {
+    try {
+      const { date } = req.params;
+      const resData = await this.wasteOfficerService.showWasteOfficersByDate(date);
+  
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send({ error: e.message });
     }
   };
 

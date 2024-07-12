@@ -32,21 +32,35 @@ class ReligionService {
 
   updateWasteOfficer = async (id, body) => {
     const message = "Waste officer successfully updated!";
-
+  
     let rel = await this.wasteOfficerDao.findById(id);
-
+  
     if (!rel) {
       return responseHandler.returnSuccess(
-        httpStatus.OK,
+        httpStatus.NOT_FOUND,
         "Waste officer not found!",
         {}
       );
     }
-    const updateData = await this.wasteOfficerDao.updateWhere(body, id);
+  
+    const updateData = await this.wasteOfficerDao.updateWhere(body, { id });
+  
     if (updateData) {
       return responseHandler.returnSuccess(httpStatus.OK, message, {});
     }
+  
+    return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update waste officer.");
   };
+
+  showWasteOfficersByDate = async (date) => {
+  try {
+    const officers = await this.wasteOfficerDao.findByAssignmentDate(date);
+
+    return responseHandler.returnSuccess(httpStatus.OK, "Waste officers retrieved successfully.", officers);
+  } catch (error) {
+    return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};  
 
   showWasteOfficer = async (id) => {
     const message = "Waste officer successfully retrieved!";

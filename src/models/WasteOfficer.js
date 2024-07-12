@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: DataTypes.STRING,
       class_name: DataTypes.STRING,
-      assignment_date: DataTypes.DATE
+      assignment_date: DataTypes.DATEONLY
     },
     {
       sequelize,

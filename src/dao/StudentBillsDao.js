@@ -27,22 +27,15 @@ class StudentBillsDao extends SuperDao {
                             model: PaymentPosts,
                             as: 'paymentpost',
                             attributes: ["id", "name", "desc", "billing_cycle"]
-                        }
+                        },
                     ]
-                }
+                },
+                {
+                    model: Students,
+                    as: 'student',
+                    attributes: ["id", "nis", "full_name", "class"]
+                },
             ],
-          include: [
-              {
-                  model: Students,
-                  as: 'student',
-                  attributes: ["id", "nis", "full_name", "class"]
-              },
-              {
-                  model: PaymentBills,
-                  as: 'studentpaymentbill',
-                  attributes: ["id","student_id"]
-              }
-          ]
         });
     }
     async findById(id) {

@@ -6,6 +6,7 @@ const routes = require("./route");
 const { jwtStrategy } = require("./config/passport");
 const { errorConverter, errorHandler } = require("./middlewares/error");
 const ApiError = require("./helper/ApiError");
+const path = require("path")
 
 process.env.PWD = process.cwd();
 process.env.TZ = "Asia/Jakarta";
@@ -16,7 +17,7 @@ const app = express();
 app.use(cors());
 app.options("*", cors());
 
-app.use(express.static(`${process.env.PWD}/public`));
+// app.use(express.static(`${process.env.PWD}/public`));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -25,10 +26,13 @@ app.use(express.json());
 app.use(passport.initialize());
 passport.use("jwt", jwtStrategy);
 
+
 app.get("/", async (req, res) => {
-  res.status(200).send("Congratulations! API is working!");
+  res.status(200).send(`Congratulations! API is working in port ${process.env.PORT}`);
 });
-app.use("/api", routes);
+app.use("/stg-server1/api", routes);
+app.use("/stg-server1/public", express.static(path.join(__dirname, '../public')));
+
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

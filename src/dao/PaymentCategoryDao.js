@@ -52,6 +52,8 @@ class PaymentCategoryDao extends SuperDao {
       include: [
         {
           model: PaymentPost,
+          as: 'paymentpost',
+          attributes: ["desc"]
         },
       ],
     });

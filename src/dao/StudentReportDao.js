@@ -69,11 +69,13 @@ class StudentReportDao extends SuperDao {
   }
 
   async getByClassId(id, student_access) {
+    const where = {
+      "$studentclass.class_id$": id,
+    }
+
+    if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
     return StudentReport.findAll({
-      where: {
-        "$studentclass.class_id$": id,
-        student_access: student_access
-      },
+      where,
       include: [
         {
           model: StudentClass,

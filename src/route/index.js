@@ -60,6 +60,11 @@ const notificationRoute = require("./notificationRoute");
 const studentDataRoute = require("./studentDataRoute")
 const studentPaymentPostRoute = require("./studentPaymentPostRoute")
 const studentPaymentCategoryRoute = require("./studentPaymentCategoryRoute")
+const studentPaymentBillsRoute = require("./studentPaymentBillsRoute")
+const studentBillsRoute = require("./studentBillsRoute")
+const studentArrearsRoute = require("./studentArrearsRoute")
+const studentPaymentReportRoute = require("./studentPaymentReportRoute")
+const wasteOfficerRoute = require("./wasteOfficerRoute")
 
 const router = express.Router();
 
@@ -307,6 +312,26 @@ const defaultRoutes = [
   {
     path: "/student-payment-category",
     route: studentPaymentCategoryRoute,
+  },
+  {
+    path: "/student-payment-bills",
+    route: studentPaymentBillsRoute
+  },
+  {
+    path: "/student-bills",
+    route: studentBillsRoute
+  },
+  {
+    path: "/student-arrears",
+    route: studentArrearsRoute
+  },
+  {
+    path: "/student-payment-report",
+    route: studentPaymentReportRoute
+  },
+  {
+    path: "/waste-officer",
+    route: wasteOfficerRoute
   },
 ];
 

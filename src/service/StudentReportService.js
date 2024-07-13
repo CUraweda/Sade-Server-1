@@ -68,6 +68,7 @@ class StudentReportService {
 
   updateStudentReport = async (id, body) => {
     const message = "Student report successfully updated!";
+    console.log("SERPIS ANJING", id)
 
     let rel = await this.studentReportDao.findById(id);
 
@@ -190,6 +191,13 @@ class StudentReportService {
         totalPage: totalPage,
       }
     );
+  }
+
+  checkReportAccess = async (key, value) => {
+    return this.studentReportDao.getCountByWhere({
+      [key]: value,
+      student_access: true
+    })
   }
 
   deleteStudentReport = async (id) => {

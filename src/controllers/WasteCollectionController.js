@@ -38,7 +38,7 @@ class WasteCollectionController {
   };
 
   show = async (req, res) => {
-    try {w
+    try {
       var id = req.params.id;
 
       const resData = await this.wasteCollectionService.showWasteCollection(id);

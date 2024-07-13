@@ -58,7 +58,7 @@ class WasteCollectionService {
       {
         student_class_id: body.student_class_id,
         collection_date: body.collection_date,
-        day_id: 4,
+        day_id: new Date(body.collection_date).getDay(),
         waste_type_id: body.waste_type_id,
         weight: body.weight,
       },

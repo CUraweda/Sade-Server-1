@@ -118,9 +118,12 @@ class StudentBillsController {
     showByStudentId = async (req, res) => {
         try {
           var id = req.params.id;
+          const cycle = req.query.cycle || ""
+          const status = req.query.status || ""
     
           const resData = await this.studentBillsService.showStudentBillsByStudentId(
-            id
+            id,
+            { cycle, status }
           );
     
           res.status(resData.statusCode).send(resData.response);

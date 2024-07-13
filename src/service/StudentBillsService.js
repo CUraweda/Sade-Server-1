@@ -69,10 +69,10 @@ class StudentBillsService {
             )
         }
     }
-    showStudentBillsByStudentId = async (id) => {
+    showStudentBillsByStudentId = async (id, filters) => {
         const message = "Student Bills successfully retrieved!";
     
-        let cl = await this.studentBillsDao.getByStudentId(id);
+        let cl = await this.studentBillsDao.getByStudentId(id, filters);
     
         if (!cl) {
           return responseHandler.returnSuccess(

@@ -57,12 +57,14 @@ class StudentArrearsController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
+        const classId = req.query.class_id || ""
 
         const resData = await this.studentArrearsService.showPage(
             page,
             limit,
             search,
-            offset
+            offset,
+            classId
         );
 
         res.status(resData.statusCode).send(resData.response);

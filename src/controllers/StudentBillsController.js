@@ -84,13 +84,15 @@ class StudentBillsController {
         const search = req.query.search_query || "";
         const offset = limit * page;
         const billId = req.query.bill_id || ""
+        const classId = req.query.class_id || ""
 
         const resData = await this.studentBillsService.showPage(
             page,
             limit,
             search,
             offset,
-            billId
+            billId,
+            classId
         );
 
         res.status(resData.statusCode).send(resData.response);

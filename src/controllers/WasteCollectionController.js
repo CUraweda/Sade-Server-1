@@ -29,7 +29,6 @@ class WasteCollectionController {
         id,
         req.body
       );
-      console.log(resData)
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);

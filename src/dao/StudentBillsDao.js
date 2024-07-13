@@ -12,11 +12,21 @@ class StudentBillsDao extends SuperDao {
     constructor() {
         super(StudentBills)
     }
-    async getByStudentId(student_id) {
-        return StudentBills.findAll({
-          where: {
+    async getByStudentId(student_id, filters) {
+        const where = {
             student_id: student_id,
-          },
+        }
+
+        if (filters.cycle) {
+            if (filters.cycle == 'bulanan') 
+                where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.like]: 'bulanan'} 
+            else if (filters.cycle == 'non-bulanan')
+               where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.notLike]: 'bulanan'} 
+        } 
+        if (filters.status) where['status'] = { [Op.like]: filters.status }
+
+        return StudentBills.findAll({
+          where,
           order: [["id", "DESC"]],
           include: [
                 {

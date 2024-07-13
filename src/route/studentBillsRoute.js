@@ -55,7 +55,7 @@ router.get(
 
 router.get(
     "/get-by-student-id/:id",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 8]),
     studentBillsController.showByStudentId
 )
 

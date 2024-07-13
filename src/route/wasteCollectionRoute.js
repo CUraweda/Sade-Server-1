@@ -29,6 +29,7 @@ router.get(
 );
 
 router.get("/", auth([1, 2, 3, 4, 5, 6]), wasteCollectionController.showAll);
+router.get("/get-by-filter", auth([1, 2, 3, 4, 5, 6]), wasteCollectionController.showByFilter);
 
 router.delete("/delete/:id", auth([1, 3, 6]), wasteCollectionController.delete);
 

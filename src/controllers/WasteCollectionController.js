@@ -29,7 +29,6 @@ class WasteCollectionController {
         id,
         req.body
       );
-
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);
@@ -70,6 +69,29 @@ class WasteCollectionController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+  showByFilter = async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
+      
+        const { waste_type_id, class_id, start_date, end_date } = req.query;
+
+        const resData = await this.wasteCollectionService.getWasteCollectionByFilter(
+            waste_type_id, class_id, start_date, end_date,
+        page,
+        limit,
+        search,
+        offset
+        );
+
+        res.status(resData.statusCode).send(resData.response);
+      } catch (e) {
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+      }
+    };
 
   delete = async (req, res) => {
     try {

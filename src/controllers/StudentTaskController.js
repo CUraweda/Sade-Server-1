@@ -255,33 +255,33 @@ class StudentTaskController {
         });
       }
 
-      if (
-        filePath.includes("_reports") && 
-        (
-          req.user?.dataValues?.role_id == 8 || 
-          req.user?.dataValues?.role_id == 7
-        )
-      ) {
-        let key = ""
-
-        if (filePath.includes("number_reports")) key = "number_path"
-        else if (filePath.includes("portofolio_reports")) key = "portofolio_path"
-        else if (filePath.includes("narrative_reports")) key = "narrative_path";
-
-        if (key) {
-          const checkAccess = await this.studentReportService.checkReportAccess(key, filePath)
-          if (!checkAccess) {
-            return res.status(httpStatus.FORBIDDEN).send({
-							status: false,
-							code: httpStatus.FORBIDDEN,
-							message: 'Report is locked',
-						});
-          }
-        }
-      }
-
+      
       // Check if file exists
       if (fs.existsSync(filePath)) {
+        if (
+          filePath.includes("_reports") && 
+          (
+            req.user?.dataValues?.role_id == 8 || 
+            req.user?.dataValues?.role_id == 7
+          )
+        ) {
+          let key = ""
+  
+          if (filePath.includes("number_reports")) key = "number_path"
+          else if (filePath.includes("portofolio_reports")) key = "portofolio_path"
+          else if (filePath.includes("narrative_reports")) key = "narrative_path";
+  
+          if (key) {
+            const checkAccess = await this.studentReportService.checkReportAccess(key, filePath)
+            if (!checkAccess) {
+              return res.status(httpStatus.FORBIDDEN).send({
+                status: false,
+                code: httpStatus.FORBIDDEN,
+                message: 'Report is locked',
+              });
+            }
+          }
+        }
         // Set appropriate headers
         const filename = path.basename(filePath);
         res.setHeader("Content-Type", "application/octet-stream");

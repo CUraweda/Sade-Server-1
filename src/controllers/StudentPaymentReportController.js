@@ -72,12 +72,21 @@ class StudentPaymentReportController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
+        const { payment_category_id, class_id, student_id, start_paid, end_paid, status } = req.query;
 
         const resData = await this.studentPaymentReportService.showPage(
             page,
             limit,
             search,
-            offset
+            offset,
+            {
+              payment_category_id,
+              class_id,
+              student_id,
+              start_paid,
+              end_paid,
+              status
+            }
         );
 
         res.status(resData.statusCode).send(resData.response);

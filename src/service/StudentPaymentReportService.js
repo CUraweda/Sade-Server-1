@@ -68,14 +68,15 @@ class StudentPaymentReportService {
       return responseHandler.returnSuccess(httpStatus.OK, message, cl);
     };
 
-    async showPage(page, limit, search, offset) {
-        const totalRows = await this.studentPaymentReportDao.getCount(search);
+    async showPage(page, limit, search, offset, filters) {
+        const totalRows = await this.studentPaymentReportDao.getCount(search, filters);
         const totalPage = Math.ceil(totalRows / limit);
     
         const result = await this.studentPaymentReportDao.getStudentBillsPage(
           search,
           offset,
-          limit
+          limit,
+          filters
         );
     
         return responseHandler.returnSuccess(

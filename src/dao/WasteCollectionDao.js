@@ -155,7 +155,6 @@ class WasteCollectionDao extends SuperDao {
   }
 
 async getFilteredCount(filterOptions) {
-  console.log("COUNT")
   const whereClause = {};
 
     if (filterOptions.waste_type_id) {
@@ -192,23 +191,23 @@ async getFilteredCount(filterOptions) {
     return WasteCollection.count({
         where: whereClause,
         include: [
-            {
-                model: StudentClass,
-                as: 'studentclass',
-                attributes: ["id", "class_id"],
-                include: [
-                    {
-                        model: Students,
-                        as: 'student',
-                        attributes: ["nis", "full_name", "class"]
-                    }
-                ]
-            },
-            {
-                model: WasteTypes,
-                as: 'wastetype',
-                attributes: ["id", "code", "name"]
-            }
+          {
+            model: StudentClass,
+            as: 'studentclass',
+            include: [
+              {
+                model: Students,
+                as: 'student',
+                attributes: ["nis", "full_name"]
+              }
+            ],
+            attributes: ["*"]
+          },
+          {
+            model: WasteTypes,
+            as: 'wastetype',
+            attributes: ["id", "code", "name", "price"]
+          },
         ],
         order: [['collection_date', 'ASC']] // Adjust the sorting as per your requirements
     });
@@ -260,7 +259,7 @@ async getCount(search) {
       {
         model: WasteTypes,
         as: 'wastetype',
-        attributes: ["id", "code", "name"]
+        attributes: ["id", "code", "name", "price"]
       },
     ],
   });
@@ -282,7 +281,7 @@ async getCount(search) {
           },
           {
             collection_date: {
-              [Op.like]: "%" + search + "%",
+            [Op.like]: "%" + search + "%",
             },
           },
           {
@@ -308,19 +307,18 @@ async getCount(search) {
               attributes: ["nis", "full_name", "class"]
             }
           ],
-          attributes: ["id"]
+          attributes: ["id", "class_id"]
         },
         {
           model: WasteTypes,
           as: 'wastetype',
-          attributes: ["id", "code", "name"]
+          attributes: ["id", "code", "name", "price"]
         },
       ],
     });
   }
 
   async getByFilter(filterOptions) {
-    console.log("PAGE")
     const whereClause = {};
 
     if (filterOptions.waste_type_id) {
@@ -372,7 +370,7 @@ async getCount(search) {
             {
                 model: WasteTypes,
                 as: 'wastetype',
-                attributes: ["id", "code", "name"]
+                attributes: ["id", "code", "name", "price"]
             }
         ],
         order: [['collection_date', 'ASC']] // Adjust the sorting as per your requirements

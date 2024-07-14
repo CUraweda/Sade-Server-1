@@ -2,6 +2,8 @@ const httpStatus = require("http-status")
 const StudentArrearsDao = require("../dao/StudentArrearsDao")
 const responseHandler = require("../helper/responseHandler")
 const logger = require("../config/logger")
+const moment = require("moment")
+const xlsx = require("xlsx")
 
 class StudentArrearsService {
     constructor() {
@@ -76,9 +78,25 @@ class StudentArrearsService {
           }
         );
     }
-    async exportPage(search, offset, limit) {
-      const filePath = await this.studentArrearsDao.exportToExcel(search, offset, limit);
-      return filePath;
+    async exportPage(search, classId) {
+      const result = await this.studentArrearsDao.getStudentBillsPage(search, undefined, undefined, classId)
+
+      const sheetData = result.map((dat, i) => ({
+        "No": i + 1,
+        "Name": dat.student?.full_name ?? "",
+        "NIS": dat.student?.nis ?? "",
+        "Pembayaran": dat.studentpaymentbill?.name ?? "",
+        "POS": dat.studentpaymentbill?.paymentpost?.name ?? "",
+        "Tipe": dat.studentpaymentbill?.paymentpost?.billing_cycle ?? "",
+        "Status": dat.status.toUpperCase(),
+        "Jatuh Tempo": dat.studentpaymentbill.due_date ? moment(dat.studentpaymentbill.due_date).format("YYYY-MM-DD") : ""
+      }));
+
+      const worksheet = xlsx.utils.json_to_sheet(sheetData);
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, 'Daftar Tunggakan Pembayaran');
+  
+      return xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });  
     }
 }
 

@@ -24,6 +24,22 @@ class ForCountryDetailDao extends SuperDao {
     });
   }
 
+  async getDetailsByDate(date, month, year) {
+    let queryLike = ""
+    if (year) queryLike += year
+    if (month) queryLike += `-${month}-`
+    if (month && date) queryLike = queryLike.slice(0, -1)
+    if (date) queryLike += `-${date}`
+
+    return ForCountryDetail.findAll({
+      where: {
+        plan_date: {
+          [Op.like]: `%${queryLike}%`
+        }
+      }
+    })
+  }
+
   async getCount(search) {
     return ForCountryDetail.count({
       where: {

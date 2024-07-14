@@ -8,6 +8,7 @@ class WasteTypeValidator {
     const schema = Joi.object({
       code: Joi.string().required(),
       name: Joi.string().required(),
+      price: Joi.number().required(),
     });
 
     // schema options

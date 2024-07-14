@@ -44,7 +44,7 @@ class WasteSalesDao extends SuperDao {
 
   async getWasteSummary(wastetypeId, startDate, endDate, offset, limit) {
     const whereClause = {};
-
+  
     if (startDate && endDate) {
       whereClause.collection_date = {
         [Op.between]: [
@@ -61,11 +61,11 @@ class WasteSalesDao extends SuperDao {
         [Op.lte]: new Date(endDate + ' 23:59:59')
       };
     }
-
+  
     if (wastetypeId) {
       whereClause.waste_type_id = wastetypeId;
     }
-
+  
     return WasteCollection.findAll({
       where: whereClause,
       include: [
@@ -76,17 +76,28 @@ class WasteSalesDao extends SuperDao {
         }
       ],
       attributes: [
-          [models.sequelize.fn('SUM', models.sequelize.col('weight')), 'totalWeight']
+        [models.sequelize.fn('SUM', models.sequelize.col('weight')), 'totalWeight']
       ],
-      group: ['wastetype.id','wastetype.id', 'wastetype.name', 'wastetype.price']
-  }).then(results => results.map(result => ({
-      id: result.wastetype.id,
-      name: result.wastetype.name,
-      price: result.wastetype.price,
-      total_weight: result.get('totalWeight'),
-      total_price: result.wastetype.price * result.get('totalWeight')
-  })));
+      group: ['wastetype.id', 'wastetype.name', 'wastetype.price']
+    }).then(results => results.map(result => {
+      const totalWeightGrams = result.get('totalWeight');
+      const totalWeightKg = totalWeightGrams / 1000; 
+      const totalPricePerKg = result.wastetype.price;
+      const roundedTotalWeight = Math.round(totalWeightKg * 100) / 100;
+  
+      let totalPrice = totalPricePerKg * totalWeightKg;
+  
+      totalPrice = Math.round(totalPrice * 100) / 100;
+      return {
+        id: result.wastetype.id,
+        name: result.wastetype.name,
+        price: result.wastetype.price,
+        total_weight: roundedTotalWeight,
+        total_price: totalPrice
+      };
+    }));
   }
-}
+  
+}  
 
 module.exports = WasteSalesDao;

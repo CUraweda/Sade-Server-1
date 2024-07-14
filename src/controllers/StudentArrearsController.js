@@ -76,22 +76,17 @@ class StudentArrearsController {
     exportAll = async (req, res) => {
       try {
           const search = req.query.search_query || "";
-          const limit = parseInt(req.query.limit) || 10;
-          const offset = parseInt(req.query.offset) || 0;
+          const classId = req.query.class_id || "";
   
-          const filePath = await this.studentArrearsService.exportPage(search, offset, limit);
-  
-          res.download(filePath, 'daftar_tunggakan.xlsx', (err) => {
-              if (err) {
-                  console.error('Error downloading the file:', err);
-                  res.status(httpStatus.INTERNAL_SERVER_ERROR).send('Error downloading the file');
-              } else {
-                  // Clean up the file after download
-                  fs.unlink(filePath, (unlinkErr) => {
-                      if (unlinkErr) console.error('Error deleting the file:', unlinkErr);
-                  });
-              }
-          });
+          const buffer = await this.studentArrearsService.exportPage(
+            search, 
+            classId
+          );
+
+          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+          res.setHeader('Content-Disposition', 'attachment; filename=Daftar Tunggakan Pembayaran Siswa.xlsx');
+
+          res.status(httpStatus.OK).send(buffer);
       } catch (e) {
           logger.error(e);
           res.status(httpStatus.BAD_GATEWAY).send(e);

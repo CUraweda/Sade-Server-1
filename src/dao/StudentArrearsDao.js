@@ -1,6 +1,7 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { formatDateForSQL } = require("../helper/utils");
 
 const Students = models.students
 const StudentBills = models.studentbills
@@ -124,6 +125,9 @@ class ArrearsDao extends SuperDao{
     async getStudentBillsPage(search,offset,limit, classId) {
         const where = {
             status: { [Op.like]: "belum lunas" },
+            ["$studentpaymentbill.due_date$"]: {
+                [Op.lte]: formatDateForSQL(new Date())
+            },
             [Op.or]: [
                 {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
                 {"$student.nis$": { [Op.like]: "%" + search + "%"}},

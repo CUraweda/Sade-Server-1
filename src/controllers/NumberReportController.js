@@ -142,6 +142,7 @@ class NumberReportController {
         semester
       );
 
+
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);

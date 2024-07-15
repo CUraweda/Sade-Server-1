@@ -3,50 +3,21 @@ const ForCountryDetailService = require("../service/ForCountryDetailService");
 const logger = require("../config/logger");
 const uploadForCountry = require("../middlewares/uploadForCountry");
 
-const Joi = require("joi");
 const path = require("path");
 const fs = require("fs");
-
-const schema = Joi.object({
-  for_country_id: Joi.number().required(),
-  activity: Joi.string().required(),
-  duration: Joi.number().precision(1).allow("", null),
-  certificate_path: Joi.string().allow("", null),
-});
 
 class ForCountryDetailController {
   constructor() {
     this.forCountryDetailService = new ForCountryDetailService();
+
   }
 
   create = async (req, res) => {
     try {
-      let resData = {};
       await uploadForCountry(req, res);
-
-      var certificate_path = req.file ? req.file.path : null;
-
-      const formData = { ...req.body, certificate_path };
-      //   console.log(formData);
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
-
-      if (error) {
-        const errorMessage = error.details
-          .map((details) => {
-            return details.message;
-          })
-          .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage); // Send error response and return
-      }
-
-      resData = await this.forCountryDetailService.createForCountryDetail(
-        formData
-      );
-
+      const certificate_path = req.file ? req.file.path : null;
+      req.body['certificate_path'] = certificate_path
+      const resData = await this.forCountryDetailService.createForCountryDetail(req.body);
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);
@@ -56,34 +27,17 @@ class ForCountryDetailController {
 
   update = async (req, res) => {
     try {
+      console.log(req.body)
       await uploadForCountry(req, res);
+      console.log(req.body)
 
-      var certificate_path = req.file ? req.file.path : null;
-      let formData;
 
-      if (certificate_path) formData = { ...req.body, certificate_path };
-      else formData = { ...req.body };
+      const certificate_path = req.file ? req.file.path : null;
+      req.body['certificate_path'] = certificate_path
 
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
-
-      if (error) {
-        const errorMessage = error.details
-          .map((details) => {
-            return details.message;
-          })
-          .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage); // Send error response and return
-      }
-
-      var id = req.params.id;
 
       const resData = await this.forCountryDetailService.updateForCountryDetail(
-        id,
-        formData
+        +req.params.id, req.body
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -125,6 +79,23 @@ class ForCountryDetailController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+  showByDate = async (req, res) => {
+    try {
+      let { date, month, year } = req.query
+      if (!month) month = new Date().getMonth + 1
+      month = month.padStart(2, "0")
+      if(date) date = date.padStart(2, "0")
+
+      const resData = await this.forCountryDetailService.showByDate(date, month, year)
+      res.status(resData.statusCode).send(resData.response)
+    } catch (e) {
+      logger.error(e)
+      res.status(httpStatus.BAD_GATEWAY).send(e)
+    }
+  }
+
+
 
   showAll = async (req, res) => {
     try {

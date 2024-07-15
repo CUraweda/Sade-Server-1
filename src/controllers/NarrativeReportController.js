@@ -27,6 +27,7 @@ class NarrativeReportController {
     try {
       var id = req.params.id;
 
+      console.log('dashdkjashjkdahjkn')
       const resData = await this.narrativeReportService.updateNarrativeReport(
         id,
         req.body

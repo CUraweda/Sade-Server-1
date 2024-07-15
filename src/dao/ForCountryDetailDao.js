@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 
 const ForCountryDetail = models.forcountrydetails;
 const ForCountry = models.forcountry;
+const User = models.user
 
 class ForCountryDetailDao extends SuperDao {
   constructor() {
@@ -85,6 +86,17 @@ class ForCountryDetailDao extends SuperDao {
           },
         ],
       },
+      include: [
+        {
+          model: ForCountry,
+          include: [
+            {
+              model: User,
+              attributes: ["full_name"]
+            },
+          ]
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

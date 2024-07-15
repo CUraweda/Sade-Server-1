@@ -8,6 +8,7 @@ module.exports = {
     host: config.dbHost,
     timezone: "Asia/Jakarta",
     dialect: "mysql",
+    logging: false,
     dialectOptions: {
       bigNumberStrings: true,
     },

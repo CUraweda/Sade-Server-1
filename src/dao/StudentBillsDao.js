@@ -1,6 +1,7 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op, where } = require("sequelize");
+const { Op, where, fn, col } = require("sequelize");
+const { formatDateForSQL } = require("../helper/utils");
 
 const StudentBills = models.studentbills
 const Students = models.students;
@@ -154,5 +155,32 @@ class StudentBillsDao extends SuperDao {
             throw error;
         }
     }
+
+    async getIncome(filters = {}) {
+        const where = {
+            status: { [Op.like]: "lunas" }
+        }
+
+        const ands = []
+
+        if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: formatDateForSQL(filters.start_date) }})
+        if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: formatDateForSQL(filters.end_date) }})
+
+        where[Op.and] = ands
+
+        return await StudentBills.findAll({
+            where,
+            include: [
+                {
+                    model: PaymentBills,
+                    as: 'studentpaymentbill',
+                    attributes: []
+                }
+            ],
+            attributes: [
+                [fn('SUM', col('studentpaymentbill.total')), 'sum']
+            ]
+        })
+    } 
 }
 module.exports = StudentBillsDao

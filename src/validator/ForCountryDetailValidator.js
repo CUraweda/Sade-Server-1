@@ -14,7 +14,7 @@ class ForCountryDetailValidator {
         const schema = Joi.object({
             for_country_id: Joi.number(),
             activity: Joi.string(),
-            status: Joi.string().valid("Menunggu Pelaksanaan", "Selesai").optional(),
+            status: Joi.string().valid("Menunggu Pelaksanaan", "Dalam Pelaksanaan", "Selesai"),
             is_date_approved: Joi.boolean().default(false),
             file: Joi.any(),
             duration: Joi.number().precision(1),

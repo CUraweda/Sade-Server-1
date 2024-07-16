@@ -17,20 +17,7 @@ class WasteOfficerDao extends SuperDao {
         assignment_date: {
           [Op.like]: `%${date}%`
         }
-      },
-      attributes: ['id', 'name', 'assignment_date'],
-      include: [
-        {
-            model: Student,
-            as: 'student',
-            attributes: ["id", "nis", "full_name"]
-        },
-        {
-            model: Class,
-            as: 'class',
-            attributes: ["id","level", "class_name"]
-        }
-      ]
+      }
     })
   }
 

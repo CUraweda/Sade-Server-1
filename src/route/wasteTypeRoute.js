@@ -10,22 +10,22 @@ const wasteTypeValidator = new WasteTypeValidator();
 
 router.post(
   "/create",
-  auth([1]),
+  auth([1, 9, 10]),
   wasteTypeValidator.wasteTypeCreateUpdateValidator,
   wasteTypeController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1]),
+  auth([1, 9, 10]),
   wasteTypeValidator.wasteTypeCreateUpdateValidator,
   wasteTypeController.update
 );
 
-router.get("/show/:id", auth([1]), wasteTypeController.show);
+router.get("/show/:id", auth([1, 9, 10]), wasteTypeController.show);
 
-router.get("/", auth([1]), wasteTypeController.showAll);
+router.get("/", auth([1, 9, 10]), wasteTypeController.showAll);
 
-router.delete("/delete/:id", auth([1]), wasteTypeController.delete);
+router.delete("/delete/:id", auth([1, 9, 10]), wasteTypeController.delete);
 
 module.exports = router;

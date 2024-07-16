@@ -6,16 +6,27 @@ const StudentBills = models.studentbills
 const Students = models.students;
 const PaymentBills = models.studentpaymentbills
 const PaymentPosts = models.paymentpost;
+const StudentClass = models.studentclass
 
 class StudentBillsDao extends SuperDao {
     constructor() {
         super(StudentBills)
     }
-    async getByStudentId(student_id) {
-        return StudentBills.findAll({
-          where: {
+    async getByStudentId(student_id, filters) {
+        const where = {
             student_id: student_id,
-          },
+        }
+
+        if (filters.cycle) {
+            if (filters.cycle == 'bulanan') 
+                where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.like]: 'bulanan'} 
+            else if (filters.cycle == 'non-bulanan')
+               where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.notLike]: 'bulanan'} 
+        } 
+        if (filters.status) where['status'] = { [Op.like]: filters.status }
+
+        return StudentBills.findAll({
+          where,
           order: [["id", "DESC"]],
           include: [
                 {
@@ -27,22 +38,15 @@ class StudentBillsDao extends SuperDao {
                             model: PaymentPosts,
                             as: 'paymentpost',
                             attributes: ["id", "name", "desc", "billing_cycle"]
-                        }
+                        },
                     ]
-                }
+                },
+                {
+                    model: Students,
+                    as: 'student',
+                    attributes: ["id", "nis", "full_name", "class"]
+                },
             ],
-          include: [
-              {
-                  model: Students,
-                  as: 'student',
-                  attributes: ["id", "nis", "full_name", "class"]
-              },
-              {
-                  model: PaymentBills,
-                  as: 'studentpaymentbill',
-                  attributes: ["id","student_id"]
-              }
-          ]
         });
     }
     async findById(id) {
@@ -60,12 +64,12 @@ class StudentBillsDao extends SuperDao {
               {
                   model: PaymentBills,
                   as: 'studentpaymentbill',
-                  attributes: ["id","student_id"]
+                //   attributes: ["id","student_id"]
               }
           ]
         });
     }
-    async getCount(search, billId) {
+    async getCount(search, billId, classId) {
         const where = {
             [Op.or]: [
                 { '$student.full_name$': { [Op.like]: '%' + search + '%' } },
@@ -76,6 +80,16 @@ class StudentBillsDao extends SuperDao {
         };
 
         if (billId) where['payment_bill_id'] = parseInt(billId);
+        if (classId) {
+            const students = await StudentClass.findAll({
+                where: {
+                    class_id: classId
+                }
+            })
+            where['student_id'] = {
+                [Op.in]: students.map(st => st.student_id)
+            }
+        }
 
         return StudentBills.count({
             where,
@@ -93,7 +107,7 @@ class StudentBillsDao extends SuperDao {
             ]
         })
     }
-    async getStudentBillsPage(search,offset,limit, billId) {
+    async getStudentBillsPage(search,offset,limit, billId, classId) {
         const where = {
             [Op.or]: [
                 {"$student.full_name$": {[Op.like]: "%" + search + "%"}},
@@ -104,6 +118,16 @@ class StudentBillsDao extends SuperDao {
         }
 
         if (billId) where['payment_bill_id'] = parseInt(billId)
+        if (classId) {
+            const students = await StudentClass.findAll({
+                where: {
+                    class_id: classId
+                }
+            })
+            where['student_id'] = {
+                [Op.in]: students.map(st => st.student_id)
+            }
+        }
 
         try {
             const result = await StudentBills.findAll({

@@ -1,5 +1,5 @@
-const cron = require("node-cron");
-// schedule tasks to be run on the server
-cron.schedule("* * * * *", () => {
-  // console.log('Execute your service here...');
-});
+const cron = require('node-cron');
+const sycnReportAccessByPayment = require('./service/cron/SyncReportAccessByPaymentBills');
+
+// Sync report access by bills
+cron.schedule('*/30 * * * *', sycnReportAccessByPayment);

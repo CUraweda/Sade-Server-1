@@ -58,7 +58,7 @@ class WasteCollectionService {
       {
         student_class_id: body.student_class_id,
         collection_date: body.collection_date,
-        day_id: new Date(reqBody.collection_date).getDay(),
+        day_id: new Date(body.collection_date).getDay(),
         waste_type_id: body.waste_type_id,
         weight: body.weight,
       },
@@ -96,6 +96,31 @@ class WasteCollectionService {
       limit
     );
 
+    return responseHandler.returnSuccess(
+      httpStatus.OK,
+      "Waste Collection successfully retrieved.",
+      {
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      }
+    );
+  }
+
+  async getWasteCollectionByFilter(waste_type_id, class_id, start_date, end_date, page, limit, search, offset) {
+    const filterOptions = {
+        waste_type_id: waste_type_id || null,
+        class_id: class_id || null,
+        start_date: start_date || null,
+        end_date: end_date || null
+    };
+    const totalRows = await this.wasteCollectionDao.getFilteredCount(filterOptions);
+    const totalPage = Math.ceil(totalRows / limit);
+
+    const result = await this.wasteCollectionDao.getByFilter(filterOptions);
+    
     return responseHandler.returnSuccess(
       httpStatus.OK,
       "Waste Collection successfully retrieved.",

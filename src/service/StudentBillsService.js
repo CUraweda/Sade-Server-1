@@ -69,10 +69,10 @@ class StudentBillsService {
             )
         }
     }
-    showStudentBillsByStudentId = async (id) => {
+    showStudentBillsByStudentId = async (id, filters) => {
         const message = "Student Bills successfully retrieved!";
     
-        let cl = await this.studentBillsDao.getByStudentId(id);
+        let cl = await this.studentBillsDao.getByStudentId(id, filters);
     
         if (!cl) {
           return responseHandler.returnSuccess(
@@ -129,15 +129,16 @@ class StudentBillsService {
 			}
     }
 
-    async showPage(page, limit, search, offset, billId) {
-        const totalRows = await this.studentBillsDao.getCount(search, billId);
+    async showPage(page, limit, search, offset, billId, classId) {
+        const totalRows = await this.studentBillsDao.getCount(search, billId, classId);
         const totalPage = Math.ceil(totalRows / limit);
     
         const result = await this.studentBillsDao.getStudentBillsPage(
           search,
           offset,
           limit,
-          billId
+          billId,
+          classId
         );
     
         return responseHandler.returnSuccess(

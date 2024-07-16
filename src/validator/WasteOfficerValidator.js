@@ -2,13 +2,15 @@ const Joi = require("joi");
 const httpStatus = require("http-status");
 const ApiError = require("../helper/ApiError");
 
-class WasteTypeValidator {
-  async wasteTypeCreateUpdateValidator(req, res, next) {
+class WasteOfficerValidator {
+  async wasteOfficerCreateUpdateValidator(req, res, next) {
     // create schema object
     const schema = Joi.object({
-      code: Joi.string().required(),
+      employee_id: Joi.number().required(),
+      class_id: Joi.number().required(),
       name: Joi.string().required(),
-      price: Joi.number().required(),
+      class_name: Joi.string().required(),
+      assignment_date: Joi.date().allow("", null),
     });
 
     // schema options
@@ -37,4 +39,4 @@ class WasteTypeValidator {
   }
 }
 
-module.exports = WasteTypeValidator;
+module.exports = WasteOfficerValidator

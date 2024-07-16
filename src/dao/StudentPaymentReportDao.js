@@ -1,13 +1,12 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
-const xlsx = require('xlsx');
-const fs = require('fs-extra');
-const path = require('path');
 
 const Students = models.students
 const StudentBills = models.studentbills
 const PaymentBills = models.studentpaymentbills
+const StudentClass = models.studentclass
+const PaymentPosts = models.paymentpost;
 
 class StudentPaymentReportDao extends SuperDao{
     async getById(id) {
@@ -16,7 +15,7 @@ class StudentPaymentReportDao extends SuperDao{
             id: id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "status", "paidoff_att",],
+        attributes: ["id", "status", "paidoff_at",],
         include: [
             {
                 model: Students,
@@ -39,7 +38,7 @@ class StudentPaymentReportDao extends SuperDao{
             student_id: student_id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "status", "paidoff_att",],
+        attributes: ["id", "status", "paidoff_at",],
         include: [
             {
                 model: Students,
@@ -62,7 +61,7 @@ class StudentPaymentReportDao extends SuperDao{
             "$studentpaymentbill.class_id$": class_id,
         },
         order: [["id", "DESC"]],
-        attributes: ["id", "status", "paidoff_att",],
+        attributes: ["id", "status", "paidoff_at",],
         include: [
             {
                 model: Students,
@@ -84,14 +83,14 @@ class StudentPaymentReportDao extends SuperDao{
         if (classes) whereClause["$studentpaymentbill.class_id$"] = classes;
         if (student) whereClause["$student.full_name$"] = { [Op.like]: `%${student}%` };
         if (start_date) whereClause["$studentpaymentbill.due_date$"] = { [Op.gte]: new Date(start_date) };
-        if (end_date) whereClause["paidoff_att"] = { [Op.lte]: new Date(end_date) };
+        if (end_date) whereClause["paidoff_at"] = { [Op.lte]: new Date(end_date) };
         if (payment_category) whereClause["$studentpaymentbill.name$"] = payment_category;
         if (status) whereClause["status"] = status;
     
         return StudentBills.findAll({
             where: whereClause,
             order: [["id", "DESC"]],
-            attributes: ["id", "status", "paidoff_att"],
+            attributes: ["id", "status", "paidoff_at"],
             include: [
                 {
                     model: Students,
@@ -108,19 +107,34 @@ class StudentPaymentReportDao extends SuperDao{
     }
     
 
-    async getCount(search) {
+    async getCount(search, filters) {
+        const where = {
+            [Op.or]: [
+                {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
+                {"$student.nis$": { [Op.like]: "%" + search + "%"}},
+                {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
+                { status : { [Op.like]: "%" + search + "%"}},
+            ]    
+        }
+
+        if (filters.payment_category_id) where["payment_bill_id"] = filters.payment_category_id
+        if (filters.student_id) where["student_id"] = filters.student_id
+        if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
+        if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
+        if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.class_id) {
+            const students = await StudentClass.findAll({
+                where: {
+                    class_id: filters.class_id
+                }
+            })
+            where['student_id'] = {
+                [Op.in]: students.map(st => st.student_id)
+            }
+        }
+
         return StudentBills.count({
-            
-            where: {
-                [Op.or]: [
-                    {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
-                    {"$student.nis$": { [Op.like]: "%" + search + "%"}},
-                    {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
-                    {status: { [Op.like]: "%" + search + "%"}},
-                    {paidoff_att: { [Op.like]: "%" + search + "%"}},
-                    {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
-                ]
-            },
+            where,
             include: [
                 {
                     model: Students,
@@ -130,25 +144,48 @@ class StudentPaymentReportDao extends SuperDao{
                 {
                     model: PaymentBills,
                     as: 'studentpaymentbill',
-                    attributes: ["name","due_date"]
+                    attributes: ["name","due_date"],
+                    include: [
+                        {
+                            model: PaymentPosts,
+                            as: "paymentpost",
+                            attributes: ["name", "billing_cycle"]
+                        }
+                    ]
                 }
             ]
         })
     }
-    async getStudentBillsPage(search,offset,limit) {
+    async getStudentBillsPage(search,offset,limit, filters) {
+        const where = {
+            [Op.or]: [
+                {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
+                {"$student.nis$": { [Op.like]: "%" + search + "%"}},
+                {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
+                { status : { [Op.like]: "%" + search + "%"}},
+            ]    
+        }
+
+        if (filters.payment_category_id) where["payment_bill_id"] = filters.payment_category_id
+        if (filters.student_id) where["student_id"] = filters.student_id
+        if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
+        if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
+        if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.class_id) {
+            const students = await StudentClass.findAll({
+                where: {
+                    class_id: filters.class_id
+                }
+            })
+            where['student_id'] = {
+                [Op.in]: students.map(st => st.student_id)
+            }
+        }
+        
         try {
             const result = await StudentBills.findAll({
-                where: {
-                    [Op.or]: [
-                        {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
-                        {"$student.nis$": { [Op.like]: "%" + search + "%"}},
-                        {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
-                        { status : { [Op.like]: "%" + search + "%"}},
-                        { paidoff_att: { [Op.like]: "%" + search + "%"}},
-                        {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
-                    ]    
-                },
-                attributes: ["id", "status", "student_id", "payment_bill_id", "paidoff_att"],
+                where,
+                attributes: ["id", "status", "student_id", "payment_bill_id", "paidoff_at"],
                 include: [
                     {
                         model: Students,
@@ -158,9 +195,19 @@ class StudentPaymentReportDao extends SuperDao{
                     {
                         model: PaymentBills,
                         as: 'studentpaymentbill',
-                        attributes: ["name","due_date", "class_id"]
+                        attributes: ["name","due_date"],
+                        include: [
+                            {
+                                model: PaymentPosts,
+                                as: "paymentpost",
+                                attributes: ["name", "billing_cycle"]
+                            }
+                        ]
                     }
-                ]
+                ],
+                offset: offset,
+                limit: limit,
+                order: [["id", "DESC"]],
             })
 
             return result;
@@ -169,40 +216,6 @@ class StudentPaymentReportDao extends SuperDao{
             throw error;
         }
     }
-
-    async exportToExcel(search, offset, limit) {
-        try {
-            const response = await this.getStudentBillsPage(search, offset, limit);
-            const data = response.map(item => ({
-                ...item.dataValues,
-                student: item.dataValues.student.dataValues,
-                studentpaymentbill: item.dataValues.studentpaymentbill.dataValues
-            }));
-
-            const worksheetData = data.map(item => ({
-                'Name': item.student.full_name,
-                'NIS': item.student.nis,
-                'Pembayaran': item.studentpaymentbill.name,
-                'Status': item.status,
-                'Tanggal Bayar': item.paidoff_att
-            }));
-
-            const workbook = xlsx.utils.book_new();
-            const worksheet = xlsx.utils.json_to_sheet(worksheetData);
-            xlsx.utils.book_append_sheet(workbook, worksheet, 'Arrears Data');
-
-            const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-
-            const filePath = path.join(__dirname, 'arrears_data.xlsx');
-            await fs.writeFile(filePath, buffer);
-
-            return filePath;
-        } catch (error) {
-            console.error('Error exporting data to Excel:', error);
-            throw error;
-        }
-    }
-
 }
 
 module.exports = StudentPaymentReportDao

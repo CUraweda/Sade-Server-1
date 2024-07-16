@@ -11,6 +11,23 @@ class ForCountryDetailDao extends SuperDao {
     super(ForCountryDetail);
   }
 
+  async getById(id) {
+    return ForCountryDetail.findOne({
+      where: { id },
+      include: [
+        {
+          model: ForCountry,
+          include: [
+            {
+              model: User,
+              attributes: ["full_name", "avatar"]
+            },
+          ]
+        }
+      ],
+    })
+  }
+
   async getByUserId(user_id, academic) {
     return ForCountryDetail.findAll({
       where: {

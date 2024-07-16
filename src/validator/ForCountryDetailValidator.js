@@ -14,10 +14,10 @@ class ForCountryDetailValidator {
         const schema = Joi.object({
             for_country_id: Joi.number(),
             activity: Joi.string(),
-            status: Joi.string().valid("Menunggu Pelaksanaan", "Selesai").optional(),
-            is_date_approved: Joi.boolean().default(false),
+            status: Joi.string().valid("Menunggu Pelaksanaan", "Dalam Pelaksanaan", "Selesai"),
+            is_date_approved: Joi.boolean(),
             file: Joi.any(),
-            duration: Joi.number().precision(1),
+            duration: Joi.number(),
             plan_date: Joi.string(),
         }).options({ convert: true })
 
@@ -33,12 +33,11 @@ class ForCountryDetailValidator {
             next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
         } else {
             // on success replace req.body with validated value and trigger next middleware function
-            req.body = {
-                ...value,
-                for_country_id: value.for_country_id ? Number(value.for_country_id) : value.for_country_id,
-                duration: value.duration !== '' && value.duration !== null ? Number(value.duration) : value.duration,
-                is_date_approved: value.is_date_approved === 'false' ? false : !!value.is_date_approved
-            };
+            // req.body = {
+            //     ...value,
+            //     for_country_id: value.for_country_id ? Number(value.for_country_id) : value.for_country_id,
+            //     duration: value.duration ? Number(value.duration) : value.duration,
+            // };
             return next();
         }
     }

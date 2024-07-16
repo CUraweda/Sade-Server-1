@@ -43,8 +43,18 @@ class WasteOfficerController {
   };
   showByDate = async (req, res) => {
     try {
+      const page = parseInt(req.query.page) || 0;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search_query || "";
+      const offset = limit * page;
       const { date } = req.params;
-      const resData = await this.wasteOfficerService.showWasteOfficersByDate(date);
+      const resData = await this.wasteOfficerService.showWasteOfficersByDate(
+        date,
+        page,
+        limit,
+        search,
+        offset
+      );
   
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

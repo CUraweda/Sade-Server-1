@@ -11,9 +11,32 @@ class WasteOfficerDao extends SuperDao {
     super(WasteOfficer);
   }
 
-  async findByAssignmentDate (date) {
+  async getCountByDate (date) {
+    return WasteOfficer.count({
+      where: {
+        assignment_date: {
+          [Op.like]: `%${date}%`
+        }
+      },
+      attributes: ['id', 'name', 'assignment_date'],
+      include: [
+        {
+            model: Employee,
+            as: 'employee',
+            attributes: ["id", "full_name"]
+        },
+        {
+            model: Class,
+            as: 'class',
+            attributes: ["id","level", "class_name"]
+        }
+      ]
+    })
+  }
+
+  async findByAssignmentDate (date, page, limit, search, offset) {
     try {
-      const results = await WasteOfficer.findAll({
+      return WasteOfficer.findAll({
         where: {
           assignment_date: {
             [Op.like]: `%${date}%`
@@ -31,9 +54,11 @@ class WasteOfficerDao extends SuperDao {
               as: 'class',
               attributes: ["id","level", "class_name"]
           }
-      ]
+      ],
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
       });
-      return results;
     } catch (error) {
       throw new Error(`Error in findByAssignmentDate DAO: ${error.message}`);
     }

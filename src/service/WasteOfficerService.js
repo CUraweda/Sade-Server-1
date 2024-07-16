@@ -52,11 +52,23 @@ class ReligionService {
     return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update waste officer.");
   };
 
-  showWasteOfficersByDate = async (date) => {
+  showWasteOfficersByDate = async (date,page, limit, search, offset) => {
   try {
-    const officers = await this.wasteOfficerDao.findByAssignmentDate(date);
+    const totalRows = await this.wasteOfficerDao.getCountByDate(date);
+    const totalPage = Math.ceil(totalRows / limit);
+    const result = await this.wasteOfficerDao.findByAssignmentDate(date, page, limit, search, offset);
 
-    return responseHandler.returnSuccess(httpStatus.OK, "Waste officers retrieved successfully.", officers);
+    return responseHandler.returnSuccess(
+      httpStatus.OK,
+      "Waste officer successfully retrieved.",
+      {
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      }
+    );
   } catch (error) {
     return responseHandler.returnError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }

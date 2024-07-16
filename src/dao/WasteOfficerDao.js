@@ -3,7 +3,7 @@ const models = require("../models");
 const {  Op, fn, col } = require("sequelize");
 
 const WasteOfficer = models.wasteofficer;
-const Employee = models.employees;
+const Student = models.students;
 const Class = models.classes;
 
 class WasteOfficerDao extends SuperDao {
@@ -21,9 +21,9 @@ class WasteOfficerDao extends SuperDao {
       attributes: ['id', 'name', 'assignment_date'],
       include: [
         {
-            model: Employee,
-            as: 'employee',
-            attributes: ["id", "full_name"]
+            model: Student,
+            as: 'student',
+            attributes: ["id", "nis", "full_name"]
         },
         {
             model: Class,
@@ -45,9 +45,9 @@ class WasteOfficerDao extends SuperDao {
         attributes: ['id', 'name', 'assignment_date'],
         include: [
           {
-              model: Employee,
-              as: 'employee',
-              attributes: ["id", "full_name"]
+              model: Student,
+              as: 'student',
+              attributes: ["id", "nis", "full_name"]
           },
           {
               model: Class,
@@ -74,7 +74,7 @@ class WasteOfficerDao extends SuperDao {
             },
           },
           {
-            "$employee.full_name$": {
+            "$student.full_name$": {
               [Op.like]: "%" + search + "%",
             },
           },
@@ -97,9 +97,9 @@ class WasteOfficerDao extends SuperDao {
       },
       include: [
           {
-              model: Employee,
-              as: 'employee',
-              attributes: ["id", "full_name"]
+              model: Student,
+              as: 'student',
+              attributes: ["id", "nis", "full_name"]
           },
           {
               model: Class,
@@ -120,7 +120,7 @@ class WasteOfficerDao extends SuperDao {
               },
             },
             {
-              "$employee.full_name$": {
+              "$student.full_name$": {
                 [Op.like]: "%" + search + "%",
               },
             },
@@ -143,9 +143,9 @@ class WasteOfficerDao extends SuperDao {
         },
         include: [
             {
-                model: Employee,
-                as: 'employee',
-                attributes: ["id", "full_name"]
+                model: Student,
+                as: 'student',
+                attributes: ["id", "nis", "full_name"]
             },
             {
                 model: Class,

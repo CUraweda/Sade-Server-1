@@ -46,7 +46,7 @@ class ForCountryDetailService {
   showForCountryDetail = async (id) => {
     const message = "For your country details successfully retrieved!";
 
-    let rel = await this.forCountryDetailDao.findById(id);
+    let rel = await this.forCountryDetailDao.getById(id);
 
     if (!rel) {
       return responseHandler.returnSuccess(

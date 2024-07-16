@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const ForCountryDetailDao = require("../dao/ForCountryDetailDao");
+const uploadForCountry = require('../middlewares/uploadForCountry')
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
@@ -12,16 +13,9 @@ class ForCountryDetailService {
 
   createForCountryDetail = async (reqBody) => {
     try {
-      let message = "For your country details successfully added.";
-
       let data = await this.forCountryDetailDao.create(reqBody);
-
-      if (!data) {
-        message = "Failed to create for your country details.";
-        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
-      }
-
-      return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
+      if (!data) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Failed to create for your country details");
+      return responseHandler.returnSuccess(httpStatus.CREATED, "For country details successfully added", data);
     } catch (e) {
       logger.error(e);
       return responseHandler.returnError(
@@ -32,41 +26,21 @@ class ForCountryDetailService {
   };
 
   updateForCountryDetail = async (id, body) => {
-    const message = "For your country details successfully updated!";
-
     let rel = await this.forCountryDetailDao.findById(id);
+    if (!rel) return responseHandler.returnSuccess(httpStatus.OK, "For your country details not found!");
+    await this.forCountryDetailDao.updateById(body, id).catch((e) => {
+      logger.error(e)
+      return responseHandler.returnError(httpStatus[400], "Cannot update for country details")
+    })
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "For your country details not found!",
-        {}
-      );
-    }
-
-    const updateData = await this.forCountryDetailDao.updateById(body, id);
-
-    //delete file if exist
     const rData = rel.dataValues;
-
-    if (rData.certificate_path) {
-      // console.log(rData.cover);
-      if (body.certificate_path) {
-        fs.unlink(rData.certificate_path, (err) => {
-          if (err) {
-            return responseHandler.returnError(
-              httpStatus.NOT_FOUND,
-              "Cannot delete attachment!"
-            );
-          }
-          console.log("Delete File successfully.");
-        });
-      }
+    if (rData.certificate_path && body.certificate_path) {
+      fs.unlink(rData.certificate_path, (err) => {
+        if (err) return responseHandler.returnError(httpStatus.NOT_FOUND, "Cannot delete attachment!");
+      });
     }
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
-    }
+    return responseHandler.returnSuccess(httpStatus.OK, "For your country details successfully updated!");
   };
 
   showForCountryDetail = async (id) => {
@@ -100,6 +74,11 @@ class ForCountryDetailService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+
+  async showByDate(date, month, year) {
+    const result = await this.forCountryDetailDao.getDetailsByDate(date, month, year)
+    return responseHandler.returnSuccess(httpStatus.OK, "For country details by month successfully retrieved", result)
+  }
 
   async showPage(page, limit, search, offset) {
     const totalRows = await this.forCountryDetailDao.getCount(search);

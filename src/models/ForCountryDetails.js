@@ -21,7 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       duration: DataTypes.DOUBLE(3, 1),
       remark: DataTypes.STRING,
       certificate_path: DataTypes.STRING,
-    },
+      plan_date: DataTypes.STRING,
+      status: DataTypes.STRING,
+      is_date_approved: DataTypes.BOOLEAN
+  },
     {
       sequelize,
       modelName: "forcountrydetails",

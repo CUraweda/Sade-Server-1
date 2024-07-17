@@ -11,5 +11,15 @@ router.get(
   auth([1, 2, 9, 10]),
   dashboardController.adminTimbangan
 );
+router.get(
+  "/detail-chart",
+  auth([1, 2, 9, 10]),
+  dashboardController.getDetailChartData
+);
 
+router.get(
+  "/chart",
+  auth([1, 2, 9, 10]),
+  dashboardController.getChartData
+);
 module.exports = router;

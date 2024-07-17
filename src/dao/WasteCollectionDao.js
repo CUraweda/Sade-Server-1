@@ -626,6 +626,28 @@ async getCount(search) {
       ],
       group: ["student_class_id"],
     });
+    
   }
+
+  async getTotalWeight(startDate, endDate) {
+    const whereClause = {};
+    if (startDate && endDate) {
+      whereClause.collection_date = {
+        [Op.between]: [new Date(startDate), new Date(endDate)]
+      };
+    } else if (startDate) {
+      whereClause.collection_date = {
+        [Op.gte]: new Date(startDate)
+      };
+    } else if (endDate) {
+      whereClause.collection_date = {
+        [Op.lte]: new Date(endDate)
+      };
+    }
+
+    const result = await WasteCollection.sum('weight', { where: whereClause });
+    return result;
+  }
+  
 }
 module.exports = WasteCollectionDao;

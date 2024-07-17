@@ -65,7 +65,6 @@ class WasteSalesDao extends SuperDao {
     if (wastetypeId) {
       whereClause.waste_type_id = wastetypeId;
     }
-
   
     const results = await WasteCollection.findAll({
       where: whereClause,
@@ -85,22 +84,35 @@ class WasteSalesDao extends SuperDao {
     return results.map(result => {
       const totalWeightGrams = result.get('totalWeight');
       const totalWeightKg = totalWeightGrams / 1000; 
-      const totalPricePerKg = result.wastetype.price;
       const roundedTotalWeight = Math.round(totalWeightKg * 100) / 100;
   
-      let totalPrice = totalPricePerKg * totalWeightKg;
+      if (result.wastetype && result.wastetype.price !== null) {
+        const totalPricePerKg = result.wastetype.price;
+        let totalPrice = totalPricePerKg * totalWeightKg;
+        totalPrice = Math.round(totalPrice * 100) / 100;
   
-      totalPrice = Math.round(totalPrice * 100) / 100;
-      return {
-        id: result.wastetype.id,
-        name: result.wastetype.name,
-        price: result.wastetype.price,
-        total_weight: roundedTotalWeight,
-        total_price: totalPrice,
-        collection_date: result.collection_date
-      };
+        return {
+          id: result.wastetype.id,
+          name: result.wastetype.name,
+          price: result.wastetype.price,
+          total_weight: roundedTotalWeight,
+          total_price: totalPrice,
+          collection_date: result.collection_date
+        };
+      } else {
+        console.warn(`Missing price for wastetype with ID: ${result.wastetype ? result.wastetype.id : 'unknown'}`);
+        return {
+          id: result.wastetype ? result.wastetype.id : null,
+          name: result.wastetype ? result.wastetype.name : null,
+          price: null,
+          total_weight: roundedTotalWeight,
+          total_price: null,
+          collection_date: result.collection_date
+        };
+      }
     });
   }
+  
   async getDetailChart(wastetypeId, startDate, endDate) {
     const whereClause = {};
   

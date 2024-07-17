@@ -95,7 +95,7 @@ class WasteSalesDao extends SuperDao {
           id: result.wastetype.id,
           name: result.wastetype.name,
           price: result.wastetype.price,
-          total_weight: roundedTotalWeight,
+          total_weight: totalWeightGrams,
           total_price: totalPrice,
           collection_date: result.collection_date
         };
@@ -167,7 +167,7 @@ class WasteSalesDao extends SuperDao {
         id: result.wastetype.id,
         name: result.wastetype.name,
         price: result.wastetype.price,
-        total_weight: roundedTotalWeight,
+        total_weight: totalWeightGrams,
         total_price: totalPrice,
         collection_date: result.collection_date
       };
@@ -206,18 +206,11 @@ class WasteSalesDao extends SuperDao {
       order: [[models.sequelize.fn('DATE', models.sequelize.col('collection_date')), 'ASC']]
     });
 
-    
-    return results.map(result => {
-      const totalWeightGrams = result.get('totalWeight');
-      const totalWeightKg = totalWeightGrams / 1000;
-      const roundedTotalWeight = Math.round(totalWeightKg * 100) / 100;
-
-      return {
-        date: result.get('date'),
-        total_weight: roundedTotalWeight,
-        total_price: result.get('totalPrice')
-      };
-    });
+    return results.map(result => ({
+      date: result.get('date'),
+      total_weight: result.get('totalWeight'),
+      total_price: result.get('totalPrice')
+    }));
   }  
 }  
 

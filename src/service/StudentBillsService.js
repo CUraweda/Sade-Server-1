@@ -167,6 +167,10 @@ class StudentBillsService {
     
         return responseHandler.returnSuccess(httpStatus.OK, message, rel);
     };
+    getIncome = async (filters) => {
+      const result = await this.studentBillsDao.getIncome(filters)
+      return Array.isArray(result) && result.length ? result[0] : result
+    }
 }
 
 module.exports = StudentBillsService

@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const WasteCollectionDao = require("../dao/WasteCollectionDao");
+const WasteTypeDao = require("../dao/WasteTypesDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
@@ -8,29 +9,35 @@ const xlsx = require("xlsx");
 class WasteCollectionService {
   constructor() {
     this.wasteCollectionDao = new WasteCollectionDao();
+    this.wasteTypeDao = new WasteTypeDao();
   }
-
   createWasteCollection = async (reqBody) => {
     try {
       let message = "Waste Collection successfully added.";
-
+  
+      const wasteType = await this.wasteTypeDao.findById(reqBody.waste_type_id);
+      if (!wasteType) {
+        message = "Waste Type not found";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
+  
       const date = new Date(reqBody.collection_date);
       const dayIndex = date.getDay();
       const body = {
         student_class_id: reqBody.student_class_id,
         collection_date: reqBody.collection_date,
         day_id: dayIndex,
-        waste_type: reqBody.waste_type,
+        waste_type_id: reqBody.waste_type_id, 
         weight: reqBody.weight,
       };
-
+  
       let data = await this.wasteCollectionDao.create(body);
-
+  
       if (!data) {
         message = "Failed to create Waste Collection.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-
+  
       return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
     } catch (e) {
       logger.error(e);
@@ -39,7 +46,7 @@ class WasteCollectionService {
         "Something went wrong!"
       );
     }
-  };
+  };  
 
   updateWasteCollection = async (id, body) => {
     const message = "Waste Collection successfully updated!";
@@ -260,6 +267,10 @@ class WasteCollectionService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  async getTotalWeight(startDate, endDate) {
+    const result = await this.wasteCollectionDao.getTotalWeight(startDate, endDate);
+    return result;
+  }
 }
 
 module.exports = WasteCollectionService;

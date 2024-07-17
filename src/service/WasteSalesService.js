@@ -8,6 +8,7 @@ class WasteSalesService {
     this.wasteSalesDao = new WasteSalesDao();
   }
 
+
   async getWasteSummary(wastetypeId, startDate, endDate, page, limit, search, offset) {
     // Get the paginated result
     const result = await this.wasteSalesDao.getWasteSummary(
@@ -35,6 +36,26 @@ class WasteSalesService {
       }
     );
   }
+  async getDetailChartData(wastetypeId, startDate, endDate) {
+    const offset = 0;
+    const limit = null; // No limit
+
+    const results = await this.wasteSalesDao.getDetailChart(wastetypeId, startDate, endDate, offset, limit);
+
+    // Transform data into chart format
+    const chartData = results.map(item => ({
+      date: item.collection_date,
+      waste_type_id: item.id,
+      weight: item.total_weight,
+      price: item.total_price
+    }));
+
+    return chartData;
+  }
+  async getChartData(startDate, endDate) {
+    return await this.wasteSalesDao.getChartData(startDate, endDate);
+  }
+  
 }
 
 module.exports = WasteSalesService;

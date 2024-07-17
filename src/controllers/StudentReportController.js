@@ -23,7 +23,6 @@ class StudentReportController {
   update = async (req, res) => {
     try {
       var id = req.params.id;
-      console.log("KONTOLER ID", id)
 
       const resData = await this.studentReportService.updateStudentReport(
         id,

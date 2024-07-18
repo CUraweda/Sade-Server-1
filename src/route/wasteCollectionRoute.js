@@ -61,7 +61,7 @@ router.post("/import", auth([1, 3, 6, 9, 10]), wasteCollectionController.importE
 
 router.get(
   "/target-achievement-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 10]),
   wasteCollectionController.showTargetAchievementByStudentId
 );
 

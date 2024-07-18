@@ -24,24 +24,24 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   achievementController.show
 );
 
 router.get(
   "/show-all-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   achievementController.showByStudentId
 );
 
 //get top one by student id
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   achievementController.showTopOneByStudentId
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), achievementController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), achievementController.showAll);
 
 router.delete(
   "/delete/:id",

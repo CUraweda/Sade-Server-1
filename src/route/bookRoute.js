@@ -22,7 +22,7 @@ router.put(
   bookController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), bookController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), bookController.show);
 
 router.get("/", auth([1, 2, 3, 4, 5, 6]), bookController.showAll);
 

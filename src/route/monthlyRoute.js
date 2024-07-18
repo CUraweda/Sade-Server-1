@@ -31,13 +31,13 @@ router.put(
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   monthlyController.show
 );
 
 router.get(
   "/download/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   monthlyController.fileDownload
 );
 

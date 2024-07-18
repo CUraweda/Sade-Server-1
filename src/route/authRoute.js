@@ -23,24 +23,24 @@ router.post("/refresh-token", authController.refreshTokens);
 router.post("/logout", authController.logout);
 router.put(
   "/change-password",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userValidator.changePasswordValidator,
   authController.changePassword
 );
 router.post("/verify-email/:id", authController.verifyMail);
 router.put(
   "/update-profile/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   authController.update
 );
 router.post(
   "/forgot-password",
-  // auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  // auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   authController.forgotPassword
 );
 router.post(
   "/reset-password",
-  // auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  // auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userValidator.resetPasswordValidator,
   authController.resetPassword
 );

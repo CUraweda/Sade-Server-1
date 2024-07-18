@@ -41,7 +41,7 @@ class StudentPaymentBillsValidator {
         payment_post_id: Joi.number().required(),
         academic_year: Joi.string().required(),
         total: Joi.number().required(),
-        data_list: Joi.array(Joi.object({
+        data_list: Joi.array().items(Joi.object({
           name: Joi.string().required(),
           due_date: Joi.date().required(),
         }))

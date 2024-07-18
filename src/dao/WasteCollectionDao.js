@@ -264,61 +264,62 @@ async getCount(search) {
     ],
   });
 }
-
-  async getWasteCollectionPage(search, offset, limit) {
-    return WasteCollection.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            collection_date: {
-            [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            waste_type_id: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            weight: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
-      include: [
+async getWasteCollectionPage(search, offset, limit) {
+  return WasteCollection.findAll({
+    where: {
+      [Op.or]: [
         {
-          model: StudentClass,
-          as: 'studentclass',
-          include: [
-            {
-              model: Students,
-              as: 'student',
-              attributes: ["nis", "full_name", "class"]
-            }
-          ],
-          attributes: ["id", "class_id"]
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
         },
         {
-          model: WasteTypes,
-          as: 'wastetype',
-          attributes: ["id", "code", "name", "price"]
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          collection_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          waste_type_id: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          weight: {
+            [Op.like]: "%" + search + "%",
+          },
         },
       ],
-    });
-  }
+    },
+    include: [
+      {
+        model: StudentClass,
+        as: 'studentclass',
+        include: [
+          {
+            model: Students,
+            as: 'student',
+            attributes: ["nis", "full_name", "class"]
+          }
+        ],
+        attributes: ["id", "class_id"]
+      },
+      {
+        model: WasteTypes,
+        as: 'wastetype',
+        attributes: ["id", "code", "name", "price"]
+      },
+    ],
+    limit: limit,  // Add this line
+    offset: offset  // Add this line
+  });
+}
 
-  async getByFilter(filterOptions) {
+  async getByFilter(filterOptions, limit, offset) {
     const whereClause = {};
 
     if (filterOptions.waste_type_id) {
@@ -373,7 +374,9 @@ async getCount(search) {
                 attributes: ["id", "code", "name", "price"]
             }
         ],
-        order: [['collection_date', 'ASC']] // Adjust the sorting as per your requirements
+        order: [['collection_date', 'ASC']],
+        limit: limit,  
+        offset: offset 
     });
 }
   async collectionPerWeekByStudentId(id) {

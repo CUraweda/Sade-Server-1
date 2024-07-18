@@ -126,7 +126,7 @@ class WasteCollectionService {
     const totalRows = await this.wasteCollectionDao.getFilteredCount(filterOptions);
     const totalPage = Math.ceil(totalRows / limit);
 
-    const result = await this.wasteCollectionDao.getByFilter(filterOptions);
+    const result = await this.wasteCollectionDao.getByFilter(filterOptions, limit, offset);
     
     return responseHandler.returnSuccess(
       httpStatus.OK,

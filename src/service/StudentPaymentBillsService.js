@@ -28,6 +28,34 @@ class StudentPaymentBillsService {
             )
         }
     }
+    bulkCreateStudentPaymentBills = async (reqBody) => {
+      try {
+        let message = "Student Payment Bills successfully added."
+
+        const dataToCreate = reqBody.data_list.map((dat) => {
+          return {
+            ...dat,
+            payment_post_id: reqBody.payment_post_id,
+            academic_year: reqBody.academic_year,
+            total: reqBody.total,    
+          }
+        })
+
+        let data = await this.studentPaymentBillsDao.bulkCreate(dataToCreate);
+
+        if (!data) {
+            message = "Failed to create payment bills"
+            return responseHandler.returnError(httpStatus.BAD_REQUEST, message)
+        }
+        return responseHandler.returnSuccess(httpStatus.CREATED, message, data)
+    } catch (e) {
+        logger.error(e)
+        return responseHandler.returnError(
+            httpStatus.INTERNAL_SERVER_ERROR,
+            "Something went wrong!"
+        )
+    }
+    }
     showStudentPaymentBillsByStudentId = async (id) => {
         const message = "Student Payment Bills successfully retrieved!";
     

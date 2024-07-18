@@ -24,15 +24,15 @@ router.put(
   studentController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), studentController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentController.show);
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), studentController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentController.showAll);
 
 router.delete("/delete/:id", auth([1, 3]), studentController.delete);
 
 router.get(
   "/show-nis/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentController.showNis
 );
 

@@ -660,6 +660,16 @@ class NumberReportService {
         rowsData[item.subject_code][4] = item.grade_text
       }
     }
+
+    switch(data.level){
+      case "SD":
+        rowsData["MTK"][2] = "6,00"
+        rowsData["IPA"][2] = "6,00"
+        rowsData["ING"][2] = "6,00"
+        break;
+      default:
+        break;
+    }
     return { rowsData }
   }
   filteredNumberReport = async (academic, semester, classId) => {

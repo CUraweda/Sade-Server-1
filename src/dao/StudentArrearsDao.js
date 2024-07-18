@@ -80,6 +80,9 @@ class ArrearsDao extends SuperDao{
     async getCount(search, classId) {
         const where = {
             status: { [Op.like]: "belum lunas" },
+            ["$studentpaymentbill.due_date$"]: {
+                [Op.lte]: formatDateForSQL(new Date())
+            },
             [Op.or]: [
                 {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
                 {"$student.nis$": { [Op.like]: "%" + search + "%"}},

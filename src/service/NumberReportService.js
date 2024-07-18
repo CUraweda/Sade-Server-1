@@ -405,25 +405,7 @@ class NumberReportService {
     doc.rect(350, posY, 200, 17).lineWidth(0.5).stroke(); // Huruf
     doc.text("Huruf", 350, 242, { align: "center", width: 200 });
 
-    const rowsData = {}
-    await this.subjectDao.getAll(data.level).then((data) => {
-      data.forEach((subject, i) => {
-        rowsData[subject.id] = [
-          i + 1,
-          subject.name,
-          subject.threshold,
-          "0,00",
-          "nol"
-        ]
-      })
-    })
-    for (let item of data.number_reports) {
-      if(rowsData[item.subject_id]){
-        rowsData[item.subject_id][3] = item.grade,
-        rowsData[item.subject_id][4] = item.grade_text
-      }
-    }
-    
+    const { rowsData } = await this.generateNumberReportTabel(data)
     const dataTable = {
       headers: [
         {
@@ -487,13 +469,13 @@ class NumberReportService {
         // first line
         if (indexColumn === 0) {
           doc
-          .lineWidth(0.5)
-          .moveTo(x, y)
-          .lineTo(x, y + height)
-          .stroke();
-          }
+            .lineWidth(0.5)
+            .moveTo(x, y)
+            .lineTo(x, y + height)
+            .stroke();
+        }
         doc
-        .lineWidth(0.5)
+          .lineWidth(0.5)
           .moveTo(x + width, y)
           .lineTo(x + width, y + height)
           .stroke();
@@ -501,7 +483,7 @@ class NumberReportService {
         doc.fontSize(9).fillColor("#292929").font("Helvetica");
       }, // {Function}
     });
-    
+
     posY += 23;
     doc.rect(50, posY, 30, 25).lineWidth(0.5).stroke(); // No
     doc.rect(80, posY, 180, 25).lineWidth(0.5).stroke(); // Kepribadian
@@ -517,7 +499,7 @@ class NumberReportService {
     doc.text("Hari", 490, posY, { align: "center", width: 60 });
 
     let rowsDataPersonalities = [];
-    
+
     for (let i = 0; i < data.personalities.length; i++) {
       const item = data.personalities[i];
       switch (i) {
@@ -548,12 +530,12 @@ class NumberReportService {
             data.attendances.tanpa_keterangan,
           ]);
           break;
-        }
-        // rowsDataPersonalities.push([i + 1, item.desc, item.grade, "", ""]);
       }
-      
-      const dataTablePer = {
-        headers: [
+      // rowsDataPersonalities.push([i + 1, item.desc, item.grade, "", ""]);
+    }
+
+    const dataTablePer = {
+      headers: [
         {
           label: "",
           property: "No",
@@ -595,7 +577,7 @@ class NumberReportService {
       ],
       rows: rowsDataPersonalities,
     };
-    
+
     posY += 11;
     const tableXPer = 50;
     const tableYPer = posY;
@@ -629,31 +611,67 @@ class NumberReportService {
         doc.fontSize(9).fillColor("#292929").font("Helvetica");
       }, // {Function}
     });
-    
+
     posY += 20;
     moment.locale("id"); // Set locale to Indonesian
     const formattedDate = moment(data.sign_at).format("DD MMMM YYYY");
     doc
-    .font("Helvetica")
-    .fontSize(9)
+      .font("Helvetica")
+      .fontSize(9)
       .text("Depok, " + formattedDate, 350, posY, {
         align: "center",
         width: 180,
       });
-      
-      posY += 15;
+
+    posY += 15;
     doc
       .font("Helvetica-Bold")
       .text("Kepala Sekolah", 50, posY, { align: "center", width: 180 })
       .text("Wali Kelas", 350, posY, { align: "center", width: 180 });
-      
-      posY += 70;
-      doc
+
+    posY += 70;
+    doc
       .font("Helvetica")
       .text(data.head, 50, 670, { align: "center", width: 180 })
       .text(data.form_teacher, 350, 670, { align: "center", width: 180 });
   };
 
+  generateNumberReportTabel = async (data) => {
+    const formatter = new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
+    let subjects = await this.subjectDao.getAll(data.level)
+    if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
+    subjects.forEach((subject, i) => {
+      if(!rowsData[subject.code][1]){
+        rowsData[subject.code].push(subject.name)
+        rowsData[subject.code].push(formatter.format(parseFloat(subject.threshold.toFixed(2))),)
+        rowsData[subject.code].push("0,00")
+        rowsData[subject.code].push("nol")
+      }
+
+    })
+    for (let item of data.number_reports) {
+      if (rowsData[item.subject_code]) {
+        rowsData[item.subject_code][2] = item.threshold
+        rowsData[item.subject_code][3] = item.grade
+        rowsData[item.subject_code][4] = item.grade_text
+      }
+    }
+
+    switch(data.level){
+      case "SD":
+        rowsData["MTK"][2] = "6,00"
+        rowsData["IPA"][2] = "6,00"
+        rowsData["ING"][2] = "6,00"
+        break;
+      default:
+        break;
+    }
+    return { rowsData }
+  }
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";
 

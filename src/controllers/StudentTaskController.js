@@ -265,14 +265,17 @@ class StudentTaskController {
             req.user?.dataValues?.role_id == 7
           )
         ) {
-          let key = ""
+          let key = "", value = filePath
   
-          if (filePath.includes("number_reports")) key = "number_path"
+          if (req.query.student_id) { 
+            key = "$studentclass.student_id$"
+            value = req.query.student_id
+          } else if (filePath.includes("number_reports")) key = "number_path"
           else if (filePath.includes("portofolio_reports")) key = "portofolio_path"
           else if (filePath.includes("narrative_reports")) key = "narrative_path";
-  
+
           if (key) {
-            const checkAccess = await this.studentReportService.checkReportAccess(key, filePath)
+            const checkAccess = await this.studentReportService.checkReportAccess(key, value)
             if (!checkAccess) {
               return res.status(httpStatus.FORBIDDEN).send({
                 status: false,

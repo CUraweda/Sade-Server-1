@@ -34,7 +34,7 @@ class DashboardController {
       const total = await this.studentBillsService.getIncome();
 
       // in arrears
-      const inArrears = await this.studentArrearsService.showPage(0, 1);
+      const inArrears = await this.studentArrearsService.showPage(0, 1, '');
       const countInArrears = inArrears?.response?.data?.totalRows ?? 0;
 
       // lunas percentage

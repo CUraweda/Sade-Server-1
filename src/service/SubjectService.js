@@ -92,6 +92,63 @@ class SubjectService {
     );
   }
 
+  subjects = [
+    {
+      level: "SMP",
+      code: "PAI",
+      name: "Pendidikan Agama",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "PKN",
+      name: "Pendidikan Kewarganegaraan",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "IND",
+      name: "Bahasa Indonesia",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "MTK",
+      name: "Matematika",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "IPA",
+      name: "Ilmu Pengetahuan Alam",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "IPS",
+      name: "Ilmu Pengetahuan Sosial",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "KES",
+      name: "Seni Budaya dan Keterampilan",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "PENJAS",
+      name: "Pendidikan Jasmani, Olahraga dan Kesehatan",
+      threshold: 7.5,
+    },
+    {
+      level: "SMP",
+      code: "ING",
+      name: "Bahasa Inggris",
+      threshold: 7.5,
+    },
+  ]
+
   deleteSubject = async (id) => {
     const message = "Subject successfully deleted!";
 

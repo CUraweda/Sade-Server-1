@@ -40,7 +40,7 @@ router.get(
   narrativeDescController.showAll
 );
 
-router.delete("/delete/:id", auth([1, 3]), narrativeDescController.delete);
+router.delete("/delete/:id", auth([1, 3, 6]), narrativeDescController.delete);
 
 // router.post("/import", auth([1, 3, 6]), narrativeDescController.importExcel);
 

@@ -69,6 +69,7 @@ class WasteCollectionController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+  
   showByFilter = async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;

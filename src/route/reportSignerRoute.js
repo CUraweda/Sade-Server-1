@@ -24,17 +24,17 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   reportSignerController.show
 );
 
 router.get(
   "/show-by-class/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   reportSignerController.showByClassId
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), reportSignerController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), reportSignerController.showAll);
 
 router.delete("/delete/:id", auth([1, 3, 5, 6]), reportSignerController.delete);
 

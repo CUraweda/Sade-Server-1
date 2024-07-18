@@ -24,13 +24,13 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentPersonalityController.show
 );
 
 router.get(
   "/",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentPersonalityController.showAll
 );
 

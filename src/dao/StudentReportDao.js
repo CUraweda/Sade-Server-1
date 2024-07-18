@@ -168,5 +168,19 @@ class StudentReportDao extends SuperDao {
       order: [["id", "ASC"]],
     });
   }
+
+  async checkReportAccess(key, value) {
+    return StudentReport.count({
+      where: {
+        [key]: value,
+        student_access: true,
+      },
+      include: [
+        {
+          model: StudentClass,
+        }
+      ]
+    })
+  }
 }
 module.exports = StudentReportDao;

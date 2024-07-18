@@ -267,6 +267,7 @@ class NumberReportDao extends SuperDao {
       number_reports: reports.map((report) => ({
         student_report_id: report.studentreport.id,
         subject_id: report.subject.id,
+        subject_code: report.subject.code,
         subject_name: report.subject.name,
         grade: formatter.format(parseFloat(report.grade.toFixed(2))),
         grade_text: report.grade_text,

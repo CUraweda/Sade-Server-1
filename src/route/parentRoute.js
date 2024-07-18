@@ -24,13 +24,13 @@ router.put(
   parentController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), parentController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), parentController.show);
 
-router.get("/show-by-userid/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), parentController.showByUserId);
+router.get("/show-by-userid/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), parentController.showByUserId);
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   parentController.showByStudentId
 );
 

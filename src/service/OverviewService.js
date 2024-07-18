@@ -49,12 +49,19 @@ class OverviewService {
 
     const updateData = await this.overviewDao.updateById(body, id);
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
+    if (!updateData) {
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Failed to update Overview",
+        {}
+      );
     }
-    if (body.status === "Aktif") {
+
+    if (updateData.status === "Aktif" || body.status == "Aktif") {
       await this.overviewDao.setActive(id);
     }
+
+    return responseHandler.returnError(httpStatus.OK, message, {});
   };
 
   showOverview = async (id) => {

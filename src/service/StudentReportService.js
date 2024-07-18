@@ -193,10 +193,7 @@ class StudentReportService {
   }
 
   checkReportAccess = async (key, value) => {
-    return this.studentReportDao.getCountByWhere({
-      [key]: value,
-      student_access: true
-    })
+    return this.studentReportDao.checkReportAccess(key, value)
   }
 
   deleteStudentReport = async (id) => {

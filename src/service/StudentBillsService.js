@@ -171,6 +171,9 @@ class StudentBillsService {
       const result = await this.studentBillsDao.getIncome(filters)
       return Array.isArray(result) && result.length ? result[0] : result
     }
+    getRecentPaidOffBills = async (start_date, limit = 5) => {
+      return this.studentBillsDao.getRecentPaidOffBills(start_date, limit)
+    }
 }
 
 module.exports = StudentBillsService

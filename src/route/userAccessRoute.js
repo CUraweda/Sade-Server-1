@@ -10,27 +10,27 @@ const userAccessValidator = new UserAccessValidator();
 
 router.post(
   "/create",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userAccessValidator.userAccessCreateUpdateValidator,
   userAccessController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userAccessValidator.userAccessCreateUpdateValidator,
   userAccessController.update
 );
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userAccessController.show
 );
 
 router.get(
   "/show-by-user/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userAccessController.showByUserId
 );
 

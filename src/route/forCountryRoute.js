@@ -10,35 +10,35 @@ const forCountryController = new ForCountryController();
 
 router.post(
   "/create",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   //   forCountryValidator.forCountryCreateUpdateValidator,
   forCountryController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   //   forCountryValidator.forCountryCreateUpdateValidator,
   forCountryController.update
 );
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   forCountryController.show
 );
 
 router.get(
   "/show-by-user/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   forCountryController.showByUserId
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), forCountryController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), forCountryController.showAll);
 
 router.delete(
   "/delete/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   forCountryController.delete
 );
 

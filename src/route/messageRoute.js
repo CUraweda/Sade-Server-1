@@ -10,23 +10,23 @@ const messageValidator = new MessageValidator();
 
 router.post(
   "/create",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   messageValidator.messageCreateUpdateValidator,
   messageController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   messageValidator.messageUpdateStatusValidator,
   messageController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8]), messageController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), messageController.show);
 
 router.get(
   "/show-by-uid/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   messageController.showConversationByUid
 );
 

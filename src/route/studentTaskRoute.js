@@ -31,13 +31,13 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentTaskController.show
 );
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentTaskController.showByStudentId
 );
 
@@ -47,13 +47,13 @@ router.delete("/delete/:id", auth([1, 6]), studentTaskController.delete);
 
 router.put(
   "/upload/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentTaskController.uploadSiswa
 );
 
 router.get(
   "/download",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentTaskController.downloadSiswa
 );
 

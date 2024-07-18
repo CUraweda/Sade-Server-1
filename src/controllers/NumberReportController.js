@@ -135,7 +135,7 @@ class NumberReportController {
   exportByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
-      const semester = req.query.semester;
+      const semester = req.query.semester || 1;
 
       const resData = await this.numberReportService.exportReportByStudentId(
         id,

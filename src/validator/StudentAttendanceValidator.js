@@ -8,6 +8,7 @@ class StudentAttendanceValidator {
     const schema = Joi.object({
       student_class_id: Joi.number().required(),
       att_date: Joi.date().required(),
+      semester: Joi.number().required(),
       att_time: Joi.string().allow("", null),
       status: Joi.string().allow("", null),
       remark: Joi.string().allow("", null),

@@ -9,22 +9,25 @@ class OverviewDao extends SuperDao {
     super(Overview);
   }
 
-  async getActive() {
+  async getActive(classId) {
     return Overview.findOne({
       where: {
         status: "Aktif",
+        class_id: classId ?? undefined
       },
     });
   }
 
   async setActive(id) {
     try {
+      const thisOverview = await this.findById(id)
       // Set all records to "Non Aktif" except the one with the given id
       await Overview.update(
         { status: "Non Aktif" },
         {
           where: {
             id: { [Op.not]: id },
+            class_id: classId ?? undefined
           },
         }
       );

@@ -103,10 +103,10 @@ class OverviewService {
     );
   }
 
-  showOverviewActive = async (id) => {
+  showOverviewActive = async (classId) => {
     const message = "Overview successfully retrieved!";
 
-    let rel = await this.overviewDao.getActive();
+    let rel = await this.overviewDao.getActive(classId)
 
     if (!rel) {
       return responseHandler.returnSuccess(

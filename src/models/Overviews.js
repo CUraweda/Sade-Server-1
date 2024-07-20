@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Overviews.belongsTo(models.classes, {
+        foreignKey: "class_id"
+      })
     }
   }
   Overviews.init(

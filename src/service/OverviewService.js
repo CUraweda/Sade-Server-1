@@ -80,14 +80,15 @@ class OverviewService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.overviewDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.overviewDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.overviewDao.getOverviewPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

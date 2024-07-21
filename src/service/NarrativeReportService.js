@@ -41,7 +41,10 @@ class NarrativeReportService {
   updateNarrativeReport = async (id, body) => {
     const message = "Narrative Report successfully updated!";
 
+
     let rel = await this.narrativeReportDao.findById(id);
+    console.log(rel)
+    console.log(id)
 
     if (!rel) {
       return responseHandler.returnSuccess(

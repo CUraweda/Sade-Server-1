@@ -11,6 +11,7 @@ class OverviewValidator {
       period: Joi.string().allow(null, ""),
       tup: Joi.string().allow(null, ""),
       status: Joi.string().allow(null, ""),
+      class_id: Joi.number().allow(null)
     });
 
     // schema options

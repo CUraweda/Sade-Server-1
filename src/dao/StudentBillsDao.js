@@ -182,5 +182,31 @@ class StudentBillsDao extends SuperDao {
             ]
         })
     } 
+    async getRecentPaidOffBills(start_date, limit = 5) {
+        return StudentBills.findAll({
+            where: {
+                paidoff_at: {
+                    [Op.gte]: formatDateForSQL(start_date)
+                },
+                status: {
+                    [Op.like]: 'belum lunas'
+                },
+            },
+            include: [
+                {
+                    model: Students,
+                    as: 'student',
+                    attributes: ["id", "nis", "full_name", "class"]
+                },
+                {
+                    model: PaymentBills,
+                    as: 'studentpaymentbill',
+                    attributes: ["id", "name"]
+                }
+            ],
+            limit,
+            order: [["updated_at", "DESC"]],
+        })
+    }
 }
 module.exports = StudentBillsDao

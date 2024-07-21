@@ -48,6 +48,19 @@ class AnnouncementController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+  
+  showByClass = async (req, res) => {
+    try {
+      var id = req.params.id;
+
+      const resData = await this.announcementService.showByClass(id);
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
 
   showBetween = async (req, res) => {
     try {

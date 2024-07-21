@@ -8,6 +8,15 @@ class AnnouncementDao extends SuperDao {
   constructor() {
     super(Announcement);
   }
+  
+  async findByClass(id) {
+    return Announcement.findAll({
+      where: {
+          class_id: id
+      },
+      order: [['date_start', 'DESC']]
+  });
+ }  
 
   async getCount(search) {
     return Announcement.count({

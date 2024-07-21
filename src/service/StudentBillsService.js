@@ -122,7 +122,7 @@ class StudentBillsService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Evidence image not provided', {})
       }
 
-			const updateData = await this.studentBillsDao.updateWhere({ ...body, paidoff_at: formatDateForSQL(new Date()) }, { id: {[Op.in]: ids}  });
+			const updateData = await this.studentBillsDao.updateWhere({ ...body, paidoff_at: formatDateForSQL(new Date(), true) }, { id: {[Op.in]: ids}  });
 
 			if (updateData) {
 				return responseHandler.returnSuccess(httpStatus.OK, 'Student evidence successfully uploaded', updateData);

@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       Classes.hasMany(models.narrativecategory, { foreignKey: "class_id" });
       Classes.hasMany(models.wasteofficer, { foreignKey: "class_id" });
       Classes.hasMany(models.overviews, { foreignKey: "class_id" })
+      Classes.hasMany(models.announcements, { foreignKey: "class_id" });
     }
   }
   Classes.init(

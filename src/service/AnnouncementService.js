@@ -7,7 +7,7 @@ const { userConstant } = require('../config/constant');
 class AnnouncementService {
     constructor() {
         this.announcementDao = new AnnouncementDao();
-    }
+    }  
 
     createAnnouncement = async (reqBody) => {
         try {
@@ -48,6 +48,18 @@ class AnnouncementService {
         if (updateData) {
             return responseHandler.returnSuccess(httpStatus.OK, message, {});
         }
+    };
+
+    showByClass = async (id) => {
+        const message = 'Announcement successfully retrieved!';
+
+        const cl = await this.announcementDao.findByClass(id);
+
+        if (!cl) {
+            return responseHandler.returnSuccess(httpStatus.OK, 'Announcement not found!', {});
+        }
+
+        return responseHandler.returnSuccess(httpStatus.OK, message, cl);
     };
 
     showAnnouncement = async (id) => {

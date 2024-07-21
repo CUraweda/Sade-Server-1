@@ -118,7 +118,6 @@ class StudentPaymentReportDao extends SuperDao{
         }
 
         if (filters.payment_category_id) where["payment_bill_id"] = filters.payment_category_id
-        if (filters.student_id) where["student_id"] = filters.student_id
         if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
         if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
         if (filters.status) where["status"] = { [Op.like]: filters.status }
@@ -132,6 +131,7 @@ class StudentPaymentReportDao extends SuperDao{
                 [Op.in]: students.map(st => st.student_id)
             }
         }
+        if (filters.student_id) where["student_id"] = filters.student_id
 
         return StudentBills.count({
             where,
@@ -167,7 +167,6 @@ class StudentPaymentReportDao extends SuperDao{
         }
 
         if (filters.payment_category_id) where["payment_bill_id"] = filters.payment_category_id
-        if (filters.student_id) where["student_id"] = filters.student_id
         if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
         if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
         if (filters.status) where["status"] = { [Op.like]: filters.status }
@@ -181,6 +180,7 @@ class StudentPaymentReportDao extends SuperDao{
                 [Op.in]: students.map(st => st.student_id)
             }
         }
+        if (filters.student_id) where["student_id"] = filters.student_id
         
         try {
             const result = await StudentBills.findAll({

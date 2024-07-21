@@ -118,13 +118,15 @@ class StudentReportController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const semester = req.query.semester || 1;
       const offset = limit * page;
 
       const resData = await this.studentReportService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        semester,
       );
 
       res.status(resData.statusCode).send(resData.response);

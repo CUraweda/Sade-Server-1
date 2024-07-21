@@ -120,14 +120,15 @@ class StudentPaymentBillsService {
             return responseHandler.returnSuccess(httpStatus.OK, message, {})
         }
     }
-    async showPage(page, limit, search, offset) {
-      const totalRows = await this.studentPaymentBillsDao.getCount(search);
+    async showPage(page, limit, search, offset, filters) {
+      const totalRows = await this.studentPaymentBillsDao.getCount(search, filters);
       const totalPage = Math.ceil(totalRows / limit);
   
       const result = await this.studentPaymentBillsDao.getStudentPaymentBillsPage(
         search,
         offset,
-        limit
+        limit,
+        filters
       );
   
       return responseHandler.returnSuccess(

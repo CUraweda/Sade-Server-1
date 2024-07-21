@@ -68,12 +68,13 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getByClassId(id, student_access) {
+  async getByClassId(id, student_access, semester) {
     const where = {
       "$studentclass.class_id$": id,
     }
 
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
+    where['semester'] = semester
     return StudentReport.findAll({
       where,
       include: [

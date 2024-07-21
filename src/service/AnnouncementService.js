@@ -41,6 +41,7 @@ class AnnouncementService {
         date_start: body.date_start,
         date_end: body.date_end,
         announcement_desc: body.announcement_desc,
+        class_id: body.class_id,
       },
       { id }
     );

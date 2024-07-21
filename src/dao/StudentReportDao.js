@@ -41,13 +41,13 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getStudentReportPage(search, offset, limit) {
+  async getStudentReportPage(search, semester, offset, limit) {
     return StudentReport.findAll({
       where: {
         [Op.or]: [
           {
             semester: {
-              [Op.like]: "%" + search + "%",
+              [Op.eq]: semester,
             },
           },
           {

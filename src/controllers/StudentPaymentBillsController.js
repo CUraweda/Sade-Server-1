@@ -48,12 +48,17 @@ class StudentPaymentBillsController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
+        const { payment_post_id, academic_year } = req.query
 
         const resData = await this.studentPaymentBillsService.showPage(
             page,
             limit,
             search,
-            offset
+            offset,
+            {
+              payment_post_id,
+              academic_year
+            }
         );
 
         res.status(resData.statusCode).send(resData.response);

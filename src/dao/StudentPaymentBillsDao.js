@@ -58,13 +58,19 @@ class StudentPaymentBillsDao extends SuperDao {
       ],
     });
   }
-  async getCount(search) {
+  async getCount(search, filters) {
+      const where = {
+        [Op.or]: [
+          { "$paymentpost.name$": { [Op.like]: "%" + search + "%"}},
+          { name: { [Op.like]: `%${search}%` } },
+        ],
+      } 
+
+      if (filters.payment_post_id) where["payment_post_id"] = filters.payment_post_id
+      if (filters.academic_year) where["academic_year"] = filters.academic_year
+
       return StudentPaymentBills.count({
-          where: {
-              [Op.or]: [
-                { "$paymentpost.name$": { [Op.like]: "%" + search + "%"}},
-              ],
-          },
+          where,
           include: [
               {
                   model: PaymentPosts,
@@ -74,16 +80,20 @@ class StudentPaymentBillsDao extends SuperDao {
           ], 
       })
   }
-  async getStudentPaymentBillsPage(search, offset, limit) {
+  async getStudentPaymentBillsPage(search, offset, limit, filters) {
       try {
+          const where = {
+            [Op.or]: [
+              { "$paymentpost.name$": { [Op.like]: "%" + search + "%"}},
+              { name: { [Op.like]: `%${search}%` } },
+            ],
+          } 
+
+          if (filters.payment_post_id) where["payment_post_id"] = filters.payment_post_id
+          if (filters.academic_year) where["academic_year"] = filters.academic_year
+
           const result = await StudentPaymentBills.findAll({
-              where: {
-                  [Op.or]: [
-                    { "$paymentpost.name$": { [Op.like]: "%" + search + "%"}},
-                    { total: { [Op.like]: `%${search}%` } },
-                    { due_date: { [Op.like]: `%${search}%` } },
-                  ],
-              },
+              where,
               include: [
                 {
                     model: PaymentPosts,

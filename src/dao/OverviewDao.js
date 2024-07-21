@@ -70,71 +70,79 @@ class OverviewDao extends SuperDao {
     }
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const where = {
+      [Op.or]: [
+        {
+          topic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          meaningful_understanding: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          period: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          tup: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (filters.class_id) where["class_id"] = filters.class_id
+
     return Overview.count({
-      where: {
-        [Op.or]: [
-          {
-            topic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            meaningful_understanding: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            period: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            tup: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where
     });
   }
 
-  async getOverviewPage(search, offset, limit) {
+  async getOverviewPage(search, offset, limit, filters) {
+    const where = {
+      [Op.or]: [
+        {
+          topic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          meaningful_understanding: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          period: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          tup: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (filters.class_id) where["class_id"] = filters.class_id
+
     return Overview.findAll({
-      where: {
-        [Op.or]: [
-          {
-            topic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            meaningful_understanding: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            period: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            tup: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: Classes,

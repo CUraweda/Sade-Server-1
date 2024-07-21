@@ -126,14 +126,14 @@ class PortofolioReportService {
   mergePortofolioReport = async (id) => {
     try {
       let message = "Portofolio report successfully merged!";
-  
+
       const datas = await this.portofolioReportDao.findByWhere({
         student_report_id: id,
       });
-  
+
       let pdf1 = "";
       let pdf2 = "";
-  
+
       for (const data of datas) {
         if (data.type === "Orang Tua") {
           pdf1 = data.file_path;
@@ -142,11 +142,10 @@ class PortofolioReportService {
           pdf2 = data.file_path;
         }
       }
-  
       if (pdf1 && pdf2) {
         var mergedPDF = await this.mergePDFs(pdf1, pdf2);
         const commentData = await this.studentReportDao.findById(id);
-        
+
         if (commentData.por_comments_path == null) {
           const message = "Portofolio comments is empty. Please make comment first"
           return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
@@ -154,13 +153,10 @@ class PortofolioReportService {
         if (commentData) {
           mergedPDF = await this.mergePDFs(mergedPDF, commentData.por_comments_path);
         }
-  
+
         let check = await this.portofolioReportDao.getByStudentReportId(id, "Merged");
-  
-        if (check) {
-          await fs.promises.unlink(check.file_path);
-        }
-  
+        if (check) { await fs.promises.unlink(check.file_path,  (err) => { console.log(err) }) }
+
         if (!check) {
           check = await this.portofolioReportDao.create({
             student_report_id: id,
@@ -173,7 +169,7 @@ class PortofolioReportService {
             check.id
           );
         }
-  
+
         await this.studentReportDao.updateWhere(
           { portofolio_path: mergedPDF },
           { id }
@@ -182,7 +178,7 @@ class PortofolioReportService {
         message = "Failed to merge Portofolio report. One or more PDF file is missing!";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-  
+
       return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
     } catch (error) {
       logger.error("Error merging portfolio report:", error);
@@ -210,9 +206,7 @@ class PortofolioReportService {
 
       const outputPath = path.join(dir, `${Date.now()}_merged.pdf`);
       const mergedPdfBytes = await mergedPdf.save();
-
       await fs.writeFile(outputPath, mergedPdfBytes);
-
       console.log(
         `PDF files merged successfully. Merged PDF saved at: ${outputPath}`
       );

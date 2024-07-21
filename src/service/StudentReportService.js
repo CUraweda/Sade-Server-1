@@ -272,9 +272,6 @@ class StudentReportService {
     const message = "Student report successfully merged!";
 
     const data = await this.studentReportDao.findById(id);
-
-    console.log(data.narrative_path);
-
     if (!data) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
@@ -298,9 +295,11 @@ class StudentReportService {
         }
       );
     }
-    await this.mergePDFs(pdf1, pdf2, pdf3);
 
-    return responseHandler.returnSuccess(httpStatus.OK, message, "");
+    const merged_path = await this.mergePDFs(pdf1, pdf2, pdf3)
+    if(data.merged_path) await fs.unlink(data.merged_path, (err) => { console.log(err) })
+    await this.studentReportDao.updateById({ merged_path }, id)
+    return responseHandler.returnSuccess(httpStatus.OK, message, { filePath: merged_path });
   };
 
   mergePDFs = async (pdf1, pdf2, pdf3) => {
@@ -326,8 +325,8 @@ class StudentReportService {
       copiedPages3.forEach((page) => mergedPdf.addPage(page));
 
       const outputPath = path.join(dir, `${Date.now()}_merged_all.pdf`);
-      const mergedPdfBytes = await mergedPdf.save();
 
+      const mergedPdfBytes = await mergedPdf.save();
       await fs.writeFile(outputPath, mergedPdfBytes);
 
       console.log(

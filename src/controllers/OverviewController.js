@@ -67,7 +67,7 @@ class OverviewController {
 
   showActive = async (req, res) => {
     try {
-      const classId = req.query.classId || ""
+      const classId = req.query.class_id || ""
       const resData = await this.overviewService.showOverviewActive(classId);
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

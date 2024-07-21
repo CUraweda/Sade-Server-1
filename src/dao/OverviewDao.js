@@ -3,6 +3,7 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const Overview = models.overviews;
+const Classes = models.classes
 
 class OverviewDao extends SuperDao {
   constructor() {
@@ -10,12 +11,34 @@ class OverviewDao extends SuperDao {
   }
 
   async getActive(classId) {
-    return Overview.findOne({
+    let result = await Overview.findOne({
       where: {
         status: "Aktif",
-        class_id: classId ?? undefined
+        class_id: classId
       },
+      include: [
+        {
+          model: Classes,
+          attributes: ["id", "level", "class_name"]
+        }
+      ],
     });
+    
+    if (!result) {
+      result = await Overview.findOne({
+        where: {
+          status: "Aktif"
+        },
+        include: [
+          {
+            model: Classes,
+            attributes: ["id", "level", "class_name"]
+          }
+        ],
+      });
+    }
+  
+    return result;
   }
 
   async setActive(id) {
@@ -27,7 +50,7 @@ class OverviewDao extends SuperDao {
         {
           where: {
             id: { [Op.not]: id },
-            class_id: classId ?? undefined
+            class_id: thisOverview.class_id
           },
         }
       );
@@ -112,6 +135,12 @@ class OverviewDao extends SuperDao {
           },
         ],
       },
+      include: [
+        {
+          model: Classes,
+          attributes: ["id", "level", "class_name"]
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

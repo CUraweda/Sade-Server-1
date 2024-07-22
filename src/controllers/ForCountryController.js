@@ -9,8 +9,6 @@ class ForCountryController {
 
   create = async (req, res) => {
     try {
-      await uploadForCountry(req, res)
-      if(req.file) req.body.certificate_path = req.file ? req.file.path : null
       const resData = await this.forCountryService.createForCountry(req.body);
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

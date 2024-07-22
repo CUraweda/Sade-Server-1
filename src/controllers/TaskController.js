@@ -11,6 +11,7 @@ const schema = Joi.object({
   subject_id: Joi.number().required(),
   task_category_id: Joi.number().required(),
   topic: Joi.string().required(),
+  description: Joi.string().required(),
   start_date: Joi.date().allow("", null),
   end_date: Joi.date().allow("", null),
   category: Joi.string().allow("", null),

@@ -1,13 +1,11 @@
 const httpStatus = require("http-status");
 const ForCountryDao = require("../dao/ForCountryDao");
-const ForCountryDetailDao = require("../dao/ForCountryDetailDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 
 class ForCountryService {
   constructor() {
     this.forCountryDao = new ForCountryDao();
-    this.forCountryDetail = new ForCountryDetailDao();
   }
 
   createForCountry = async (reqBody) => {

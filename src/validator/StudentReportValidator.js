@@ -8,6 +8,7 @@ class StudentReportValidator {
     const schema = Joi.object({
       student_class_id: Joi.number().required(),
       semester: Joi.number().required(),
+      academic_year: Joi.string().required(),
       number_path: Joi.string().allow("", null),
       narrative_path: Joi.string().allow("", null),
       portofolio_path: Joi.string().allow("", null),

@@ -1,25 +1,23 @@
 const httpStatus = require("http-status");
 const ForCountryDao = require("../dao/ForCountryDao");
+const ForCountryDetailDao = require("../dao/ForCountryDetailDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
-const { userConstant } = require("../config/constant");
 
 class ForCountryService {
   constructor() {
     this.forCountryDao = new ForCountryDao();
+    this.forCountryDetail = new ForCountryDetailDao();
   }
 
   createForCountry = async (reqBody) => {
     try {
       let message = "One day for your country successfully added.";
-
       let data = await this.forCountryDao.create(reqBody);
-
       if (!data) {
         message = "Failed to create One day for your country.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-
       return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
     } catch (e) {
       logger.error(e);
@@ -29,7 +27,7 @@ class ForCountryService {
       );
     }
   };
-
+  
   updateForCountry = async (id, body) => {
     const message = "One day for your country successfully updated!";
 

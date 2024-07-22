@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       semester: DataTypes.INTEGER,
       number_path: DataTypes.STRING,
       narrative_path: DataTypes.STRING,
+      academic_year: DataTypes.STRING,
       portofolio_path: DataTypes.STRING,
       merged_path: DataTypes.STRING,
       nar_teacher_comments: DataTypes.TEXT,

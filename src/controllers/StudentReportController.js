@@ -65,11 +65,9 @@ class StudentReportController {
   showByClassId = async (req, res) => {
     try {
       const id = req.params.id;
-      const semester = req.query.semester ? +req.query.semester : 1
+      const semester = req.query.semester ? +req.query.semester || 1 : 1
       const student_access = req.query.student_access || undefined
-
-      const resData =
-        await this.studentReportService.showStudentReportByClassId(id, student_access, semester);
+      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

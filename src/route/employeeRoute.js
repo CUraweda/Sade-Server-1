@@ -22,6 +22,13 @@ router.put(
   employeeController.update
 );
 
+router.put(
+  '/attach/:id',
+  auth([1,5]),
+  employeeValidator.attachEmployeeValidator,
+  employeeController.update
+)
+
 router.get(
   "/show/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),

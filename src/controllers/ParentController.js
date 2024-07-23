@@ -85,6 +85,19 @@ class ParentController {
     }
   };
 
+  showByName = async (req, res) => {
+    try {
+      var name = req.params.name;
+
+      const resData = await this.parentService.showByName(name);
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+
   showAll = async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;

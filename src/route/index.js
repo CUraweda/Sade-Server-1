@@ -14,6 +14,7 @@ const studentAttendanceRoute = require("./studentAttendanceRoute");
 const wasteCollectionRoute = require("./wasteCollectionRoute");
 const userAccessRoute = require("./userAccessRoute");
 const formTeacherRoute = require("./formTeacherRoute");
+const formSubjectRoute = require("./formSubjectRoute");
 const eduCalendarRoute = require("./eduCalendarRoute");
 const eduCalendarDetailRoute = require("./eduCalendarDetailRoute");
 const bookCategoryRoute = require("./bookCategoryRoute");
@@ -130,6 +131,10 @@ const defaultRoutes = [
   {
     path: "/form-teacher",
     route: formTeacherRoute,
+  },
+  {
+    path: "/form-subject",
+    route: formSubjectRoute,
   },
   {
     path: "/edu-calendar",

@@ -35,38 +35,21 @@ class EmployeeService {
     const message = "Employee successfully updated!";
 
     let dt = await this.employeeDao.findById(id);
-
+    
     if (!dt) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
-        "Employee year not found!",
+        "Employee not found!",
         {}
       );
     }
 
-    const updateData = await this.employeeDao.updateWhere(
-      {
-        employee_no: body.employee_no,
-        full_name: body.full_name,
-        gender: body.gender,
-        pob: body.pob,
-        dob: body.dob,
-        religion: body.religion,
-        marital_status: body.marital_status,
-        last_education: body.last_education,
-        certificate_year: body.certificate_year,
-        is_education: body.is_education,
-        major: body.major,
-        employee_status: body.employee_status,
-        work_start_date: body.work_start_date,
-        occupation: body.occupation,
-        is_teacher: body.is_teacher,
-        duty: body.duty,
-        job_desc: body.job_desc,
-        grade: body.grade,
-      },
-      { id }
-    );
+    if(body.user_id){
+      const alreadyTaken = await this.employeeDao.getByUserId(body.user_id)
+      if(alreadyTaken.length > 0) return responseHandler.returnError(httpStatus.OK, "User already taken")
+    }
+
+    const updateData = await this.employeeDao.updateWhere(body, { id });
 
     if (updateData) {
       return responseHandler.returnSuccess(httpStatus.OK, message, {});
@@ -105,12 +88,12 @@ class EmployeeService {
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.employeeDao.getCount(search);
+  async showPage(page, limit, filter , offset) {
+    const totalRows = await this.employeeDao.getCount(filter.search);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.employeeDao.getEmployeesPage(
-      search,
+      filter,
       offset,
       limit
     );

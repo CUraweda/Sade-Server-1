@@ -645,6 +645,7 @@ class NumberReportService {
     let subjects = await this.subjectDao.getAll(data.level)
     if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
     subjects.forEach((subject, i) => {
+      if(!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
       if(!rowsData[subject.code][1]){
         rowsData[subject.code].push(subject.name)
         rowsData[subject.code].push(formatter.format(parseFloat(subject.threshold.toFixed(2))),)

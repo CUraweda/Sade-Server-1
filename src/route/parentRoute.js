@@ -34,6 +34,10 @@ router.get(
   parentController.showByStudentId
 );
 
+router.get("/show-by-name/:name", auth([1, 4, 8]), parentController.showByName)
+
+router.put("/attach-user/:id", auth([1, 4, 8]), parentValidator.parentAttachValidator, parentController.update)
+
 router.get("/", auth([1, 2, 3, 4, 5, 6, 8]), parentController.showAll);
 
 router.delete("/delete/:id", auth([1, 3]), parentController.delete);

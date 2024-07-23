@@ -166,32 +166,49 @@ class UserService {
     );
   };
 
-  updateUser = async (id, req) => {
+  updateUser = async (id, body) => {
     const message = "User data successfully updated!";
-
-    let userData = await this.userDao.findById(id);
-
-    if (!userData) {
-      return responseHandler.returnError(
-        httpStatus.NOT_FOUND,
-        "User not found!"
+  
+    let user = await this.userDao.findById(id);
+  
+    if (!user) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "User not found!",
+        {}
       );
     }
-
+  
     const updateData = await this.userDao.updateWhere(
       {
-        full_name: req.body.full_name,
-        address: req.body.address,
-        phone_number: req.body.phone_number,
-        avatar: req.file == undefined ? null : req.file.path,
+        full_name: body.full_name,
+        email: body.email,
+        address: body.address,
+        phone_number: body.phone_number,
+        avatar: body.avatar || null,
       },
       { id }
     );
-
+  
+    const userData = user.dataValues;
+  
+    if (userData.avatar && body.avatar) {
+      fs.unlink(userData.avatar, (err) => {
+        if (err) {
+          return responseHandler.returnError(
+            httpStatus.NOT_FOUND,
+            "Cannot delete avatar!"
+          );
+        }
+        console.log("Avatar file deleted successfully.");
+      });
+    }
+  
     if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
+      return responseHandler.returnSuccess(httpStatus.OK, message, body);
     }
   };
+  
 
   forgotPassword = async (body) => {
     const message = "Password reset link sent!";
@@ -272,6 +289,42 @@ class UserService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  
+  async showPage(page, limit, search, offset) {
+    const totalRows = await this.userDao.getCount(search);
+    const totalPage = Math.ceil(totalRows / limit);
+
+    const result = await this.userDao.getUserPage(
+      search,
+      offset,
+      limit
+    );
+
+    return responseHandler.returnSuccess(
+      httpStatus.OK,
+      "User successfully retrieved.",
+      {
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      }
+    );
+  }
+  
+  deleteUser = async (id) => {
+    const message = "User successfully deleted!";
+
+    let rel = await this.userDao.deleteByWhere({ id });
+
+    if (!rel) {
+      return responseHandler.returnSuccess(httpStatus.OK, "User not found!");
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
 }
 
 module.exports = UserService;

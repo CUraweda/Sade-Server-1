@@ -44,6 +44,47 @@ class UserDao extends SuperDao {
       attributes: ["id", "uuid", "role_id", "full_name", "email"],
     });
   }
+  
+  async getCount(search) {
+    return User.count({
+      where: {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            email: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
+    });
+  }
+  
+  async getUserPage(search, offset, limit) {
+    return User.findAll({
+      where: {
+        [Op.or]: [
+          {
+            full_name: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            email: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
+    });
+  }
 }
 
 module.exports = UserDao;

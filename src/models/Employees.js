@@ -12,10 +12,14 @@ module.exports = (sequelize, DataTypes) => {
       Employees.hasMany(models.formteacher, {
         foreignKey: "employee_id",
       });
+      Employees.belongsTo(models.user, {
+        foreignKey: "user_id",
+      });
     }
   }
   Employees.init(
     {
+      user_id: DataTypes.INTEGER,
       employee_no: DataTypes.STRING,
       full_name: DataTypes.STRING,
       gender: DataTypes.STRING,

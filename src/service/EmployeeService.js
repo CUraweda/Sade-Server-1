@@ -39,14 +39,14 @@ class EmployeeService {
     if (!dt) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
-        "Employee year not found!",
+        "Employee not found!",
         {}
       );
     }
 
     if(body.user_id){
       const alreadyTaken = await this.employeeDao.getByUserId(body.user_id)
-      if(alreadyTaken) return responseHandler.returnError(httpStatus.OK, "User already taken")
+      if(alreadyTaken.length > 0) return responseHandler.returnError(httpStatus.OK, "User already taken")
     }
 
     const updateData = await this.employeeDao.updateWhere(body, { id });

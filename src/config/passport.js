@@ -47,7 +47,7 @@ const jwtVerify = async (req, payload, done) => {
 
         if (!user) {
             console.log('User Cache Missed!');
-            user = await userDao.findOneByWhere({ uuid: payload.sub });
+            user = await userDao.findUserByUUID(payload.sub);
             redisService.setUser(user);
         }
 

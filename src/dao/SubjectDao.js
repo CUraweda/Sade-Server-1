@@ -3,7 +3,7 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const Subject = models.subjects;
-
+const FormSubject = models.formsubject
 class SubjectDao extends SuperDao {
   constructor() {
     super(Subject);
@@ -48,7 +48,8 @@ class SubjectDao extends SuperDao {
     });
   }
 
-  async getSubjectPage(search, offset, limit) {
+  async getSubjectPage(filter, offset, limit) {
+    const { search, employee } = filter
     return Subject.findAll({
       where: {
         [Op.or]: [
@@ -69,6 +70,15 @@ class SubjectDao extends SuperDao {
           },
         ],
       },
+      ...(employee && {
+        include: [
+          {
+            model: FormSubject,
+            where: { employee_id: employee.id },
+            required: true
+          }
+        ]
+      }),
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

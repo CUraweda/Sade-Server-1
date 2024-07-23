@@ -74,12 +74,12 @@ class FormTeacherService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.formTeacherDao.getCount(search);
+  async showPage(page, limit, filter, offset) {
+    const totalRows = await this.formTeacherDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.formTeacherDao.getFormTeacherPage(
-      search,
+      filter,
       offset,
       limit
     );

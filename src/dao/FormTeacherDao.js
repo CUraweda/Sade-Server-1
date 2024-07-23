@@ -25,9 +25,12 @@ class FormTeacherDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(filter) {
+    const { search, academic, active } = filter
     return FormTeacher.count({
       where: {
+        ...(academic && { academic_year: academic }),
+        ...(active && { status: active != "N" ? "active" : "non-active" }),
         [Op.or]: [
           {
             "$class.class_name$": {
@@ -41,16 +44,6 @@ class FormTeacherDao extends SuperDao {
           },
           {
             "$employee.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
               [Op.like]: "%" + search + "%",
             },
           },
@@ -67,9 +60,12 @@ class FormTeacherDao extends SuperDao {
     });
   }
 
-  async getFormTeacherPage(search, offset, limit) {
+  async getFormTeacherPage(filter, offset, limit) {
+    const { search, academic, active } = filter
     return FormTeacher.findAll({
       where: {
+        ...(academic && { academic_year: academic }),
+        ...(active && { status: active != "N" ? "active" : "non-active" }),
         [Op.or]: [
           {
             "$class.class_name$": {
@@ -83,16 +79,6 @@ class FormTeacherDao extends SuperDao {
           },
           {
             "$employee.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
               [Op.like]: "%" + search + "%",
             },
           },

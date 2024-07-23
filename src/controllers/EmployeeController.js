@@ -108,18 +108,6 @@ class EmployeeController {
     }
   };
 
-  updateUserId = async (req, res) => {
-    try {
-      var id = req.params.id;
-
-      const resData = await this.employeeService.updateUserId(id, req.body);
-
-      res.status(resData.statusCode).send(resData.response);
-    } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);
-    }
-  }
 }
 
 module.exports = EmployeeController;

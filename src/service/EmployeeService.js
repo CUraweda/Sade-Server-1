@@ -156,30 +156,6 @@ class EmployeeService {
     }
   };
   
-  updateUserId = async (id, body) => {
-    const message = "Employee successfully updated!";
-
-    let dt = await this.employeeDao.findById(id);
-
-    if (!dt) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Employee year not found!",
-        {}
-      );
-    }
-
-    const updateData = await this.employeeDao.updateWhere(
-      {
-        user_id: body.user_id
-      },
-      { id }
-    );
-
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
-    }
-  };
 }
 
 module.exports = EmployeeService;

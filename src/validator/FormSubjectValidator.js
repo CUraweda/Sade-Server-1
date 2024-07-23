@@ -9,7 +9,7 @@ class FormSubjectValidator {
       subject_id: Joi.number().required(),
       employee_id: Joi.number().required(),
       academic_year: Joi.string().required(),
-      status: Joi.string().required(),
+      is_active: Joi.boolean().required(),
     });
 
     // schema options

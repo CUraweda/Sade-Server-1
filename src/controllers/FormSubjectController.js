@@ -51,13 +51,17 @@ class FormSubjectController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const academic_year = req.query.academic_year 
+      const is_active = req.query.is_active 
       const offset = limit * page;
 
       const resData = await this.FormSubjectService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        academic_year,
+        is_active
       );
 
       res.status(resData.statusCode).send(resData.response);

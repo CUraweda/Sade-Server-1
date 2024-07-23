@@ -48,15 +48,30 @@ class AnnouncementController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+  
+  showByClass = async (req, res) => {
+    try {
+      var id = req.params.id;
+
+      const resData = await this.announcementService.showByClass(id);
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
 
   showBetween = async (req, res) => {
     try {
       const start = req.query.start;
       const end = req.query.end;
+      const class_id = req.query.class_id || ""
 
       const resData = await this.announcementService.showAnnouncementBetween(
         start,
-        end
+        end,
+        class_id
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -72,12 +87,18 @@ class AnnouncementController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { start_date, end_date, class_id } = req.query
 
       const resData = await this.announcementService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          start_date,
+          end_date,
+          class_id
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

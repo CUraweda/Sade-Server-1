@@ -29,6 +29,7 @@ class StudentAttendanceService {
 
       let body = {
         student_class_id: reqBody.student_class_id,
+        semester: reqBody.semester,
         att_date: reqBody.att_date,
         att_time: reqBody.att_time,
         status: statusDesc,
@@ -102,6 +103,7 @@ class StudentAttendanceService {
     const updateData = await this.studentAttendanceDao.updateWhere(
       {
         student_class_id: body.student_class_id,
+        semester: body.semester,
         att_date: body.att_date,
         att_time: body.att_time,
         status: body.status,

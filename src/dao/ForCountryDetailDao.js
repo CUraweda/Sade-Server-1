@@ -4,10 +4,28 @@ const { Op } = require("sequelize");
 
 const ForCountryDetail = models.forcountrydetails;
 const ForCountry = models.forcountry;
+const User = models.user
 
 class ForCountryDetailDao extends SuperDao {
   constructor() {
     super(ForCountryDetail);
+  }
+
+  async getById(id) {
+    return ForCountryDetail.findOne({
+      where: { id },
+      include: [
+        {
+          model: ForCountry,
+          include: [
+            {
+              model: User,
+              attributes: ["full_name", "avatar"]
+            },
+          ]
+        }
+      ],
+    })
   }
 
   async getByUserId(user_id, academic) {
@@ -22,6 +40,22 @@ class ForCountryDetailDao extends SuperDao {
         },
       ],
     });
+  }
+
+  async getDetailsByDate(date, month, year) {
+    let queryLike = ""
+    if (year) queryLike += year
+    if (month) queryLike += `-${month}-`
+    if (month && date) queryLike = queryLike.slice(0, -1)
+    if (date) queryLike += `-${date}`
+
+    return ForCountryDetail.findAll({
+      where: {
+        plan_date: {
+          [Op.like]: `%${queryLike}%`
+        }
+      }
+    })
   }
 
   async getCount(search) {
@@ -69,6 +103,17 @@ class ForCountryDetailDao extends SuperDao {
           },
         ],
       },
+      include: [
+        {
+          model: ForCountry,
+          include: [
+            {
+              model: User,
+              attributes: ["full_name"]
+            },
+          ]
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const WasteCollectionDao = require("../dao/WasteCollectionDao");
+const WasteTypeDao = require("../dao/WasteTypesDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
@@ -8,29 +9,35 @@ const xlsx = require("xlsx");
 class WasteCollectionService {
   constructor() {
     this.wasteCollectionDao = new WasteCollectionDao();
+    this.wasteTypeDao = new WasteTypeDao();
   }
-
   createWasteCollection = async (reqBody) => {
     try {
       let message = "Waste Collection successfully added.";
-
+  
+      const wasteType = await this.wasteTypeDao.findById(reqBody.waste_type_id);
+      if (!wasteType) {
+        message = "Waste Type not found";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
+  
       const date = new Date(reqBody.collection_date);
       const dayIndex = date.getDay();
       const body = {
         student_class_id: reqBody.student_class_id,
         collection_date: reqBody.collection_date,
         day_id: dayIndex,
-        waste_type: reqBody.waste_type,
+        waste_type_id: reqBody.waste_type_id, 
         weight: reqBody.weight,
       };
-
+  
       let data = await this.wasteCollectionDao.create(body);
-
+  
       if (!data) {
         message = "Failed to create Waste Collection.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-
+  
       return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
     } catch (e) {
       logger.error(e);
@@ -39,7 +46,7 @@ class WasteCollectionService {
         "Something went wrong!"
       );
     }
-  };
+  };  
 
   updateWasteCollection = async (id, body) => {
     const message = "Waste Collection successfully updated!";
@@ -58,7 +65,7 @@ class WasteCollectionService {
       {
         student_class_id: body.student_class_id,
         collection_date: body.collection_date,
-        day_id: new Date(reqBody.collection_date).getDay(),
+        day_id: new Date(body.collection_date).getDay(),
         waste_type_id: body.waste_type_id,
         weight: body.weight,
       },
@@ -96,6 +103,31 @@ class WasteCollectionService {
       limit
     );
 
+    return responseHandler.returnSuccess(
+      httpStatus.OK,
+      "Waste Collection successfully retrieved.",
+      {
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      }
+    );
+  }
+
+  async getWasteCollectionByFilter(waste_type_id, class_id, start_date, end_date, page, limit, search, offset) {
+    const filterOptions = {
+        waste_type_id: waste_type_id || null,
+        class_id: class_id || null,
+        start_date: start_date || null,
+        end_date: end_date || null
+    };
+    const totalRows = await this.wasteCollectionDao.getFilteredCount(filterOptions);
+    const totalPage = Math.ceil(totalRows / limit);
+
+    const result = await this.wasteCollectionDao.getByFilter(filterOptions, limit, offset);
+    
     return responseHandler.returnSuccess(
       httpStatus.OK,
       "Waste Collection successfully retrieved.",
@@ -235,6 +267,10 @@ class WasteCollectionService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  async getTotalWeight(startDate, endDate) {
+    const result = await this.wasteCollectionDao.getTotalWeight(startDate, endDate);
+    return result;
+  }
 }
 
 module.exports = WasteCollectionService;

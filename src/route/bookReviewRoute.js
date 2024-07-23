@@ -10,35 +10,35 @@ const bookReviewValidator = new BookReviewValidator();
 
 router.post(
   "/create",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   bookReviewValidator.bookReviewCreateUpdateValidator,
   bookReviewController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   bookReviewValidator.bookReviewCreateUpdateValidator,
   bookReviewController.update
 );
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   bookReviewController.show
 );
 
 router.get(
   "/show-by-book/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   bookReviewController.showAllByBookId
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), bookReviewController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), bookReviewController.showAll);
 
 router.delete(
   "/delete/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   bookReviewController.delete
 );
 

@@ -6,6 +6,7 @@ class AnnouncementValidator {
   async announcementCreateUpdateValidator(req, res, next) {
     // create schema object
     const schema = Joi.object({
+      class_id: Joi.number().allow(null),
       date_start: Joi.string().required(),
       date_end: Joi.string().required(),
       announcement_desc: Joi.string().required(),

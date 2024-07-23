@@ -24,23 +24,23 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   narrativeDescController.show
 );
 
 router.get(
   "/show-by-subcategory/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   narrativeDescController.showBySubCatId
 );
 
 router.get(
   "/",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   narrativeDescController.showAll
 );
 
-router.delete("/delete/:id", auth([1, 3]), narrativeDescController.delete);
+router.delete("/delete/:id", auth([1, 3, 6]), narrativeDescController.delete);
 
 // router.post("/import", auth([1, 3, 6]), narrativeDescController.importExcel);
 

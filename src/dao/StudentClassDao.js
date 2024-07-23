@@ -23,12 +23,14 @@ class StudentClassDao extends SuperDao {
     });
   }
   async getByClasses(class_id, academic_year) {
+    const where = {
+      class_id: class_id,
+      is_active: "Ya",
+    }
+
+    if (academic_year) where["academic_year"] = academic_year
     return StudentClass.findAll({
-      where: {
-        class_id: class_id,
-        academic_year: academic_year,
-        is_active: "Ya",
-      },
+      where,
       include: [
         {
           model: Students,

@@ -41,13 +41,13 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getStudentReportPage(search, offset, limit) {
+  async getStudentReportPage(search, semester, offset, limit) {
     return StudentReport.findAll({
       where: {
         [Op.or]: [
           {
             semester: {
-              [Op.like]: "%" + search + "%",
+              [Op.eq]: semester,
             },
           },
           {
@@ -68,12 +68,13 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getByClassId(id, student_access) {
+  async getByClassId(id, student_access, semester) {
     const where = {
       "$studentclass.class_id$": id,
     }
 
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
+    where['semester'] = semester
     return StudentReport.findAll({
       where,
       include: [
@@ -167,6 +168,20 @@ class StudentReportDao extends SuperDao {
       ],
       order: [["id", "ASC"]],
     });
+  }
+
+  async checkReportAccess(key, value) {
+    return StudentReport.count({
+      where: {
+        [key]: value,
+        student_access: true,
+      },
+      include: [
+        {
+          model: StudentClass,
+        }
+      ]
+    })
   }
 }
 module.exports = StudentReportDao;

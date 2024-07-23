@@ -12,9 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       Employees.hasMany(models.formteacher, {
         foreignKey: "employee_id",
       });
-      Employees.hasMany(models.wasteofficer, {
-        foreignKey: "employee_id",
-      });
     }
   }
   Employees.init(

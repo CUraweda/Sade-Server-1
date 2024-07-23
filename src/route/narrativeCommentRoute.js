@@ -24,23 +24,23 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   narrativeCommentController.show
 );
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   narrativeCommentController.showByStudentId
 );
 
 router.get(
   "/show-by-student-report/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   narrativeCommentController.showByStudentReportId
 );
 
-// router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8]), narrativeCommentController.showAll);
+// router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), narrativeCommentController.showAll);
 
 router.delete(
   "/delete/:id",

@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const NumberReportDao = require("../dao/NumberReportDao");
 const StudentReportDao = require("../dao/StudentReportDao");
+const SubjectDao = require('../dao/SubjectDao')
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
@@ -17,6 +18,7 @@ class NumberReportService {
   constructor() {
     this.numberReportDao = new NumberReportDao();
     this.studentReportDao = new StudentReportDao();
+    this.subjectDao = new SubjectDao()
   }
 
   createNumberReport = async (reqBody) => {
@@ -199,7 +201,6 @@ class NumberReportService {
     const message = "Number Report successfully exported!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester);
-    // console.log(rel);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -217,6 +218,8 @@ class NumberReportService {
       id,
       semester
     );
+
+
 
     const pdfFile = await this.generatePdf(rel, dir);
 
@@ -247,7 +250,8 @@ class NumberReportService {
 
     this.generateCover(doc, data);
     this.generateHeader(doc, data);
-    this.generateContents(doc, data);
+    await this.generateContents(doc, data);
+
     // this.generateCustomerInformation(doc, invoice);
     // this.generateInvoiceTable(doc, invoice);
     // this.generateFooter(doc);
@@ -401,20 +405,7 @@ class NumberReportService {
     doc.rect(350, posY, 200, 17).lineWidth(0.5).stroke(); // Huruf
     doc.text("Huruf", 350, 242, { align: "center", width: 200 });
 
-    // let i;
-    let rowsData = [];
-
-    for (let i = 0; i < data.number_reports.length; i++) {
-      const item = data.number_reports[i];
-      rowsData.push([
-        i + 1,
-        item.subject_name,
-        item.threshold,
-        item.grade,
-        item.grade_text,
-      ]);
-    }
-
+    const { rowsData } = await this.generateNumberReportTabel(data)
     const dataTable = {
       headers: [
         {
@@ -456,7 +447,7 @@ class NumberReportService {
           headerColor: "#FFFFFF",
         },
       ],
-      rows: rowsData,
+      rows: Object.values(rowsData),
     };
 
     const tableX = 50;
@@ -645,6 +636,42 @@ class NumberReportService {
       .text(data.form_teacher, 350, 670, { align: "center", width: 180 });
   };
 
+  generateNumberReportTabel = async (data) => {
+    const formatter = new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
+    let subjects = await this.subjectDao.getAll(data.level)
+    if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
+    subjects.forEach((subject, i) => {
+      if(!rowsData[subject.code][1]){
+        rowsData[subject.code].push(subject.name)
+        rowsData[subject.code].push(formatter.format(parseFloat(subject.threshold.toFixed(2))),)
+        rowsData[subject.code].push("0,00")
+        rowsData[subject.code].push("nol")
+      }
+
+    })
+    for (let item of data.number_reports) {
+      if (rowsData[item.subject_code]) {
+        rowsData[item.subject_code][2] = item.threshold
+        rowsData[item.subject_code][3] = item.grade
+        rowsData[item.subject_code][4] = item.grade_text
+      }
+    }
+
+    switch(data.level){
+      case "SD":
+        rowsData["MTK"][2] = "6,00"
+        rowsData["IPA"][2] = "6,00"
+        rowsData["ING"][2] = "6,00"
+        break;
+      default:
+        break;
+    }
+    return { rowsData }
+  }
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";
 

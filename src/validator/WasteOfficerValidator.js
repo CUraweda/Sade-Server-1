@@ -6,7 +6,7 @@ class WasteOfficerValidator {
   async wasteOfficerCreateUpdateValidator(req, res, next) {
     // create schema object
     const schema = Joi.object({
-      employee_id: Joi.number().required(),
+      student_id: Joi.number().required(),
       class_id: Joi.number().required(),
       name: Joi.string().required(),
       class_name: Joi.string().required(),

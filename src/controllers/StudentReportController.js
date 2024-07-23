@@ -23,7 +23,6 @@ class StudentReportController {
   update = async (req, res) => {
     try {
       var id = req.params.id;
-      console.log("KONTOLER ID", id)
 
       const resData = await this.studentReportService.updateStudentReport(
         id,
@@ -66,10 +65,9 @@ class StudentReportController {
   showByClassId = async (req, res) => {
     try {
       const id = req.params.id;
+      const semester = req.query.semester ? +req.query.semester || 1 : 1
       const student_access = req.query.student_access || undefined
-
-      const resData =
-        await this.studentReportService.showStudentReportByClassId(id, student_access);
+      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -119,13 +117,15 @@ class StudentReportController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const semester = +req.query.semester || 1;
       const offset = limit * page;
 
       const resData = await this.studentReportService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        semester,
       );
 
       res.status(resData.statusCode).send(resData.response);

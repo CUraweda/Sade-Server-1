@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       student_class_id: DataTypes.STRING,
       att_date: DataTypes.DATE,
       att_time: DataTypes.TIME,
+      semester: DataTypes.INTEGER,
       status: DataTypes.STRING,
       remark: DataTypes.STRING,
     },

@@ -69,10 +69,10 @@ class StudentBillsService {
             )
         }
     }
-    showStudentBillsByStudentId = async (id) => {
+    showStudentBillsByStudentId = async (id, filters) => {
         const message = "Student Bills successfully retrieved!";
     
-        let cl = await this.studentBillsDao.getByStudentId(id);
+        let cl = await this.studentBillsDao.getByStudentId(id, filters);
     
         if (!cl) {
           return responseHandler.returnSuccess(
@@ -122,22 +122,23 @@ class StudentBillsService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, 'Evidence image not provided', {})
       }
 
-			const updateData = await this.studentBillsDao.updateWhere({ ...body, paidoff_at: formatDateForSQL(new Date()) }, { id: {[Op.in]: ids}  });
+			const updateData = await this.studentBillsDao.updateWhere({ ...body, paidoff_at: formatDateForSQL(new Date(), true) }, { id: {[Op.in]: ids}  });
 
 			if (updateData) {
 				return responseHandler.returnSuccess(httpStatus.OK, 'Student evidence successfully uploaded', updateData);
 			}
     }
 
-    async showPage(page, limit, search, offset, billId) {
-        const totalRows = await this.studentBillsDao.getCount(search, billId);
+    async showPage(page, limit, search, offset, billId, classId) {
+        const totalRows = await this.studentBillsDao.getCount(search, billId, classId);
         const totalPage = Math.ceil(totalRows / limit);
     
         const result = await this.studentBillsDao.getStudentBillsPage(
           search,
           offset,
           limit,
-          billId
+          billId,
+          classId
         );
     
         return responseHandler.returnSuccess(
@@ -166,6 +167,13 @@ class StudentBillsService {
     
         return responseHandler.returnSuccess(httpStatus.OK, message, rel);
     };
+    getIncome = async (filters) => {
+      const result = await this.studentBillsDao.getIncome(filters)
+      return Array.isArray(result) && result.length ? result[0] : result
+    }
+    getRecentPaidOffBills = async (start_date, limit = 5) => {
+      return this.studentBillsDao.getRecentPaidOffBills(start_date, limit)
+    }
 }
 
 module.exports = StudentBillsService

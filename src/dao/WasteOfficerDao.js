@@ -3,7 +3,7 @@ const models = require("../models");
 const {  Op, fn, col } = require("sequelize");
 
 const WasteOfficer = models.wasteofficer;
-const Employee = models.employees;
+const Student = models.students;
 const Class = models.classes;
 
 class WasteOfficerDao extends SuperDao {
@@ -11,9 +11,19 @@ class WasteOfficerDao extends SuperDao {
     super(WasteOfficer);
   }
 
-  async findByAssignmentDate (date) {
+  async getCountByDate (date) {
+    return WasteOfficer.count({
+      where: {
+        assignment_date: {
+          [Op.like]: `%${date}%`
+        }
+      }
+    })
+  }
+
+  async findByAssignmentDate (date, page, limit, search, offset) {
     try {
-      const results = await WasteOfficer.findAll({
+      return WasteOfficer.findAll({
         where: {
           assignment_date: {
             [Op.like]: `%${date}%`
@@ -22,18 +32,20 @@ class WasteOfficerDao extends SuperDao {
         attributes: ['id', 'name', 'assignment_date'],
         include: [
           {
-              model: Employee,
-              as: 'employee',
-              attributes: ["id", "full_name"]
+              model: Student,
+              as: 'student',
+              attributes: ["id", "nis", "full_name"]
           },
           {
               model: Class,
               as: 'class',
               attributes: ["id","level", "class_name"]
           }
-      ]
+      ],
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
       });
-      return results;
     } catch (error) {
       throw new Error(`Error in findByAssignmentDate DAO: ${error.message}`);
     }
@@ -49,7 +61,7 @@ class WasteOfficerDao extends SuperDao {
             },
           },
           {
-            "$employee.full_name$": {
+            "$student.full_name$": {
               [Op.like]: "%" + search + "%",
             },
           },
@@ -72,9 +84,9 @@ class WasteOfficerDao extends SuperDao {
       },
       include: [
           {
-              model: Employee,
-              as: 'employee',
-              attributes: ["id", "full_name"]
+              model: Student,
+              as: 'student',
+              attributes: ["id", "nis", "full_name"]
           },
           {
               model: Class,
@@ -95,7 +107,7 @@ class WasteOfficerDao extends SuperDao {
               },
             },
             {
-              "$employee.full_name$": {
+              "$student.full_name$": {
                 [Op.like]: "%" + search + "%",
               },
             },
@@ -118,9 +130,9 @@ class WasteOfficerDao extends SuperDao {
         },
         include: [
             {
-                model: Employee,
-                as: 'employee',
-                attributes: ["id", "full_name"]
+                model: Student,
+                as: 'student',
+                attributes: ["id", "nis", "full_name"]
             },
             {
                 model: Class,

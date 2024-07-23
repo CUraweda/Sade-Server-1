@@ -1,21 +1,25 @@
-const formatDateForSQL = (date) => {
-	const pad = (num) => (num < 10 ? '0' + num : num);
+const formatDateForSQL = (date, withTime = false) => {
+  const pad = (num) => (num < 10 ? "0" + num : num);
 
-	return (
-		date.getFullYear() +
-		'-' +
-		pad(date.getMonth() + 1) +
-		'-' +
-		pad(date.getDate()) +
-		' ' +
-		pad(date.getHours()) +
-		':' +
-		pad(date.getMinutes()) +
-		':' +
-		pad(date.getSeconds())
-	);
+  let result =
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate());
+
+  if (withTime)
+    result +=
+      " " +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes()) +
+      ":" +
+      pad(date.getSeconds());
+
+  return result;
 };
 
 module.exports = {
-	formatDateForSQL
-}
+  formatDateForSQL,
+};

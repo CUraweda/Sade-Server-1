@@ -219,7 +219,7 @@ class NumberReportDao extends SuperDao {
               include: [
                 {
                   model: Students,
-                  attributes: ["id", "nis", "nisn", "full_name", "gender"],
+                  attributes: ["id", "nis", "nisn","full_name", "level", "gender"],
                 },
                 {
                   model: Classes,
@@ -234,6 +234,7 @@ class NumberReportDao extends SuperDao {
           attributes: ["id", "level", "code", "name", "threshold"],
         },
       ],
+      order: [[{ model: Subjects }, 'id', 'ASC']],
     });
 
     // Extracting necessary information
@@ -243,7 +244,7 @@ class NumberReportDao extends SuperDao {
           class_id = 0,
           academic_year = "",
           class: { class_name } = {},
-          student: { full_name, nisn, nis } = {},
+          student: { full_name, nisn, nis, level } = {},
         } = {},
       } = {},
     } = reports[0] || {};
@@ -258,12 +259,15 @@ class NumberReportDao extends SuperDao {
     const result = {
       full_name,
       nisn,
+      level,
       nis,
       class: class_name,
       semester,
       academic_year,
       number_reports: reports.map((report) => ({
         student_report_id: report.studentreport.id,
+        subject_id: report.subject.id,
+        subject_code: report.subject.code,
         subject_name: report.subject.name,
         grade: formatter.format(parseFloat(report.grade.toFixed(2))),
         grade_text: report.grade_text,

@@ -49,12 +49,19 @@ class OverviewService {
 
     const updateData = await this.overviewDao.updateById(body, id);
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
+    if (!updateData) {
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Failed to update Overview",
+        {}
+      );
     }
-    if (body.status === "Aktif") {
+
+    if (updateData.status === "Aktif" || body.status == "Aktif") {
       await this.overviewDao.setActive(id);
     }
+
+    return responseHandler.returnError(httpStatus.OK, message, {});
   };
 
   showOverview = async (id) => {
@@ -73,14 +80,15 @@ class OverviewService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.overviewDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.overviewDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.overviewDao.getOverviewPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(
@@ -96,10 +104,10 @@ class OverviewService {
     );
   }
 
-  showOverviewActive = async (id) => {
+  showOverviewActive = async (classId) => {
     const message = "Overview successfully retrieved!";
 
-    let rel = await this.overviewDao.getActive();
+    let rel = await this.overviewDao.getActive(classId)
 
     if (!rel) {
       return responseHandler.returnSuccess(

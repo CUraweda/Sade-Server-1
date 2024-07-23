@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       subject_id: DataTypes.INTEGER,
       task_category_id: DataTypes.INTEGER,
       topic: DataTypes.STRING,
+      description: DataTypes.STRING,
       start_date: DataTypes.DATE,
       end_date: DataTypes.DATE,
       category: DataTypes.STRING,

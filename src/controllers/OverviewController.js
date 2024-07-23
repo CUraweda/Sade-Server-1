@@ -50,12 +50,16 @@ class OverviewController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { class_id } = req.query
 
       const resData = await this.overviewService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          class_id
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -67,7 +71,8 @@ class OverviewController {
 
   showActive = async (req, res) => {
     try {
-      const resData = await this.overviewService.showOverviewActive();
+      const classId = req.query.class_id || ""
+      const resData = await this.overviewService.showOverviewActive(classId);
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);

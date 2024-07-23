@@ -51,6 +51,7 @@ class ClassesController {
       const search = req.query.search_query || "";
       const offset = limit * page;
 
+
       const resData = await this.classesService.showPage(
         page,
         limit,

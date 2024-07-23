@@ -87,11 +87,11 @@ class AnnouncementService {
         return responseHandler.returnSuccess(httpStatus.OK, message, cl);
     };
 
-    async showPage(page, limit, search, offset) {
-        const totalRows = await this.announcementDao.getCount(search);
+    async showPage(page, limit, search, offset, filters) {
+        const totalRows = await this.announcementDao.getCount(search, filters);
         const totalPage = Math.ceil(totalRows / limit);
 
-        const result = await this.announcementDao.getAnnouncementPage(search, offset, limit);
+        const result = await this.announcementDao.getAnnouncementPage(search, offset, limit, filters);
 
         return responseHandler.returnSuccess(
             httpStatus.OK,

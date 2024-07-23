@@ -85,12 +85,18 @@ class AnnouncementController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { start_date, end_date, class_id } = req.query
 
       const resData = await this.announcementService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          start_date,
+          end_date,
+          class_id
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

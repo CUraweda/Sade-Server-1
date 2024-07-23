@@ -66,10 +66,12 @@ class AnnouncementController {
     try {
       const start = req.query.start;
       const end = req.query.end;
+      const class_id = req.query.class_id || ""
 
       const resData = await this.announcementService.showAnnouncementBetween(
         start,
-        end
+        end,
+        class_id
       );
 
       res.status(resData.statusCode).send(resData.response);

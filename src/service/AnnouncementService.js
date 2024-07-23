@@ -75,10 +75,10 @@ class AnnouncementService {
         return responseHandler.returnSuccess(httpStatus.OK, message, cl);
     };
 
-    showAnnouncementBetween = async (start, end) => {
+    showAnnouncementBetween = async (start, end, classId) => {
         const message = 'Announcement successfully retrieved!';
 
-        const cl = await this.announcementDao.getAllBetween(start, end);
+        const cl = await this.announcementDao.getAllBetween(start, end, classId);
 
         if (!cl) {
             return responseHandler.returnSuccess(httpStatus.OK, 'Announcement not found!', {});

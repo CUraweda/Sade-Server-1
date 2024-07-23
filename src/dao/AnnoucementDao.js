@@ -73,19 +73,34 @@ class AnnouncementDao extends SuperDao {
       order: [["id", "DESC"]],
     });
   }
-  async getAllBetween(start, end) {
+  async getAllBetween(start, end, classId) {
     const startDate = new Date(start + " 00:00:00");
     const endDate = new Date(end + " 23:59:59");
 
-    return Announcement.findAll({
-      where: {
+    const where = {
+      [Op.or]: {
         date_start: {
           [Op.between]: [startDate, endDate],
         },
         date_end: {
           [Op.between]: [startDate, endDate],
         },
-      },
+      }
+    }
+
+    if (classId) {
+      where[Op.and] = [
+        {
+          [Op.or]: [
+            { class_id: null },
+            { class_id: classId }
+          ]
+        }
+      ];
+    } 
+
+    return Announcement.findAll({
+      where,
     });
   }
 }

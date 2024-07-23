@@ -65,14 +65,16 @@ class FormSubjectService {
         return responseHandler.returnSuccess(httpStatus.OK, message, rel);
     };
 
-    async showPage(page, limit, search, offset) {
-        const totalRows = await this.formSubjectDao.getCount(search);
+    async showPage(page, limit, search, offset, academic_year, is_active) {
+        const totalRows = await this.formSubjectDao.getCount(search, academic_year, is_active);
         const totalPage = Math.ceil(totalRows / limit);
 
         const result = await this.formSubjectDao.getFormSubjectPage(
             search,
             offset,
-            limit
+            limit,
+            academic_year,
+            is_active
         );
 
         return responseHandler.returnSuccess(

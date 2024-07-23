@@ -107,6 +107,7 @@ class EmployeeController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
 }
 
 module.exports = EmployeeController;

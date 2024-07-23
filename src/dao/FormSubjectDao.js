@@ -25,88 +25,101 @@ class FormSubjectDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
-    return FormSubject.count({
-      where: {
+  async getCount(search, academic_year, is_active) {
+    const conditions = {
         [Op.or]: [
-          {
-            "$subject.name$": {
-              [Op.like]: "%" + search + "%",
+            {
+              "$subject.name$": {
+                  [Op.like]: "%" + search + "%",
+              },
             },
-          },
-          {
-            "$employee.employee_no$": {
-              [Op.like]: "%" + search + "%",
+            {
+              "$employee.employee_no$": {
+                  [Op.like]: "%" + search + "%",
+              },
             },
-          },
-          {
-            "$employee.full_name$": {
-              [Op.like]: "%" + search + "%",
+            {
+              "$employee.full_name$": {
+                  [Op.like]: "%" + search + "%",
+              },
+            }
+        ]
+    };
+
+    if (academic_year) {
+        conditions.academic_year = {
+            [Op.like]: academic_year,
+        };
+    }
+
+    if (is_active !== undefined) {
+        conditions.is_active = {
+            [Op.eq]: is_active,
+        };
+    }
+
+    return FormSubject.count({
+        where: conditions,
+        include: [
+            {
+                model: Employees,
             },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
+            {
+                model: Subject,
             },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
         ],
-      },
-      include: [
-        {
-          model: Employees,
-        },
-        {
-          model: Subject,
-        },
-      ],
+  });
+}
+
+
+  async getFormSubjectPage(search, offset, limit, academic_year, is_active) {
+    const conditions = {
+        [Op.or]: [
+            {
+                "$subject.name$": {
+                    [Op.like]: "%" + search + "%",
+                },
+            },
+            {
+                "$employee.employee_no$": {
+                    [Op.like]: "%" + search + "%",
+                },
+            },
+            {
+                "$employee.full_name$": {
+                    [Op.like]: "%" + search + "%",
+                },
+            }
+        ]
+    };
+
+    if (academic_year) {
+        conditions.academic_year = {
+            [Op.like]: academic_year,
+        };
+    }
+
+    if (is_active !== undefined) {
+        conditions.is_active = {
+            [Op.eq]: is_active,
+        };
+    }
+
+    return FormSubject.findAll({
+        where: conditions,
+        include: [
+            {
+                model: Employees,
+            },
+            {
+                model: Subject,
+            },
+        ],
+        offset: offset,
+        limit: limit,
+        order: [["id", "DESC"]],
     });
   }
 
-  async getFormSubjectPage(search, offset, limit) {
-    return FormSubject.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$subject.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$employee.employee_no$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$employee.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
-      include: [
-        {
-          model: Employees,
-        },
-        {
-          model: Subject,
-        },
-      ],
-    });
-  }
 }
 module.exports = FormSubjectDao;

@@ -35,6 +35,12 @@ router.get(
   employeeController.show
 );
 
+router.get(
+  "/show-by-status",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  employeeController.showAllIsGuru
+);
+
 router.get("/", auth([1, 2, 3, 4, 5, 6]), employeeController.showAll);
 
 router.delete("/delete/:id", auth([1, 5]), employeeController.delete);

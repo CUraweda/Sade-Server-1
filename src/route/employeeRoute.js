@@ -29,6 +29,12 @@ router.get(
 );
 
 router.get(
+  "/update-user/:id",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  employeeController.updateUserId
+);
+
+router.get(
   "/show-by-status",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   employeeController.showAllIsGuru

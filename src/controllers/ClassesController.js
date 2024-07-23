@@ -46,16 +46,16 @@ class ClassesController {
 
   showAll = async (req, res) => {
     try {
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-
-
+      
       const resData = await this.classesService.showPage(
         page,
         limit,
-        search,
+        { search, employee },
         offset
       );
 

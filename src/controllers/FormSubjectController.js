@@ -1,15 +1,15 @@
 const httpStatus = require("http-status");
-const SubjectService = require("../service/SubjectService");
+const FormSubjectService = require("../service/FormSubjectService");
 const logger = require("../config/logger");
 
-class SubjectController {
+class FormSubjectController {
   constructor() {
-    this.subjectService = new SubjectService();
+    this.FormSubjectService = new FormSubjectService();
   }
 
   create = async (req, res) => {
     try {
-      const resData = await this.subjectService.createSubject(req.body);
+      const resData = await this.FormSubjectService.createFormSubject(req.body);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -21,8 +21,10 @@ class SubjectController {
   update = async (req, res) => {
     try {
       var id = req.params.id;
-
-      const resData = await this.subjectService.updateSubject(id, req.body);
+      const resData = await this.FormSubjectService.updateFormSubject(
+        id,
+        req.body
+      );
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -35,7 +37,7 @@ class SubjectController {
     try {
       var id = req.params.id;
 
-      const resData = await this.subjectService.showSubject(id);
+      const resData = await this.FormSubjectService.showFormSubject(id);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -46,16 +48,15 @@ class SubjectController {
 
   showAll = async (req, res) => {
     try {
-      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
 
-      const resData = await this.subjectService.showPage(
+      const resData = await this.FormSubjectService.showPage(
         page,
         limit,
-        { search, employee },
+        search,
         offset
       );
 
@@ -70,7 +71,7 @@ class SubjectController {
     try {
       var id = req.params.id;
 
-      const resData = await this.subjectService.deleteSubject(id);
+      const resData = await this.FormSubjectService.deleteFormSubject(id);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -80,4 +81,4 @@ class SubjectController {
   };
 }
 
-module.exports = SubjectController;
+module.exports = FormSubjectController;

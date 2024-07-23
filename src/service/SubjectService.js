@@ -73,11 +73,11 @@ class SubjectService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.subjectDao.getCount(search);
+  async showPage(page, limit, filter, offset) {
+    const totalRows = await this.subjectDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 
-    const result = await this.subjectDao.getSubjectPage(search, offset, limit);
+    const result = await this.subjectDao.getSubjectPage(filter, offset, limit);
 
     return responseHandler.returnSuccess(
       httpStatus.OK,

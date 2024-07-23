@@ -151,6 +151,22 @@ class ParentService {
     return responseHandler.returnSuccess(httpStatus.OK, message, dt)
   }
 
+  showByName = async (name) => {
+    const message = "Parent successfully retrieved!";
+
+    let dt = await this.parentDao.findOneByWhere({ name })
+
+    if (!dt) {
+      return responseHandler.returnSuccess(
+        httpStatus.NOT_FOUND,
+        "Parent not found!",
+        {}
+      )
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt)
+  }
+
   async showPage(page, limit, search, offset) {
     const totalRows = await this.parentDao.getCount(search);
     const totalPage = Math.ceil(totalRows / limit);

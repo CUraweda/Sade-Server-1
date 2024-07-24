@@ -642,17 +642,21 @@ class NumberReportService {
       maximumFractionDigits: 2,
     });
     let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
-    let subjects = await this.subjectDao.getAll(data.level)
+    let subjects = await this.subjectDao.getAll(data)
+    console.log(subjects)
     if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
     subjects.forEach((subject, i) => {
       if(!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
       if(!rowsData[subject.code][1]){
         rowsData[subject.code].push(subject.name)
-        rowsData[subject.code].push(formatter.format(parseFloat(subject.threshold.toFixed(2))),)
+        if (subject.threshold !== null && subject.threshold !== undefined) {
+          rowsData[subject.code].push(formatter.format(parseFloat(subject.threshold.toFixed(2))))
+        } else {
+          rowsData[subject.code].push("0.00") // or any default value
+        }
         rowsData[subject.code].push("0,00")
         rowsData[subject.code].push("nol")
       }
-
     })
     for (let item of data.number_reports) {
       if (rowsData[item.subject_code]) {
@@ -661,7 +665,7 @@ class NumberReportService {
         rowsData[item.subject_code][4] = item.grade_text
       }
     }
-
+  
     switch(data.level){
       case "SD":
         rowsData["MTK"][2] = "6,00"
@@ -673,6 +677,7 @@ class NumberReportService {
     }
     return { rowsData }
   }
+  
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";
 

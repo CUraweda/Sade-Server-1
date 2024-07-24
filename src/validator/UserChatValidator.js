@@ -7,7 +7,7 @@ class UserChatValidator {
     // create schema object
     const schema = Joi.object({
       user_id: Joi.number().required(),
-      sender_id: Joi.number().required(),
+      with_id: Joi.number().required(),
     });
 
     // schema options

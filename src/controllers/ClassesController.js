@@ -57,6 +57,8 @@ class ClassesController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      // let levels
+      // switch(with_wali)
 
       const levels = employee && with_wali != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
       const resData = await this.classesService.showPage(

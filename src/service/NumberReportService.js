@@ -642,7 +642,8 @@ class NumberReportService {
       maximumFractionDigits: 2,
     });
     let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
-    let subjects = await this.subjectDao.getAll(data.level)
+    let subjects = await this.subjectDao.getAll(data)
+    console.log(subjects)
     if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
     subjects.forEach((subject, i) => {
       if(!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
@@ -652,7 +653,6 @@ class NumberReportService {
         rowsData[subject.code].push("0,00")
         rowsData[subject.code].push("nol")
       }
-
     })
     for (let item of data.number_reports) {
       if (rowsData[item.subject_code]) {
@@ -664,6 +664,7 @@ class NumberReportService {
     
     return { rowsData }
   }
+  
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";
 

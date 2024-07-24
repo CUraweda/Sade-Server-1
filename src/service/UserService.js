@@ -183,8 +183,9 @@ class UserService {
       {
         full_name: body.full_name,
         email: body.email,
-        address: body.address,
-        phone_number: body.phone_number,
+        role_id: body.role_id,
+        status: body.status,
+        email_verified: body.email_verified,
         avatar: body.avatar || null,
       },
       { id }

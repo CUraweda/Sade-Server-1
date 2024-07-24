@@ -18,6 +18,13 @@ router.post(
 router.post("/import", auth([1, 3]), parentController.importExcel);
 
 router.put(
+  "/update/me",
+  auth([8]),
+  parentValidator.parentCreateUpdateValidator,
+  parentController.updateMe
+);
+
+router.put(
   "/update/:id",
   auth([1, 3]),
   parentValidator.parentCreateUpdateValidator,

@@ -11,29 +11,27 @@ class ClassesDao extends SuperDao {
   }
 
   async getCount(filter) {
-    const { search, employee, levels } = filter
+    const { search, levels, classIds } = filter
     return Classes.count({
       where: {
-        ...((levels && levels.length > 0) && { level: levels }),
-        [Op.or]: [
-          {
-            class_name: {
-              [Op.like]: "%" + search + "%",
-            },
+        [Op.and]: [
+          ((levels?.length || classIds?.length) && {
+            [Op.or]: [
+              ((levels && levels.length > 0) && { level: { [Op.in]: levels} }),
+              ((classIds && classIds.length > 0) && { id: { [Op.in]: classIds} }),
+            ]
+          }),
+          { 
+            [Op.or]: [
+              {
+                class_name: {
+                  [Op.like]: "%" + search + "%",
+                },
+              }
+            ]
           },
         ],
       },
-      ...(employee && {
-        include: [
-          {
-            model: FormTeacher,
-            where: {
-              employee_id: employee.id
-            },
-            required: false,
-          },
-        ],
-      }),
     });
   }
 
@@ -46,29 +44,27 @@ class ClassesDao extends SuperDao {
   }
 
   async getClassesPage(filter, offset, limit) {
-    const { search, employee, levels } = filter
+    const { search, levels, classIds } = filter
     return Classes.findAll({
       where: {
-        ...((levels && levels.length > 0) && { level: levels }),
-        [Op.or]: [
-          {
-            class_name: {
-              [Op.like]: "%" + search + "%",
-            },
+        [Op.and]: [
+          ((levels?.length || classIds?.length) && {
+            [Op.or]: [
+              ((levels && levels.length > 0) && { level: { [Op.in]: levels} }),
+              ((classIds && classIds.length > 0) && { id: { [Op.in]: classIds} }),
+            ]
+          }),
+          { 
+            [Op.or]: [
+              {
+                class_name: {
+                  [Op.like]: "%" + search + "%",
+                },
+              }
+            ]
           },
         ],
       },
-      ...(employee && {
-        include: [
-          {
-            model: FormTeacher,
-            where: {
-              employee_id: employee.id
-            },
-            required: false,
-          },
-        ],
-      }),
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

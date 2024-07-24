@@ -47,15 +47,23 @@ class SubjectController {
   showAll = async (req, res) => {
     try {
       const { employee } = req.user
+      const { with_assign } = req.query
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
 
+      let subjectIds = []
+
+      if (employee && with_assign == "Y") {
+        // subject ids 
+        subjectIds = employee.formsubjects?.map(fs => fs.subject?.id ?? "").filter(l => l != "") ?? []
+      }
+
       const resData = await this.subjectService.showPage(
         page,
         limit,
-        { search, employee },
+        { search, subjectIds },
         offset
       );
 

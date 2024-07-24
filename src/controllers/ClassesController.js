@@ -52,19 +52,28 @@ class ClassesController {
   showAll = async (req, res) => {
     try {
       const { employee } = req.user
-      const { with_wali } = req.query
+      const { with_assign } = req.query
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
       // let levels
       // switch(with_wali)
+      let classIds = []
+      let levels = []
 
-      const levels = employee && with_wali != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
+      if (employee && with_assign == "Y") {
+        // form class teacher
+        classIds = employee.formteachers?.map(ft => ft.class_id) ?? [] 
+        // subject teacher
+        levels = employee.formsubjects?.map(fs => fs.subject?.level ?? "").filter(l => l != "") ?? []
+      }
+
+      // levels = employee && with_assign != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
       const resData = await this.classesService.showPage(
         page,
         limit,
-        { search, employee, levels },
+        { search, classIds, levels, employee },
         offset
       );
 

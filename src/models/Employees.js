@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       Employees.hasMany(models.formteacher, {
         foreignKey: "employee_id",
       });
+      Employees.hasMany(models.formsubject, {
+        foreignKey: "employee_id",
+      });
       Employees.belongsTo(models.user, {
         foreignKey: "user_id",
       });

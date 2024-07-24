@@ -25,7 +25,8 @@ class FormTeacherDao extends SuperDao {
     });
   }
 
-  async getCount(search, academic_year, is_active) {
+  async getCount(filter) {
+    const { academic_year, search, is_active } = filter
     const conditions = {
       [Op.or]: [
         {
@@ -71,7 +72,8 @@ class FormTeacherDao extends SuperDao {
     });
   }
 
-  async getFormTeacherPage(search, offset, limit, academic_year, is_active) {
+  async getFormTeacherPage(filter, offset, limit) {
+    const { academic_year, search, is_active } = filter
     const conditions = {
       [Op.or]: [
         {

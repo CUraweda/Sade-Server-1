@@ -48,7 +48,6 @@ class AuthService {
         message = "Email not verified!";
         return responseHandler.returnError(statusCode, message, user);
       }
-      console.log(user)
 
       return responseHandler.returnSuccess(statusCode, message, user);
     } catch (e) {

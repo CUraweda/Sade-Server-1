@@ -1,10 +1,15 @@
 const httpStatus = require("http-status");
 const ClassesService = require("../service/ClassesService");
+const SubjectService = require("../service/SubjectService");
 const logger = require("../config/logger");
+const FormSubjectService = require("../service/FormSubjectService");
+const { level } = require("winston");
 
 class ClassesController {
   constructor() {
     this.classesService = new ClassesService();
+    this.subjectService = new SubjectService()
+    this.formSubjectService = new FormSubjectService()
   }
 
   create = async (req, res) => {
@@ -47,15 +52,19 @@ class ClassesController {
   showAll = async (req, res) => {
     try {
       const { employee } = req.user
+      const { with_wali } = req.query
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      
+      // let levels
+      // switch(with_wali)
+
+      const levels = employee && with_wali != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
       const resData = await this.classesService.showPage(
         page,
         limit,
-        { search, employee },
+        { search, employee, levels },
         offset
       );
 

@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const FormSubjectDao = require("../dao/FormSubjectDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
+const { where } = require("sequelize");
 
 class FormSubjectService {
     constructor() {
@@ -88,6 +89,19 @@ class FormSubjectService {
                 totalPage: totalPage,
             }
         );
+    }
+
+    async getAllLevelSubjectFromEmployee(employee_id) {
+        const rel = await this.formSubjectDao.getByEmployeeId(employee_id)
+        if (!rel) {
+            return responseHandler.returnSuccess(
+                httpStatus.OK,
+                "Form Subject not found!"
+            );
+        }
+        const level = {}
+        rel.forEach((formSubject) => { level[formSubject.subject.level] = 0 })
+        return Object.keys(level)
     }
 
     deleteFormSubject = async (id) => {

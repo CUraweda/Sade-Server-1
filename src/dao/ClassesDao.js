@@ -1,6 +1,7 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { level } = require("winston");
 
 const Classes = models.classes;
 const FormTeacher = models.formteacher
@@ -10,15 +11,11 @@ class ClassesDao extends SuperDao {
   }
 
   async getCount(filter) {
-    const { search, employee } = filter
+    const { search, employee, levels } = filter
     return Classes.count({
       where: {
+        ...((levels && levels.length > 0) && { level: levels }),
         [Op.or]: [
-          {
-            level: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
           {
             class_name: {
               [Op.like]: "%" + search + "%",
@@ -31,25 +28,29 @@ class ClassesDao extends SuperDao {
           {
             model: FormTeacher,
             where: {
-              employee_id: employee.id,
+              employee_id: employee.id
             },
-            required: true,
+            required: false,
           },
         ],
       }),
     });
   }
 
-  async getClassesPage(filter, offset, limit) {
-    const { search, employee } = filter
+  async getClassesByLevels(levels = []) {
     return Classes.findAll({
       where: {
+        [Op.in]: levels
+      }
+    })
+  }
+
+  async getClassesPage(filter, offset, limit) {
+    const { search, employee, levels } = filter
+    return Classes.findAll({
+      where: {
+        ...((levels && levels.length > 0) && { level: levels }),
         [Op.or]: [
-          {
-            level: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
           {
             class_name: {
               [Op.like]: "%" + search + "%",
@@ -62,9 +63,9 @@ class ClassesDao extends SuperDao {
           {
             model: FormTeacher,
             where: {
-              employee_id: employee.id,
+              employee_id: employee.id
             },
-            required: true,
+            required: false,
           },
         ],
       }),

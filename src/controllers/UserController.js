@@ -8,8 +8,9 @@ const Joi = require('joi')
 const schema = Joi.object({
     full_name: Joi.string().optional(),
     email: Joi.string().optional(),
-    address: Joi.string().required(),
-    phone_number: Joi.string().optional()
+    status: Joi.number().integer().optional(),
+    email_verified: Joi.number().integer().optional(),
+    role_id: Joi.number().integer().optional(),
 })
 
 class AuthController {
@@ -51,36 +52,41 @@ class AuthController {
   };
   update = async (req, res) => {
     try {
-      await uploadAvatar(req, res);
-  
-      const user_file = req.file ? req.file.path : null;
-      let formData;
-  
-      if (user_file) formData = { ...req.body, avatar: user_file };
-      else formData = { ...req.body };
-  
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
-  
-      if (error) {
-        const errorMessage = error.details
-          .map((details) => details.message)
-          .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
-      }
-  
-      const id = req.params.id;
-      const resData = await this.userService.updateUser(id, formData);
-  
-      res.status(resData.statusCode).send(resData.response);
+        await uploadAvatar(req, res);
+        
+        const user_file = req.file ? req.file.path : null;
+        let formData;
+        
+        if (user_file) formData = { ...req.body, avatar: user_file };
+        else formData = { ...req.body };
+        
+        // Convert role_id and status to integers if they exist
+        if (formData.role_id) formData.role_id = parseInt(formData.role_id, 10);
+        if (formData.status) formData.status = parseInt(formData.status, 10);
+        if (formData.email_verified) formData.email_verified = parseInt(formData.email_verified, 10);
+
+        const { error } = schema.validate(formData, {
+            abortEarly: false,
+            allowUnknown: true,
+            stripUnknown: true,
+        });
+        
+        if (error) {
+            const errorMessage = error.details
+                .map((details) => details.message)
+                .join(", ");
+            return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
+        }
+        
+        const id = req.params.id;
+        const resData = await this.userService.updateUser(id, formData);
+        
+        res.status(resData.statusCode).send(resData.response);
     } catch (e) {
-      logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send({ error: e.message });
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send({ error: e.message });
     }
-};
+  };
 
   delete = async (req, res) => {
     try {

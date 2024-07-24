@@ -79,7 +79,7 @@ class FormTeacherService {
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.formTeacherDao.getFormTeacherPage(
-      filter,
+      search,
       offset,
       limit,
       academic_year,

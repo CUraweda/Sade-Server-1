@@ -324,6 +324,21 @@ class UserService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  showUser = async (id) => {
+    const message = "User successfully retrieved!";
+
+    let dt = await this.userDao.findById(id);
+
+    if (!dt) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "User not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt);
+  };
 
 }
 

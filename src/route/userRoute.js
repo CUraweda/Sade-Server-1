@@ -18,6 +18,11 @@ router.get(
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userController.showAll
 )
+router.get(
+  "/show/:id",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  userController.show
+)
 router.put(
   "/update/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),

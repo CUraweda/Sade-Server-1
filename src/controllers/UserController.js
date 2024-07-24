@@ -16,6 +16,18 @@ class AuthController {
   constructor() {
     this.userService = new UserService();
   }
+  show = async (req, res) => {
+    try {
+      var id = req.params.id;
+
+      const resData = await this.userService.showUser(id);
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
 
   showAll = async (req, res) => {
     try {

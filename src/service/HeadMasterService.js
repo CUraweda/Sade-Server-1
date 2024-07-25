@@ -4,7 +4,7 @@ const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
 const fs = require("fs");
-const HeadmasterDao = require("../dao/HeadMasterDao");
+const HeadmasterDao = require("../dao/HeadmasterDao");
 const { truncate } = require("fs-extra");
 
 class HeadmasterService {

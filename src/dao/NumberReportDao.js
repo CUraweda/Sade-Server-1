@@ -50,42 +50,56 @@ class NumberReportDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const { academic, semester, class_id, class_ids, subject_id } = filters
+
+    const where = {
+      [Op.or]: [
+        {
+          "$studentreport.studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentreport.studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentreport.studentclass.academic_year$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentreport.semester$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          grade: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          grade_text: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (subject_id) where["subject_id"] = subject_id
+
+    if (semester) where["$studentreport.semester$"] = semester
+
+    if (academic) where["$studentreport.studentclass.academic_year$"] = academic
+
+    if (class_ids?.length) where["$studentreport.studentclass.class_id$"] = { [Op.in]: class_ids }
+
+    if (class_id) where["$studentreport.studentclass.class_id$"] = class_id;
+
     return NumberReport.count({
-      where: {
-        [Op.or]: [
-          {
-            "$studentreport.studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentreport.studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentreport.studentclass.academic_year$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentreport.semester$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            grade: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            grade_text: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: StudentReports,
@@ -105,47 +119,65 @@ class NumberReportDao extends SuperDao {
               ],
             },
           ],
+        },
+        {
+          model: Subjects,
+          attributes: ["id", "name"],
         },
       ],
     });
   }
 
-  async getNumberReportPage(search, offset, limit) {
+  async getNumberReportPage(search, offset, limit, filters) {
+    const { academic, semester, class_id, class_ids, subject_id } = filters
+
+    const where = {
+      [Op.or]: [
+        {
+          "$studentreport.studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentreport.studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentreport.studentclass.academic_year$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentreport.semester$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          grade: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          grade_text: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (subject_id) where["subject_id"] = subject_id
+
+    if (semester) where["$studentreport.semester$"] = semester
+
+    if (academic) where["$studentreport.studentclass.academic_year$"] = academic
+
+    if (class_ids?.length) where["$studentreport.studentclass.class_id$"] = { [Op.in]: class_ids }
+
+    if (class_id) where["$studentreport.studentclass.class_id$"] = class_id;
+
     return NumberReport.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$studentreport.studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentreport.studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentreport.studentclass.academic_year$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentreport.semester$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            grade: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            grade_text: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: StudentReports,
@@ -166,7 +198,14 @@ class NumberReportDao extends SuperDao {
             },
           ],
         },
+        {
+          model: Subjects,
+          attributes: ["id", "name"],
+        },
       ],
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
     });
   }
 

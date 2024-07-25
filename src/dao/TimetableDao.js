@@ -11,6 +11,25 @@ class TimetableDao extends SuperDao {
     super(Timetable);
   }
 
+  async findByClass(filters) {
+    const where = {}
+
+    if (filters.semester) where["semester"] = filters.semester
+    if (filters.academic) where["academic_year"] = filters.academic
+    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
+    if (filters.class_id) where["class_id"] = filters.class_id
+
+    return Timetable.findAll({
+      where,
+      include: [
+        {
+          model: Classes,
+          attributes: ["id", "level", "class_name"],
+        },
+      ],
+    });
+  }
+
   async findByClassId(classId, semester, academic) {
     return Timetable.findAll({
       where: {

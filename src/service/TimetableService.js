@@ -86,6 +86,24 @@ class TimetableService {
     return responseHandler.returnSuccess(httpStatus.OK, message, data);
   };
 
+  showTimetableByClass = async (filters) => {
+    const message = "Timetable successfully retrieved!";
+
+    let data = await this.timetableDao.findByClass(
+      filters
+    );
+
+    if (!data) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Timetable not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, data);
+  };
+
   async showPage(page, limit, search, offset) {
     const totalRows = await this.timetableDao.getCount(search);
     const totalPage = Math.ceil(totalRows / limit);

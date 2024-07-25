@@ -57,23 +57,13 @@ class ClassesController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      // let levels
-      // switch(with_wali)
-      let classIds = []
-      let levels = []
-
-      if (employee && with_assign == "Y") {
-        // form class teacher
-        classIds = employee.formteachers?.map(ft => ft.class_id) ?? [] 
-        // subject teacher
-        levels = employee.formsubjects?.map(fs => fs.subject?.level ?? "").filter(l => l != "") ?? []
-      }
-
+      
       // levels = employee && with_assign != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
+      
       const resData = await this.classesService.showPage(
         page,
         limit,
-        { search, classIds, levels, employee },
+        { search, employee_id: with_assign == "Y" ? employee.id : null  },
         offset
       );
 

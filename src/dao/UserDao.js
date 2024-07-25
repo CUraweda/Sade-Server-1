@@ -91,31 +91,6 @@ class UserDao extends SuperDao {
           model: Employee, 
           required: false ,
           attributes: ["id"],
-          include: [
-            {
-              model: FormTeacher,
-              attributes: ["id", "class_id", "academic_year"],
-              where: {
-                is_active: true
-              },  
-              required: false
-            },
-            {
-              model: FormSubject,
-              attributes: ["id", "subject_id", "academic_year"],
-              where: {
-                is_active: true
-              },  
-              required: false,
-              include: [
-                {
-                  model: Subject,
-                  attributes: ["id", "level"],
-                  required: false
-                }
-              ]
-            }
-          ]
         }
       ]
     });

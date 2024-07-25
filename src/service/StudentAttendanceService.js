@@ -208,14 +208,15 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.studentAttendanceDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.studentAttendanceDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentAttendanceDao.getStudentAttendancePage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

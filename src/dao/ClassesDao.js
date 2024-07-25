@@ -15,27 +15,62 @@ class ClassesDao extends SuperDao {
   }
 
   async getCount(filter) {
-    const { search, levels, classIds } = filter
-    return Classes.count({
-      where: {
-        [Op.and]: [
-          ((levels?.length || classIds?.length) && {
-            [Op.or]: [
-              ((levels && levels.length > 0) && { level: { [Op.in]: levels} }),
-              ((classIds && classIds.length > 0) && { id: { [Op.in]: classIds} }),
-            ]
-          }),
-          { 
-            [Op.or]: [
-              {
-                class_name: {
-                  [Op.like]: "%" + search + "%",
-                },
-              }
-            ]
+    const { search, employee_id } = filter
+    let levels = [], classIds = []
+
+    if (employee_id) {
+      const subjects = await Subject.findAll({
+        attributes: ["level"],
+        include: [
+          {
+            model: FormSubject,
+            attributes: [],
+            where: {
+              employee_id: employee_id
+            },
+            required: true
+          }
+        ]
+      })
+  
+      if (subjects.length) levels = subjects.map(s => s.level)
+
+      const formClasses = await Classes.findAll({
+        attributes: ["id"],
+        include: [
+          {
+            model: FormTeacher,
+            attributes: [],
+            where: {
+              employee_id: employee_id
+            },
+            required: true
           },
-        ],
+        ]
+      })
+
+      if (formClasses) classIds = formClasses.map(fc => fc.id)
+    }
+
+    return Classes.count({
+      where: {         
+        [Op.and]: [
+          (employee_id && {
+            [Op.or]: {
+              id: { [Op.in]: classIds }, 
+              level: { [Op.in]: levels }, 
+            }
+          }),
+          {
+            [Op.or]: {
+              class_name: {
+                [Op.like]: "%" + search + "%",
+              },
+            }
+          }
+        ]
       },
+      order: [["id", "DESC"]],
     });
   }
 

@@ -26,7 +26,8 @@ class ClassesDao extends SuperDao {
             model: FormSubject,
             attributes: [],
             where: {
-              employee_id: employee_id
+              employee_id: employee_id,
+              is_active: true
             },
             required: true
           }
@@ -42,7 +43,8 @@ class ClassesDao extends SuperDao {
             model: FormTeacher,
             attributes: [],
             where: {
-              employee_id: employee_id
+              employee_id: employee_id,
+              is_active: true
             },
             required: true
           },
@@ -94,7 +96,8 @@ class ClassesDao extends SuperDao {
             model: FormSubject,
             attributes: [],
             where: {
-              employee_id: employee_id
+              employee_id: employee_id,
+              is_active: true
             },
             required: true
           }
@@ -110,7 +113,8 @@ class ClassesDao extends SuperDao {
             model: FormTeacher,
             attributes: [],
             where: {
-              employee_id: employee_id
+              employee_id: employee_id,
+              is_active: true
             },
             required: true
           },

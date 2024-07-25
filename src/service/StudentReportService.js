@@ -169,15 +169,15 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset, semester) {
-    const totalRows = await this.studentReportDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.studentReportDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentReportDao.getStudentReportPage(
       search,
-      semester,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

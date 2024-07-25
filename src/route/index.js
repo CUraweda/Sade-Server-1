@@ -68,6 +68,7 @@ const studentPaymentReportRoute = require("./studentPaymentReportRoute")
 const wasteOfficerRoute = require("./wasteOfficerRoute")
 const wasteSalesRoute = require("./wasteSalesRoute")
 const dashboardRoute = require("./DashboardRoute")
+const headmasterRoute = require("./HeadmasterRoute")
 
 const router = express.Router();
 
@@ -347,6 +348,10 @@ const defaultRoutes = [
   {
     path: "/dashboard",
     route: dashboardRoute
+  },
+  {
+    path: "/headmaster",
+    route: headmasterRoute
   }
 ];
 

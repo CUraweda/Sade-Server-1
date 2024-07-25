@@ -1,10 +1,12 @@
 const httpStatus = require("http-status");
 const AnnouncementService = require("../service/AnnouncementService");
 const logger = require("../config/logger");
+const ClassesService = require("../service/ClassesService");
 
 class AnnouncementController {
   constructor() {
     this.announcementService = new AnnouncementService();
+    this.classService = new ClassesService()
   }
 
   create = async (req, res) => {
@@ -83,11 +85,18 @@ class AnnouncementController {
 
   showAll = async (req, res) => {
     try {
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { start_date, end_date, class_id } = req.query
+      const { start_date, end_date, class_id, with_assign } = req.query
+
+      let class_ids = []
+      if (employee && with_assign == "Y") {
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id }, 0)
+        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+      }
 
       const resData = await this.announcementService.showPage(
         page,
@@ -97,7 +106,8 @@ class AnnouncementController {
         {
           start_date,
           end_date,
-          class_id
+          class_id,
+          class_ids
         }
       );
 

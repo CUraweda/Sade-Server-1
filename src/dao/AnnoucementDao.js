@@ -31,8 +31,16 @@ class AnnouncementDao extends SuperDao {
       ],
     }
 
-    if (filters.start_date) where["date_start"] = { [Op.gte]: formatDateForSQL(new Date(filters.start_date)) }
-    if (filters.end_date) where["date_end"] = { [Op.lte]: formatDateForSQL(new Date(filters.end_date)) }
+    if (filters.start_date && filters.end_date) {
+      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))]
+      where[Op.or] = {
+        date_start: { [Op.between]: dates },
+        date_end: { [Op.between]: dates }
+      }
+    } 
+
+    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
+
     if (filters.class_id) where["class_id"] = filters.class_id
 
     return Announcement.count({
@@ -58,6 +66,9 @@ class AnnouncementDao extends SuperDao {
         date_end: { [Op.between]: dates }
       }
     } 
+
+    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
+
     if (filters.class_id) where["class_id"] = filters.class_id
 
     return Announcement.findAll({

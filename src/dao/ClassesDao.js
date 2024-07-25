@@ -5,35 +5,72 @@ const { level } = require("winston");
 
 const Classes = models.classes;
 const FormTeacher = models.formteacher
+const FormSubject = models.formsubject
+const Subject = models.subjects
+const Employee = models.employees
+
 class ClassesDao extends SuperDao {
   constructor() {
     super(Classes);
   }
 
   async getCount(filter) {
-    const { search, employee, levels } = filter
-    return Classes.count({
-      where: {
-        ...((levels && levels.length > 0) && { level: levels }),
-        [Op.or]: [
+    const { search, employee_id } = filter
+    let levels = [], classIds = []
+
+    if (employee_id) {
+      const subjects = await Subject.findAll({
+        attributes: ["level"],
+        include: [
           {
-            class_name: {
-              [Op.like]: "%" + search + "%",
+            model: FormSubject,
+            attributes: [],
+            where: {
+              employee_id: employee_id
             },
-          },
-        ],
-      },
-      ...(employee && {
+            required: true
+          }
+        ]
+      })
+  
+      if (subjects.length) levels = subjects.map(s => s.level)
+
+      const formClasses = await Classes.findAll({
+        attributes: ["id"],
         include: [
           {
             model: FormTeacher,
+            attributes: [],
             where: {
-              employee_id: employee.id
+              employee_id: employee_id
             },
-            required: false,
+            required: true
           },
-        ],
-      }),
+        ]
+      })
+
+      if (formClasses) classIds = formClasses.map(fc => fc.id)
+    }
+
+    return Classes.count({
+      where: {         
+        [Op.and]: [
+          (employee_id && {
+            [Op.or]: {
+              id: { [Op.in]: classIds }, 
+              level: { [Op.in]: levels }, 
+            }
+          }),
+          {
+            [Op.or]: {
+              class_name: {
+                [Op.like]: "%" + search + "%",
+              },
+            }
+          }
+        ]
+      },
+      order: [["id", "DESC"]],
     });
   }
 
@@ -46,29 +83,61 @@ class ClassesDao extends SuperDao {
   }
 
   async getClassesPage(filter, offset, limit) {
-    const { search, employee, levels } = filter
-    return Classes.findAll({
-      where: {
-        ...((levels && levels.length > 0) && { level: levels }),
-        [Op.or]: [
+    const { search, employee_id } = filter
+    let levels = [], classIds = []
+
+    if (employee_id) {
+      const subjects = await Subject.findAll({
+        attributes: ["level"],
+        include: [
           {
-            class_name: {
-              [Op.like]: "%" + search + "%",
+            model: FormSubject,
+            attributes: [],
+            where: {
+              employee_id: employee_id
             },
-          },
-        ],
-      },
-      ...(employee && {
+            required: true
+          }
+        ]
+      })
+  
+      if (subjects.length) levels = subjects.map(s => s.level)
+
+      const formClasses = await Classes.findAll({
+        attributes: ["id"],
         include: [
           {
             model: FormTeacher,
+            attributes: [],
             where: {
-              employee_id: employee.id
+              employee_id: employee_id
             },
-            required: false,
+            required: true
           },
-        ],
-      }),
+        ]
+      })
+
+      if (formClasses) classIds = formClasses.map(fc => fc.id)
+    }
+
+    return Classes.findAll({
+      where: {         
+        [Op.and]: [
+          (employee_id && {
+            [Op.or]: {
+              id: { [Op.in]: classIds }, 
+              level: { [Op.in]: levels }, 
+            }
+          }),
+          {
+            [Op.or]: {
+              class_name: {
+                [Op.like]: "%" + search + "%",
+              },
+            }
+          }
+        ]
+      },
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

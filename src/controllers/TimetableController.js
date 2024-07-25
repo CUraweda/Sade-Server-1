@@ -1,10 +1,12 @@
 const httpStatus = require("http-status");
 const TimetableService = require("../service/TimetableService");
 const logger = require("../config/logger");
+const ClassesService = require("../service/ClassesService");
 
 class TimetableController {
   constructor() {
     this.timetableService = new TimetableService();
+    this.classService = new ClassesService()
   }
 
   create = async (req, res) => {
@@ -62,6 +64,31 @@ class TimetableController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+  showByClass = async (req, res) => {
+    try {
+      var { employee } = req.user;
+      const { class_id, semester, academic, with_assign } = req.query
+
+      let class_ids = []
+      if (employee && with_assign == "Y") {
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id }, 0)
+        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+      }
+
+      const resData = await this.timetableService.showTimetableByClass({
+        class_id,
+        semester,
+        academic,
+        class_ids
+      });
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  }
 
   showAll = async (req, res) => {
     try {

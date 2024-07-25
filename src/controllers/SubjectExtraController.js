@@ -1,20 +1,15 @@
 const httpStatus = require("http-status");
-const ClassesService = require("../service/ClassesService");
-const SubjectService = require("../service/SubjectService");
+const SubjectExtraService = require("../service/subjectExtraService");
 const logger = require("../config/logger");
-const FormSubjectService = require("../service/FormSubjectService");
-const { level } = require("winston");
 
-class ClassesController {
+class SubjectExtraController {
   constructor() {
-    this.classesService = new ClassesService();
-    this.subjectService = new SubjectService()
-    this.formSubjectService = new FormSubjectService()
+    this.subjectExtraService = new SubjectExtraService();
   }
 
   create = async (req, res) => {
     try {
-      const resData = await this.classesService.createClasses(req.body);
+      const resData = await this.subjectExtraService.createSubject(req.body);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -27,7 +22,7 @@ class ClassesController {
     try {
       var id = req.params.id;
 
-      const resData = await this.classesService.updateClasses(id, req.body);
+      const resData = await this.subjectExtraService.updateSubject(id, req.body);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -40,7 +35,7 @@ class ClassesController {
     try {
       var id = req.params.id;
 
-      const resData = await this.classesService.showClasses(id);
+      const resData = await this.subjectExtraService.showSubject(id);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -52,18 +47,15 @@ class ClassesController {
   showAll = async (req, res) => {
     try {
       const { employee } = req.user
-      const { with_assign } = req.query
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      
-      // levels = employee && with_assign != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
-      
-      const resData = await this.classesService.showPage(
+
+      const resData = await this.subjectExtraService.showPage(
         page,
         limit,
-        { search, employee_id: with_assign == "Y" ? employee.id : null  },
+        { search, employee },
         offset
       );
 
@@ -78,7 +70,7 @@ class ClassesController {
     try {
       var id = req.params.id;
 
-      const resData = await this.classesService.deleteClasses(id);
+      const resData = await this.subjectExtraService.deleteSubject(id);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -88,4 +80,4 @@ class ClassesController {
   };
 }
 
-module.exports = ClassesController;
+module.exports = SubjectExtraController;

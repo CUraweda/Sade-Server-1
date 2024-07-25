@@ -29,6 +29,12 @@ router.get(
 );
 
 router.get(
+  "/show-by-class",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  timetableController.showByClass
+);
+
+router.get(
   "/show-by-class/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   timetableController.showByClassId

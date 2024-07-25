@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Subjects.hasMany(models.timetabletemp, { foreignKey: "subject_id" });
       Subjects.hasMany(models.classtimetable, { foreignKey: "subject_id" });
       Subjects.hasMany(models.task, { foreignKey: "subject_id" });
+      Subjects.hasMany(models.formsubject, { foreignKey: "subject_id" });
     }
   }
   Subjects.init(

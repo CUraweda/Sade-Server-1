@@ -75,7 +75,7 @@ class ClassesService {
   };
 
   async showPage(page, limit, filter, offset) {
-    const totalRows = await this.classesDao.getCount(filter.search);
+    const totalRows = await this.classesDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.classesDao.getClassesPage(filter, offset, limit);

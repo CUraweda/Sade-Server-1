@@ -139,42 +139,48 @@ class StudentAttendanceDao extends SuperDao {
     return result;
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const where = {
+      [Op.or]: [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_time: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
+    if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
+    if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
+
     return StudentAttendance.count({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_time: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         // Additional models can be included if needed
         {
@@ -190,42 +196,48 @@ class StudentAttendanceDao extends SuperDao {
     });
   }
 
-  async getStudentAttendancePage(search, offset, limit) {
+  async getStudentAttendancePage(search, offset, limit, filters) {
+    const where = {
+      [Op.or]: [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_time: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
+    if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
+    if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
+
     return StudentAttendance.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_time: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         // Additional models can be included if needed
         {

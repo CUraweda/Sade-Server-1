@@ -100,6 +100,8 @@ class OverviewDao extends SuperDao {
         },
       ],
     }
+    
+    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
 
     if (filters.class_id) where["class_id"] = filters.class_id
 
@@ -138,6 +140,8 @@ class OverviewDao extends SuperDao {
         },
       ],
     }
+
+    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
 
     if (filters.class_id) where["class_id"] = filters.class_id
 

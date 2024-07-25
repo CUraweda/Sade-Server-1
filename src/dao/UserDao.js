@@ -5,13 +5,50 @@ const { required } = require("joi");
 
 const User = models.user;
 const Employee = models.employees
+const FormTeacher = models.formteacher
+const FormSubject = models.formsubject
+const Subject = models.subjects
 class UserDao extends SuperDao {
   constructor() {
     super(User);
   }
 
   async findByEmail(email) {
-    return User.findOne({ where: { email } });
+    return User.findOne({ 
+      where: { email },
+      include: [
+        { 
+          model: Employee, 
+          required: false, 
+          attributes: ["id"],
+          include: [
+            {
+              model: FormTeacher,
+              attributes: ["id", "class_id", "academic_year"],
+              where: {
+                is_active: true
+              },  
+              required: false
+            },
+            {
+              model: FormSubject,
+              attributes: ["id", "subject_id", "academic_year"],
+              where: {
+                is_active: true
+              },  
+              required: false,
+              include: [
+                {
+                  model: Subject,
+                  attributes: ["id", "level"],
+                  required: false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    });
   }
 
   async isEmailExists(email) {
@@ -50,7 +87,11 @@ class UserDao extends SuperDao {
     return User.findOne({
       where: { uuid },
       include: [
-        { model: Employee, required: false }
+        { 
+          model: Employee, 
+          required: false ,
+          attributes: ["id"],
+        }
       ]
     });
   }

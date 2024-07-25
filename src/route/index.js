@@ -9,12 +9,14 @@ const employeeRoute = require("./employeeRoute");
 const roleRoute = require("./roleRoute");
 const wasteTypeRoute = require("./wasteTypeRoute");
 const subjectRoute = require("./subjectRoute");
+const subjectExtraRoute = require("./subjectExtraRoute");
 const studentClassRoute = require("./studentClassRoute");
 const studentAttendanceRoute = require("./studentAttendanceRoute");
 const wasteCollectionRoute = require("./wasteCollectionRoute");
 const userAccessRoute = require("./userAccessRoute");
 const formTeacherRoute = require("./formTeacherRoute");
 const formSubjectRoute = require("./formSubjectRoute");
+const formExtraRoute = require("./formExtraRoute");
 const eduCalendarRoute = require("./eduCalendarRoute");
 const eduCalendarDetailRoute = require("./eduCalendarDetailRoute");
 const bookCategoryRoute = require("./bookCategoryRoute");
@@ -114,6 +116,10 @@ const defaultRoutes = [
     route: subjectRoute,
   },
   {
+    path: "/subject-extra",
+    route: subjectExtraRoute,
+  },
+  {
     path: "/student-class",
     route: studentClassRoute,
   },
@@ -136,6 +142,10 @@ const defaultRoutes = [
   {
     path: "/form-subject",
     route: formSubjectRoute,
+  },
+  {
+    path: "/form-extra",
+    route: formExtraRoute,
   },
   {
     path: "/edu-calendar",

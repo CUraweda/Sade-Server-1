@@ -116,7 +116,7 @@ class StudentReportController {
 
   showAll = async (req, res) => {
     try {
-      const { employee } = req.query
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
@@ -125,7 +125,7 @@ class StudentReportController {
 
       let class_ids = []
       if (employee && with_assign == "Y") {
-        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id }, 0)
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id, with_subject: "N" }, 0)
         class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
       }
 

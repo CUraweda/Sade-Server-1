@@ -164,14 +164,15 @@ class StudentTaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.studentTaskDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.studentTaskDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentTaskDao.getStudentTaskPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

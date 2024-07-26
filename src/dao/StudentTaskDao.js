@@ -88,62 +88,70 @@ class StudentTaskDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const { class_id, class_ids } = filters
+
+    const where = {
+      [Op.or]: [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          semester: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          topic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          characteristic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          start_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          end_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          assign_value: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          feed_fwd: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
+
+    if (class_id) where["$studentclass.class_id$"] = class_id
+
     return StudentTask.count({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            semester: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            topic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            characteristic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            start_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            end_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            assign_value: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            feed_fwd: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: StudentClass,
@@ -165,62 +173,70 @@ class StudentTaskDao extends SuperDao {
     });
   }
 
-  async getStudentTaskPage(search, offset, limit) {
+  async getStudentTaskPage(search, offset, limit, filters) {
+    const { class_id, class_ids } = filters
+
+    const where = {
+      [Op.or]: [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          semester: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          topic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          characteristic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          start_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          end_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          assign_value: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          feed_fwd: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
+
+    if (class_id) where["$studentclass.class_id$"] = class_id
+
     return StudentTask.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            semester: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            topic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            characteristic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            start_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            end_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            assign_value: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            feed_fwd: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: StudentClass,

@@ -58,7 +58,7 @@ class ForCountryDetailDao extends SuperDao {
     })
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
     return ForCountryDetail.count({
       where: {
         [Op.or]: [
@@ -82,34 +82,39 @@ class ForCountryDetailDao extends SuperDao {
     });
   }
 
-  async getForCountryDetailPage(search, offset, limit) {
+  async getForCountryDetailPage(search, offset, limit, filters) {
+    const { class_id, class_ids } = filters
+    const where = {
+      [Op.or]: [
+        {
+          activity: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          duration: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    console.log(class_id)
+
     return ForCountryDetail.findAll({
-      where: {
-        [Op.or]: [
-          {
-            activity: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            duration: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: ForCountry,
           include: [
             {
               model: User,
-              attributes: ["full_name"]
+              attributes: ["full_name"],
             },
           ]
         }

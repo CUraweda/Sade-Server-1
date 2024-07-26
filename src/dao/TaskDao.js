@@ -42,52 +42,60 @@ class TaskDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const { class_id, class_ids } = filters
+
+    const where = {
+      [Op.or]: [
+        {
+          "$subject.name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$class.class_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$taskcategory.desc$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          topic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          start_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          end_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          category: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (class_ids?.length) where["class_id"] = { [Op.in]: class_ids }
+
+    if (class_id) where["class_id"] = class_id
+
     return Task.count({
-      where: {
-        [Op.or]: [
-          {
-            "$subject.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$class.class_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$taskcategory.desc$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            topic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            start_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            end_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            category: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: Subjects,
@@ -100,52 +108,60 @@ class TaskDao extends SuperDao {
     });
   }
 
-  async getTaskPage(search, offset, limit) {
+  async getTaskPage(search, offset, limit, filters) {
+    const { class_id, class_ids } = filters
+
+    const where = {
+      [Op.or]: [
+        {
+          "$subject.name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$class.class_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$taskcategory.desc$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          topic: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          start_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          end_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          category: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (class_ids?.length) where["class_id"] = { [Op.in]: class_ids }
+
+    if (class_id) where["class_id"] = class_id
+
     return Task.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$subject.name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$class.class_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$taskcategory.desc$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            topic: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            start_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            end_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            category: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: Subjects,

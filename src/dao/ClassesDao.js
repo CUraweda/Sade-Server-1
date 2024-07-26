@@ -26,7 +26,8 @@ class ClassesDao extends SuperDao {
             model: FormSubject,
             attributes: [],
             where: {
-              employee_id: employee_id
+              employee_id: employee_id,
+              is_active: true
             },
             required: true
           }
@@ -42,7 +43,8 @@ class ClassesDao extends SuperDao {
             model: FormTeacher,
             attributes: [],
             where: {
-              employee_id: employee_id
+              employee_id: employee_id,
+              is_active: true
             },
             required: true
           },
@@ -83,41 +85,47 @@ class ClassesDao extends SuperDao {
   }
 
   async getClassesPage(filter, offset, limit) {
-    const { search, employee_id, is_active } = filter
+    const { search, employee_id, with_subject = "Y", with_form_class = "Y", is_active } = filter
     let levels = [], classIds = []
 
     if (employee_id) {
-      const subjects = await Subject.findAll({
-        attributes: ["level"],
-        include: [
-          {
-            model: FormSubject,
-            attributes: [],
-            where: {
-              employee_id: employee_id
-            },
-            required: true
-          }
-        ]
-      })
+      if (with_subject == "Y") {
+        const subjects = await Subject.findAll({
+          attributes: ["level"],
+          include: [
+            {
+              model: FormSubject,
+              attributes: [],
+              where: {
+                employee_id: employee_id,
+                is_active: true
+              },
+              required: true
+            }
+          ]
+        })
+
+        if (subjects.length) levels = subjects.map(s => s.level)
+      }
   
-      if (subjects.length) levels = subjects.map(s => s.level)
-
-      const formClasses = await Classes.findAll({
-        attributes: ["id"],
-        include: [
-          {
-            model: FormTeacher,
-            attributes: [],
-            where: {
-              employee_id: employee_id
+      if (with_form_class == "Y") {
+        const formClasses = await Classes.findAll({
+          attributes: ["id"],
+          include: [
+            {
+              model: FormTeacher,
+              attributes: [],
+              where: {
+                employee_id: employee_id,
+                is_active: true
+              },
+              required: true
             },
-            required: true
-          },
-        ]
-      })
-
-      if (formClasses) classIds = formClasses.map(fc => fc.id)
+          ]
+        })
+  
+        if (formClasses) classIds = formClasses.map(fc => fc.id)
+      }
     }
 
     return Classes.findAll({

@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const NumberReportService = require("../service/NumberReportService");
 const logger = require("../config/logger");
 const uploadExcel = require("../middlewares/uploadExcel");
+const ClassesService = require("../service/ClassesService");
 
 const path = require("path");
 const fs = require("fs");
@@ -9,6 +10,7 @@ const fs = require("fs");
 class NumberReportController {
   constructor() {
     this.numberReportService = new NumberReportService();
+    this.classService = new ClassesService()
   }
 
   create = async (req, res) => {
@@ -68,16 +70,27 @@ class NumberReportController {
 
   showAll = async (req, res) => {
     try {
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { academic, semester, class_id, subject_id, with_assign } = req.query
+
+      let class_ids = []
+      if (employee && with_assign == "Y") {
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id, with_subject: "N" }, 0)
+        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+      }
 
       const resData = await this.numberReportService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          academic, semester, class_id, subject_id, class_ids
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

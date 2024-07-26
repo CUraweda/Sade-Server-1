@@ -107,14 +107,15 @@ class NumberReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.numberReportDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.numberReportDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.numberReportDao.getNumberReportPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

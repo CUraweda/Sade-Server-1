@@ -83,7 +83,7 @@ class ClassesDao extends SuperDao {
   }
 
   async getClassesPage(filter, offset, limit) {
-    const { search, employee_id } = filter
+    const { search, employee_id, is_active } = filter
     let levels = [], classIds = []
 
     if (employee_id) {
@@ -121,7 +121,8 @@ class ClassesDao extends SuperDao {
     }
 
     return Classes.findAll({
-      where: {         
+      where: {
+        ...(is_active == "Y" && { is_active: true }),         
         [Op.and]: [
           (employee_id && {
             [Op.or]: {

@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "for_country_id",
       });
       ForCountryDetails.belongsTo(models.students, {
-        foreignKey: "for_country_id",
+        foreignKey: "student_id",
       });
     }
   }

@@ -19,6 +19,7 @@ class ForCountryDetailValidator {
             file: Joi.any(),
             duration: Joi.number(),
             plan_date: Joi.string(),
+            student_id: Joi.number().allow(null)
         }).options({ convert: true })
 
         // validate request body against schema

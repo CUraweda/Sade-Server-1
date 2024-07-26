@@ -24,6 +24,13 @@ router.put(
   studentController.update
 );
 
+router.post(
+  "/import-json",
+  auth([1, 3]),
+  studentValidator.studentExportData,
+  studentController.importJSON
+)
+
 router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentController.show);
 
 router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentController.showAll);

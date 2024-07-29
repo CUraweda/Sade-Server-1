@@ -59,32 +59,10 @@ class ForCountryDetailDao extends SuperDao {
     })
   }
 
-  async getCount(search) {
-    return ForCountryDetail.count({
-      where: {
-        [Op.or]: [
-          {
-            activity: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            duration: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
-    });
-  }
+  async getCount(search, filters) {
+    const { class_id, class_ids } = filters
 
-  async getForCountryDetailPage(search, offset, limit) {
-    return ForCountryDetail.findAll({
+    return ForCountryDetail.count({
       where: {
         [Op.or]: [
           {
@@ -110,13 +88,82 @@ class ForCountryDetailDao extends SuperDao {
           include: [
             {
               model: User,
-              attributes: ["full_name"]
+              attributes: ["full_name"],
             },
           ]
         },
         {
           model: Student,
-          attributes: ["full_name"]
+          attributes: ["id", "full_name"],
+          include: [
+            {
+              model: models.studentclass,
+              where: {
+                class_id: {
+                  [Op.in]: [class_id, ...class_ids]
+                }
+              },
+            }
+          ]
+        }
+      ],
+    });
+  }
+
+  async getForCountryDetailPage(search, offset, limit, filters) {
+    const { class_id, class_ids } = filters
+    const where = {
+      [Op.or]: [
+        {
+          activity: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          duration: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    let classIds = []
+
+    if (class_ids?.length) classIds = class_ids
+
+    if (class_id) classIds = [class_id]
+
+
+    return ForCountryDetail.findAll({
+      where,
+      include: [
+        {
+          model: ForCountry,
+          include: [
+            {
+              model: User,
+              attributes: ["full_name"],
+            },
+          ]
+        },
+        {
+          model: Student,
+          attributes: ["id", "full_name"],
+          include: [
+            {
+              model: models.studentclass,
+              where: {
+                class_id: {
+                  [Op.in]: classIds
+                }
+              },
+            }
+          ]
         }
       ],
       offset: offset,

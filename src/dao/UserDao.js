@@ -1,13 +1,17 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
-const { required } = require("joi");
 
 const User = models.user;
 const Employee = models.employees
 const FormTeacher = models.formteacher
+const Class = models.classes
 const FormSubject = models.formsubject
 const Subject = models.subjects
+const FormXtra = models.formextra
+const SubjectXtra = models.subjectextra
+const Headmaster = models.headmaster
+
 class UserDao extends SuperDao {
   constructor() {
     super(User);
@@ -20,15 +24,30 @@ class UserDao extends SuperDao {
         { 
           model: Employee, 
           required: false, 
-          attributes: ["id"],
+          attributes: ["id", "full_name"],
           include: [
+            {
+              model: Headmaster,
+              attributes: ["id"],
+              where: {
+                is_active: true
+              },
+              required: false 
+            },
             {
               model: FormTeacher,
               attributes: ["id", "class_id", "academic_year"],
               where: {
                 is_active: true
-              },  
-              required: false
+              },
+              required: false,
+              include: [
+                {
+                  model: Class,
+                  attributes: ["id", "level", "class_name"],
+                  required: false
+                }
+              ]
             },
             {
               model: FormSubject,
@@ -40,7 +59,22 @@ class UserDao extends SuperDao {
               include: [
                 {
                   model: Subject,
-                  attributes: ["id", "level"],
+                  attributes: ["id", "level", "name"],
+                  required: false
+                }
+              ]
+            },
+            {
+              model: FormXtra,
+              attributes: ["id"],
+              where: {
+                is_active: true
+              },  
+              required: false,
+              include: [
+                {
+                  model: SubjectXtra,
+                  attributes: ["id", "name"],
                   required: false
                 }
               ]

@@ -48,12 +48,13 @@ class StudentClassDao extends SuperDao {
     return StudentClass.findAll({
       where: {
         class_id: { [Op.in]: class_id },
+        is_active: "Ya",
       },
       include: [
         {
           model: Students,
           required: true,
-          include: { model: UserAccess, required: true, include: { model: User }}
+          include: { model: UserAccess, required: true, include: { model: User } }
         }
       ]
     })

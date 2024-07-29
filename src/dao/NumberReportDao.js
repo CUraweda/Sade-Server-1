@@ -167,13 +167,9 @@ class NumberReportDao extends SuperDao {
     }
 
     if (subject_id) where["subject_id"] = subject_id
-
     if (semester) where["$studentreport.semester$"] = semester
-
     if (academic) where["$studentreport.studentclass.academic_year$"] = academic
-
     if (class_ids?.length) where["$studentreport.studentclass.class_id$"] = { [Op.in]: class_ids }
-
     if (class_id) where["$studentreport.studentclass.class_id$"] = class_id;
 
     return NumberReport.findAll({

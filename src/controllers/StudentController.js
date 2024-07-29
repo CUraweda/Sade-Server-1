@@ -1,11 +1,13 @@
 const httpStatus = require("http-status");
 const StudentService = require("../service/StudentService");
+const ParentService = require("../service/ParentService");
 const logger = require("../config/logger");
 const uploadExcel = require("../middlewares/uploadExcel");
 
 class StudentController {
   constructor() {
     this.studentService = new StudentService();
+    this.parentService = new ParentService()
   }
 
   create = async (req, res) => {
@@ -32,6 +34,16 @@ class StudentController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+  importJSON = async (req, res) => {
+    const { json_data } = req.body
+    const { candidate, parents } = json_data
+
+    const studentResponse = await this.studentService.createStudent(candidate)
+    for (let parentData of Object.values(parents)) await this.parentService.createParent(parentData)
+
+    res.status(studentResponse.statusCode).send(studentResponse.response);
+  }
 
   update = async (req, res) => {
     try {

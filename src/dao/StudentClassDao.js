@@ -1,10 +1,13 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { required } = require("joi");
 
 const StudentClass = models.studentclass;
 const Students = models.students;
+const User = models.user
 const Classes = models.classes;
+const UserAccess = models.useraccess
 const Reports = models.studentreports;
 
 class StudentClassDao extends SuperDao {
@@ -38,6 +41,23 @@ class StudentClassDao extends SuperDao {
       ],
       order: [["id", "ASC"]],
     });
+  }
+
+  async getAllStudentFromClasses(class_id = []) {
+    if (!Array.isArray(class_id)) throw new Error('Role IDs must be provided as an array')
+    return StudentClass.findAll({
+      where: {
+        class_id: { [Op.in]: class_id },
+        is_active: "Ya",
+      },
+      include: [
+        {
+          model: Students,
+          required: true,
+          include: { model: UserAccess, required: true, include: { model: User } }
+        }
+      ]
+    })
   }
 
   async getByLevel(level, academic_year) {
@@ -91,7 +111,7 @@ class StudentClassDao extends SuperDao {
     }
 
     if (classId) where['class_id'] = parseInt(classId);
-		if (academic) where['academic_year'] = academic;
+    if (academic) where['academic_year'] = academic;
 
     return StudentClass.count({
       where,
@@ -144,7 +164,7 @@ class StudentClassDao extends SuperDao {
 
     if (classId) where['class_id'] = parseInt(classId)
     if (academic) where['academic_year'] = academic;
-    
+
     return StudentClass.findAll({
       where,
       offset: offset,

@@ -1,10 +1,13 @@
 const httpStatus = require("http-status");
 const UserChatService = require("../service/UserChatService");
+const ClassesService = require('../service/ClassesService')
 const logger = require("../config/logger");
+const { ca } = require("date-fns/locale");
 
 class UserChatController {
   constructor() {
     this.userChatService = new UserChatService();
+    this.classesService = new ClassesService();
   }
 
   create = async (req, res) => {
@@ -56,6 +59,19 @@ class UserChatController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+  showByGuruEmployee = async (req, res) => {
+    try {
+      const { employee } = req.user
+      let classData = await this.classesService.showPage(0, 100, { search: '', employee_id: employee.id, is_active: "Y" }, 0)
+      classData = classData.response.data.result.map(classesData => { return classesData.id })
+      const data = await this.userChatService.showListChatGuru([1, 2, 3, 6, 10], classData)
+      res.status(data.statusCode).send(data.response)
+    } catch (err) {
+      logger.error(err)
+      res.status(httpStatus.BAD_GATEWAY).send(err)
+    }
+  }
 
   showByUserIdDetails = async (req, res) => {
     try {

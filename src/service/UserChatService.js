@@ -1,11 +1,15 @@
 const httpStatus = require("http-status");
 const UserChatDao = require("../dao/UserChatDao");
+const UserDao = require("../dao/UserDao");
+const StudentClassDao = require('../dao/StudentClassDao')
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
 
 class UserChatService {
   constructor() {
+    this.userDao = new UserDao()
+    this.studentClassDao = new StudentClassDao()
     this.userChatDao = new UserChatDao();
   }
 
@@ -113,6 +117,18 @@ class UserChatService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
+
+  showListChatGuru = async (accessibleRole = [1, 2, 3, 6, 10], classList = []) => {
+    const userData = await this.userDao.findUsersByRoles(accessibleRole)
+    if (classList.length > 0) {
+      const studentData = await this.studentClassDao.getAllStudentFromClasses(classList)
+      for (let studentClass of studentData) {
+        const { useraccesses } = studentClass.student
+        userData.push(...useraccesses)
+      }
+    }
+    return responseHandler.returnSuccess(httpStatus.OK, "List Chat Guru successfully retrived", userData)
+  }
 
   deleteUserChat = async (id) => {
     const message = "User chat successfully deleted!";

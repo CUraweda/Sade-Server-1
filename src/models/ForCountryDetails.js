@@ -12,10 +12,14 @@ module.exports = (sequelize, DataTypes) => {
       ForCountryDetails.belongsTo(models.forcountry, {
         foreignKey: "for_country_id",
       });
+      ForCountryDetails.belongsTo(models.students, {
+        foreignKey: "student_id",
+      });
     }
   }
   ForCountryDetails.init(
     {
+      student_id: DataTypes.INTEGER,
       for_country_id: DataTypes.INTEGER,
       activity: DataTypes.STRING,
       duration: DataTypes.DOUBLE(3, 1),

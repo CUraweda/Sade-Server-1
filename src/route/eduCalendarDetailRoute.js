@@ -10,14 +10,14 @@ const eduCalendarDetailValidator = new EduCalendarDetailValidator();
 
 router.post(
   "/create",
-  auth([1, 2, 3, 4, 6]),
+  auth([1, 3, 4]),
   eduCalendarDetailValidator.eduCalendarDetailCreateUpdateValidator,
   eduCalendarDetailController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 2, 3, 4, 6]),
+  auth([1, 3, 4]),
   eduCalendarDetailValidator.eduCalendarDetailUpdateValidator,
   eduCalendarDetailController.update
 );
@@ -42,7 +42,7 @@ router.get(
 
 router.delete(
   "/delete/:id",
-  auth([1, 2, 3, 4, 6]),
+  auth([1, 3, 4]),
   eduCalendarDetailController.delete
 );
 

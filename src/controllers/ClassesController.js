@@ -57,13 +57,12 @@ class ClassesController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      
-      // levels = employee && with_assign != "Y" ? await this.formSubjectService.getAllLevelSubjectFromEmployee(employee.id) : []
+      const is_active = req.query.is_active || "Y";
       
       const resData = await this.classesService.showPage(
         page,
         limit,
-        { search, employee_id: with_assign == "Y" ? employee.id : null, with_subject, with_form_class },
+        { search, employee_id: with_assign == "Y" ? employee.id : null, is_active },
         offset
       );
 

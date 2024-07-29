@@ -80,14 +80,15 @@ class ForCountryDetailService {
     return responseHandler.returnSuccess(httpStatus.OK, "For country details by month successfully retrieved", result)
   }
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.forCountryDetailDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.forCountryDetailDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.forCountryDetailDao.getForCountryDetailPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

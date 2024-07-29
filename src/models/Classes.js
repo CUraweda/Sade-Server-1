@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       class_name: DataTypes.STRING,
       book_target: DataTypes.INTEGER,
       waste_target: DataTypes.DOUBLE,
+      is_active: DataTypes.BOOLEAN,
     },
     {
       sequelize,

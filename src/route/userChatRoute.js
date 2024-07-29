@@ -34,6 +34,8 @@ router.get(
   userChatController.showUserBetweenId
 );
 
+router.get('/show-by-guru', auth([6]), userChatController.showByGuruEmployee)
+
 router.get(
   "/show-by-user/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),

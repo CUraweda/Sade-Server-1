@@ -9,6 +9,7 @@ class SubjectValidator {
       level: Joi.string().required(),
       code: Joi.string().required(),
       name: Joi.string().required(),
+      threshold: Joi.number().required()
     });
 
     // schema options

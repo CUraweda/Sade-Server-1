@@ -93,7 +93,7 @@ class UserService {
   };
 
   getUserByUuid = async (uuid) => {
-    return this.userDao.findOneByWhere({ uuid });
+    return this.userDao.findUserByUUID(uuid);
   };
 
   getAccountByUuid = async (uuid) => {

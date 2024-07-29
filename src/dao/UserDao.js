@@ -123,8 +123,63 @@ class UserDao extends SuperDao {
       include: [
         { 
           model: Employee, 
-          required: false ,
-          attributes: ["id"],
+          required: false, 
+          attributes: ["id", "full_name"],
+          include: [
+            {
+              model: Headmaster,
+              attributes: ["id"],
+              where: {
+                is_active: true
+              },
+              required: false 
+            },
+            {
+              model: FormTeacher,
+              attributes: ["id", "class_id", "academic_year"],
+              where: {
+                is_active: true
+              },
+              required: false,
+              include: [
+                {
+                  model: Class,
+                  attributes: ["id", "level", "class_name"],
+                  required: false
+                }
+              ]
+            },
+            {
+              model: FormSubject,
+              attributes: ["id", "subject_id", "academic_year"],
+              where: {
+                is_active: true
+              },  
+              required: false,
+              include: [
+                {
+                  model: Subject,
+                  attributes: ["id", "level", "name"],
+                  required: false
+                }
+              ]
+            },
+            {
+              model: FormXtra,
+              attributes: ["id"],
+              where: {
+                is_active: true
+              },  
+              required: false,
+              include: [
+                {
+                  model: SubjectXtra,
+                  attributes: ["id", "name"],
+                  required: false
+                }
+              ]
+            }
+          ]
         }
       ]
     });

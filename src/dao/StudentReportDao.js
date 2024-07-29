@@ -18,7 +18,7 @@ class StudentReportDao extends SuperDao {
   }
 
   async getCount(search, filters) {
-    const { semester, student_access, class_id, class_ids } = filters
+    const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       [Op.or]: [
         {
@@ -34,8 +34,9 @@ class StudentReportDao extends SuperDao {
       ],
     }
 
+    if (academic) where["$studentclass.academic_year$"] = academic
     if (semester) where["semester"] = semester
-    
+
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
 
     if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
@@ -63,8 +64,8 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getStudentReportPage(search, offset, limit, filters) {
-    const { semester, student_access, class_id, class_ids } = filters
+async getStudentReportPage(search, offset, limit, filters) {
+    const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       [Op.or]: [
         {
@@ -79,9 +80,10 @@ class StudentReportDao extends SuperDao {
         },
       ],
     }
+    if (academic) where["$studentclass.academic_year$"] = academic
 
     if (semester) where["semester"] = semester
-    
+
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
 
     if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }

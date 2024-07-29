@@ -221,7 +221,6 @@ class NumberReportService {
     );
 
 
-
     const pdfFile = await this.generatePdf(rel, dir);
 
     if (pdfFile) {

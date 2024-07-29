@@ -78,7 +78,8 @@ class UserDao extends SuperDao {
       throw new Error("Role IDs must be provided as an array.");
     }
     return User.findAll({
-      where: { role_id: { [Op.in]: roleIds }, status: 1, email_verified: 1 }
+      where: { role_id: { [Op.in]: roleIds }, status: 1, email_verified: 1 },
+      attributes: ["id", "uuid", "role_id", "full_name", "email"],
     });
   }
 

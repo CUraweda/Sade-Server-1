@@ -35,6 +35,11 @@ class AchievementDao extends SuperDao {
               [Op.like]: "%" + search + "%",
             },
           },
+          {
+            "$student.full_name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
         ],
       },
       include: [
@@ -70,6 +75,11 @@ class AchievementDao extends SuperDao {
         [Op.or]: [
           {
             achievement_desc: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$student.full_name$": {
               [Op.like]: "%" + search + "%",
             },
           },

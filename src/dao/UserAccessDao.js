@@ -72,6 +72,7 @@ class UserAccessDao extends SuperDao {
           },
         ],
       },
+      offset, limit,
       include: [
         {
           model: Students,

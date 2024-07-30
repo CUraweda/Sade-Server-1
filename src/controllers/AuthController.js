@@ -76,11 +76,14 @@ class AuthController {
 				return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
 			}
 
+      let userData = user.toJSON()
+      delete userData.password
+
 			res.status(httpStatus.OK).json({
 				status: true,
 				code: 200,
 				message: "User information retrieved",
-				data: user,
+				data: userData,
 			});
 		} catch (e) {
 			logger.error(e);

@@ -119,14 +119,15 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.achievementDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.achievementDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.achievementDao.getAchievementPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

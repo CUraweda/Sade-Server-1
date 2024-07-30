@@ -18,41 +18,89 @@ class AchievementDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const { class_id, class_ids } = filters
+
+    let classIds = []
+
+    if (class_ids?.length) classIds = class_ids
+
+    if (class_id) classIds = [class_id]
+
     return Achievement.count({
       where: {
         [Op.or]: [
           {
-            level: {
+            achievement_desc: {
               [Op.like]: "%" + search + "%",
             },
           },
           {
-            class_name: {
+            "$student.full_name$": {
               [Op.like]: "%" + search + "%",
             },
           },
         ],
       },
+      include: [
+        {
+          model: models.students,
+          attributes: ["full_name"],
+          include: [
+            {
+              model: models.studentclass,
+              where: {
+                class_id: {
+                  [Op.in]: classIds
+                }
+              },
+            }
+          ]
+        }
+      ],
     });
   }
 
-  async getAchievementPage(search, offset, limit) {
+  async getAchievementPage(search, offset, limit, filters) {
+    const { class_id, class_ids } = filters
+
+    let classIds = []
+
+    if (class_ids?.length) classIds = class_ids
+
+    if (class_id) classIds = [class_id]
+
     return Achievement.findAll({
       where: {
         [Op.or]: [
           {
-            level: {
+            achievement_desc: {
               [Op.like]: "%" + search + "%",
             },
           },
           {
-            class_name: {
+            "$student.full_name$": {
               [Op.like]: "%" + search + "%",
             },
           },
         ],
       },
+      include: [
+        {
+          model: models.students,
+          attributes: ["full_name"],
+          include: [
+            {
+              model: models.studentclass,
+              where: {
+                class_id: {
+                  [Op.in]: classIds
+                }
+              },
+            }
+          ]
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

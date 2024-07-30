@@ -163,6 +163,18 @@ class StudentClassService {
     );
   }
 
+  showClassByStudent = async (id) => {
+    const rel = await this.studentClassDao.getByStudentId(id)
+    if (rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Student Class not found!"
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  }
+
   deleteStudentClass = async (id) => {
     const message = "Student Class successfully deleted!";
 

@@ -6,18 +6,18 @@ class ParentValidator {
   async parentCreateUpdateValidator(req, res, next) {
     // create schema object
     const schema = Joi.object({
-			student_id: Joi.string().optional(),
+			student_id: Joi.number().optional(),
 			parent_type: Joi.string().optional(),
 			name: Joi.string().required(),
 			nationality: Joi.string().optional(),
 			religion: Joi.string().optional(),
-			marriage_to: Joi.number().integer().optional(),
-			in_age: Joi.number().integer().optional(),
+			marriage_to: Joi.number().integer().optional().allow(null),
+			in_age: Joi.number().integer().optional().allow(null),
 			relationship_to_student: Joi.string().optional(),
 			address: Joi.string().optional(),
 			phone: Joi.string().optional(),
 			email: Joi.string().email().optional(),
-			com_priority: Joi.string().optional(),
+			com_priority: Joi.string().optional().allow(null),
 			last_education: Joi.string().optional(),
 			salary: Joi.string().optional(),
 			field_of_work: Joi.string().optional(),

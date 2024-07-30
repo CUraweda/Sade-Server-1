@@ -35,7 +35,7 @@ class HeadmasterService {
             logger.error(e);
             return responseHandler.returnError(
                 httpStatus.BAD_REQUEST,
-                "Something went wrong!"
+            "Something went wrong!"
             );
         }
     }

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       start_academic_year: DataTypes.STRING,
       end_academic_year: DataTypes.STRING,
       is_active: DataTypes.BOOLEAN,
+      category: DataTypes.STRING
     },
     {
       sequelize,

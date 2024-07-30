@@ -1,6 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 const Headmaster = models.headmaster;
 const Employees = models.employees;
@@ -107,6 +107,6 @@ class HeadmasterDao extends SuperDao {
         order: [["id", "DESC"]],
     });
   }
-
+ 
 }
 module.exports = HeadmasterDao;

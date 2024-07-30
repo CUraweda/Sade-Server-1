@@ -15,6 +15,13 @@ router.post(
   timetableController.create
 );
 
+router.post(
+  "/duplicate-create",
+  auth([1, 3, 6]),
+  timetableValidator.timetableDuplicateCreateValidator,
+  timetableController.duplicateCreate
+);
+
 router.put(
   "/update/:id",
   auth([1, 3, 6]),

@@ -10,6 +10,7 @@ class HeadmasterValidator {
       start_academic_year: Joi.string().required(),
       end_academic_year: Joi.string().required(),
       is_active: Joi.boolean().default(false),
+      category: Joi.string().required()
     });
 
     // schema options

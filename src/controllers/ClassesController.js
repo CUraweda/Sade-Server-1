@@ -62,7 +62,7 @@ class ClassesController {
       const resData = await this.classesService.showPage(
         page,
         limit,
-        { search, employee_id: with_assign == "Y" ? employee.id : null, is_active },
+        { search, employee_id: with_assign == "Y" && employee, is_active },
         offset
       );
 

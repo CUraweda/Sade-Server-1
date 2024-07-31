@@ -6,6 +6,9 @@ const auth = require("../middlewares/auth");
 const dashboardController = new DashboardController();
 
 router.get("/admin-keuangan", auth([1, 2]), dashboardController.adminKeuangan);
+
+router.get("/admin-keuangan-chart", auth([1, 2]), dashboardController.keuanganChart)
+
 router.get(
   "/admin-timbangan",
   auth([1, 2, 9, 10]),

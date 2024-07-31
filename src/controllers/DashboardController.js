@@ -66,6 +66,18 @@ class DashboardController {
     }
   };
 
+  keuanganChart = async (req, res) => {
+    try {
+      const {start_date, end_date, post_payment_id} = req.query
+
+      const chart = await this.studentBillsService.getIncomeGroupDate({start_date, end_date, post_payment_id})
+      return res.status(httpStatus.OK).send(chart)
+    } catch (error) {
+      logger.error(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);      
+    }
+  }
+
   adminTimbangan = async (req, res) => {
     try {
       const now = new Date();

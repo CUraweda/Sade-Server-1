@@ -29,9 +29,14 @@ class StudentClassDao extends SuperDao {
   getByStudentId(student_id) {
     return StudentClass.findAll({
       where: { student_id },
-      include: {
-        model: Classes
-      }
+      include: [
+        {
+          model: Students
+        },
+        {
+          model: Classes
+        }
+      ]
     })
   }
   async getByClasses(class_id, academic_year) {

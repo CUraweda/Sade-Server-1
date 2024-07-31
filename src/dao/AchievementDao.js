@@ -46,14 +46,18 @@ class AchievementDao extends SuperDao {
         {
           model: models.students,
           attributes: ["full_name"],
+          required: true,
           include: [
             {
               model: models.studentclass,
-              where: {
-                class_id: {
-                  [Op.in]: classIds
-                }
-              },
+              required: true,
+              ...(classIds.length && {
+                where: {
+                  class_id: {
+                    [Op.in]: classIds
+                  }
+                },
+              })
             }
           ]
         }
@@ -89,14 +93,19 @@ class AchievementDao extends SuperDao {
         {
           model: models.students,
           attributes: ["full_name"],
+          required: true,
           include: [
             {
               model: models.studentclass,
-              where: {
-                class_id: {
-                  [Op.in]: classIds
-                }
-              },
+              attributes: ["academic_year"],
+              required: true,
+              ...(classIds.length && {
+                where: {
+                  class_id: {
+                    [Op.in]: classIds
+                  }
+                },
+              })
             }
           ]
         }

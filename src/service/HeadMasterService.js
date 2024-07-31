@@ -45,7 +45,7 @@ class HeadmasterService {
         if (body.is_active === true) {
             await this.headmasterDao.updateWhere(
                 { is_active: 0 },
-                { is_active: 1, category: reqBody.category}
+                { is_active: 1, category: body.category}
             );
         }
 

@@ -62,6 +62,12 @@ class ForCountryDetailDao extends SuperDao {
   async getCount(search, filters) {
     const { class_id, class_ids } = filters
 
+    let classIds = []
+
+    if (class_ids?.length) classIds = class_ids
+
+    if (class_id) classIds = [class_id]
+
     return ForCountryDetail.count({
       where: {
         [Op.or]: [
@@ -95,14 +101,18 @@ class ForCountryDetailDao extends SuperDao {
         {
           model: Student,
           attributes: ["id", "full_name"],
+          required: classIds.length > 0,
           include: [
             {
               model: models.studentclass,
-              where: {
-                class_id: {
-                  [Op.in]: [class_id, ...class_ids]
-                }
-              },
+              required: classIds.length > 0,
+              ...(classIds.length && {
+                where: {
+                  class_id: {
+                    [Op.in]: classIds
+                  }
+                },
+              })
             }
           ]
         }
@@ -154,14 +164,18 @@ class ForCountryDetailDao extends SuperDao {
         {
           model: Student,
           attributes: ["id", "full_name"],
+          required: classIds.length > 0,
           include: [
             {
               model: models.studentclass,
-              where: {
-                class_id: {
-                  [Op.in]: classIds
-                }
-              },
+              required: classIds.length > 0,
+              ...(classIds.length && {
+                where: {
+                  class_id: {
+                    [Op.in]: classIds
+                  }
+                },
+              })
             }
           ]
         }

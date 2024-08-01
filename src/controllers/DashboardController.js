@@ -66,6 +66,18 @@ class DashboardController {
     }
   };
 
+  keuanganChart = async (req, res) => {
+    try {
+      const {start_date, end_date, post_payment_id} = req.query
+
+      const chart = await this.studentBillsService.getIncomeGroupDate({start_date, end_date, post_payment_id})
+      return res.status(httpStatus.OK).send(chart)
+    } catch (error) {
+      logger.error(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);      
+    }
+  }
+
   adminTimbangan = async (req, res) => {
     try {
       const now = new Date();
@@ -154,7 +166,7 @@ class DashboardController {
       const formattedNow = formatDateToYYYYMMDD(now);
       const formattedOneMonthAgo = formatDateToYYYYMMDD(oneMonthAgo);
 
-      const { waste_type_id, start_date, end_date } = req.query;
+      const { waste_type_id, start_date, end_date, class_id } = req.query;
 
       // Use provided dates or defaults
       const startDate = start_date ? start_date : formattedOneMonthAgo;
@@ -163,7 +175,8 @@ class DashboardController {
       const chartData = await this.wasteSalesService.getDetailChartData(
         waste_type_id,
         startDate,
-        endDate
+        endDate,
+        class_id
       );
 
       return res.status(httpStatus.OK).send(chartData);
@@ -192,14 +205,15 @@ class DashboardController {
       const formattedNow = formatDateToYYYYMMDD(now);
       const formattedOneMonthAgo = formatDateToYYYYMMDD(oneMonthAgo);
 
-      const { start_date, end_date } = req.query;
+      const { start_date, end_date, class_id } = req.query;
 
       const startDate = start_date ? start_date : formattedOneMonthAgo;
       const endDate = end_date ? end_date : formattedNow;
 
       const chartData = await this.wasteSalesService.getChartData(
         startDate,
-        endDate
+        endDate,
+        class_id
       );
 
       return res.status(httpStatus.OK).send(chartData);

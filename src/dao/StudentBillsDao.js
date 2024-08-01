@@ -1,6 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op, where, fn, col } = require("sequelize");
+const { Op, where, fn, col, literal } = require("sequelize");
 const { formatDateForSQL } = require("../helper/utils");
 
 const StudentBills = models.studentbills
@@ -168,7 +168,7 @@ class StudentBillsDao extends SuperDao {
 
         where[Op.and] = ands
 
-        return await StudentBills.findAll({
+        return StudentBills.findAll({
             where,
             include: [
                 {
@@ -179,7 +179,37 @@ class StudentBillsDao extends SuperDao {
             ],
             attributes: [
                 [fn('SUM', col('studentpaymentbill.total')), 'sum']
-            ]
+            ],
+        })
+    } 
+
+    async getIncomeGroupByDate(filters = {}) {
+        const where = {
+            status: { [Op.like]: "lunas" }
+        }
+
+        const ands = []
+
+        if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: filters.start_date }})
+        if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: filters.end_date }})
+        if (filters.post_payment_id) ands.push({ '$studentpaymentbill.payment_post_id$': filters.post_payment_id })
+
+        where[Op.and] = ands
+
+        return StudentBills.findAll({
+            where,
+            include: [
+                {
+                    model: PaymentBills,
+                    as: 'studentpaymentbill',
+                    attributes: [],
+                }
+            ],
+            attributes: [
+                [literal('DATE(paidoff_at)'), 'paidoff_date'],
+                [fn('SUM', col('studentpaymentbill.total')), 'sum']
+            ],
+            group: ['paidoff_date']
         })
     } 
     async getRecentPaidOffBills(start_date, limit = 5) {

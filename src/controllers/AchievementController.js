@@ -178,6 +178,49 @@ class AchievementController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+  downloadCertificate = async (req, res) => {
+    try {
+      const filePath = req.query.filepath; // Assuming the full file path is provided in the query parameter
+
+      // Check if file path is provided
+      if (!filePath) {
+        return res.status(httpStatus.BAD_REQUEST).send({
+          status: false,
+          code: httpStatus.BAD_REQUEST,
+          message: "File path not provided.",
+        });
+      }
+
+      // Check if file exists
+      if (fs.existsSync(filePath)) {
+        // Set appropriate headers
+        const filename = path.basename(filePath);
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}"`
+        );
+
+        // Create read stream and pipe to response
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+      } else {
+        res.status(httpStatus.NOT_FOUND).send({
+          status: false,
+          code: httpStatus.NOT_FOUND,
+          message: "File not found.",
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+        status: false,
+        code: httpStatus.INTERNAL_SERVER_ERROR,
+        message: e.message,
+      });
+    }
+  }
 }
 
 module.exports = AchievementController;

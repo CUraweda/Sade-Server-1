@@ -56,7 +56,7 @@ class StudentClassController {
       const id = req.params.id;
       const resData = await this.studentClassService.showClassByStudent(id);
       res.status(resData.statusCode).send(resData.response);
-    } catch (err) {
+    } catch (e) {
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }

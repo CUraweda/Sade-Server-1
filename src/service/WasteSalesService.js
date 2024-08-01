@@ -36,11 +36,11 @@ class WasteSalesService {
       }
     );
   }
-  async getDetailChartData(wastetypeId, startDate, endDate) {
+  async getDetailChartData(wastetypeId, startDate, endDate, classId) {
     const offset = 0;
     const limit = null; // No limit
 
-    const results = await this.wasteSalesDao.getDetailChart(wastetypeId, startDate, endDate, offset, limit);
+    const results = await this.wasteSalesDao.getDetailChart(wastetypeId, startDate, endDate, classId);
 
     // Transform data into chart format
     const chartData = results.map(item => ({
@@ -52,8 +52,8 @@ class WasteSalesService {
 
     return chartData;
   }
-  async getChartData(startDate, endDate) {
-    return await this.wasteSalesDao.getChartData(startDate, endDate);
+  async getChartData(startDate, endDate, classId) {
+    return await this.wasteSalesDao.getChartData(startDate, endDate, classId);
   }
   
 }

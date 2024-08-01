@@ -43,9 +43,10 @@ class StudentClassDao extends SuperDao {
     const where = {
       class_id: class_id,
       is_active: "Ya",
-    }
-
-    if (academic_year) where["academic_year"] = academic_year
+    };
+  
+    if (academic_year) where["academic_year"] = academic_year;
+  
     return StudentClass.findAll({
       where,
       include: [
@@ -53,9 +54,12 @@ class StudentClassDao extends SuperDao {
           model: Students,
         },
       ],
-      order: [["id", "ASC"]],
+      order: [
+        [{ model: Students, as: 'student' }, 'full_name', 'ASC'],
+      ],
     });
   }
+  
 
   async getAllStudentFromClasses(class_id = []) {
     if (!Array.isArray(class_id)) throw new Error('Role IDs must be provided as an array')

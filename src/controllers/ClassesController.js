@@ -58,11 +58,13 @@ class ClassesController {
       const search = req.query.search_query || "";
       const offset = limit * page;
       const is_active = req.query.is_active || "Y";
+
+      console.log(with_assign)
       
       const resData = await this.classesService.showPage(
         page,
         limit,
-        { search, employee_id: with_assign == "Y" ? employee.id : null, is_active },
+        { search, employee_id: with_assign == "Y" ? employee.id : null, is_active, with_subject, with_form_class},
         offset
       );
 

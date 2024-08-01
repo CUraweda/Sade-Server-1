@@ -145,6 +145,22 @@ class NumberReportService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  
+  deleteAllNumberReports = async () => {
+    const message = "All Number Reports successfully deleted!";
+  
+    let rel = await this.numberReportDao.deleteAll();
+  
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "No Number Reports found to delete!"
+      );
+    }
+  
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+  
 
   showNumberReportByStudentId = async (id, semester) => {
     const message = "Number Report successfully retrieved!";

@@ -112,6 +112,18 @@ class NumberReportController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+  
+  deleteAll = async (req, res) => {
+    try {
+      const resData = await this.numberReportService.deleteAllNumberReports();
+  
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+  
 
   showByStudentId = async (req, res) => {
     try {

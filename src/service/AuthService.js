@@ -25,7 +25,6 @@ class AuthService {
       let message = "Login Successful";
       let statusCode = httpStatus.OK;
       let user = await this.userDao.findByEmail(email);
-      console.log(password, user.password);
       if (user == null) {
         return responseHandler.returnError(
           httpStatus.BAD_REQUEST,

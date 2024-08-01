@@ -58,6 +58,8 @@ class ClassesController {
       const search = req.query.search_query || "";
       const offset = limit * page;
       const is_active = req.query.is_active || "Y";
+
+      console.log(with_assign)
       
       const resData = await this.classesService.showPage(
         page,

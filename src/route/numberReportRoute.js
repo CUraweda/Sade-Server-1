@@ -37,6 +37,7 @@ router.get(
 
 router.get("/", auth([1, 2, 3, 4, 5, 6]), numberReportController.showAll);
 router.delete("/delete/:id", auth([1, 6]), numberReportController.delete);
+router.delete("/delete-all", auth([1, 6]), numberReportController.deleteAll);
 
 router.get(
   "/show-by-student/:id",

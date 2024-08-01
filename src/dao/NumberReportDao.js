@@ -371,5 +371,16 @@ class NumberReportDao extends SuperDao {
       order: [["id", "ASC"]],
     });
   }
+  async deleteAll() {
+    try {
+      const result = await NumberReport.destroy({
+        where: {},
+      });
+      return result;
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+  }
 }
 module.exports = NumberReportDao;

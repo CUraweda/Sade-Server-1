@@ -107,9 +107,10 @@ class AchievementController {
   showByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
+      const academic = req.query.academic
 
       const resData = await this.achievementService.showAchievementByStudentId(
-        id
+        id, academic
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -122,9 +123,10 @@ class AchievementController {
   showTopOneByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
+      const academic = req.query.academic
 
       const resData =
-        await this.achievementService.showAchievementTopOneByStudentId(id);
+        await this.achievementService.showAchievementTopOneByStudentId(id, academic);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -140,7 +142,7 @@ class AchievementController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { class_id, with_assign } = req.query
+      const { class_id, with_assign, academic } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -155,7 +157,8 @@ class AchievementController {
         offset,
         {
           class_id,
-          class_ids
+          class_ids,
+          academic
         }
       );
 

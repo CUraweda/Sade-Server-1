@@ -69,7 +69,8 @@ class StudentReportController {
       const id = req.params.id;
       const semester = req.query.semester ? +req.query.semester || 1 : 1
       const student_access = req.query.student_access || undefined
-      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester);
+      const academic = req.query.academic
+      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester, academic);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -82,11 +83,12 @@ class StudentReportController {
     try {
       const id = req.query.id || 0;
       const semester = req.query.semester || 0;
+      const academic = req.query.academic
 
       const resData =
         await this.studentReportService.showStudentReportByStudentId(
           id,
-          semester
+          semester, academic
         );
 
       res.status(resData.statusCode).send(resData.response);
@@ -100,11 +102,12 @@ class StudentReportController {
     try {
       const id = req.query.id || 0;
       const semester = req.query.semester || 0;
+      const academic = req.query.academic
 
       const resData =
         await this.studentReportService.showStudentReportByStudentIdDetails(
           id,
-          semester
+          semester, academic
         );
 
       res.status(resData.statusCode).send(resData.response);

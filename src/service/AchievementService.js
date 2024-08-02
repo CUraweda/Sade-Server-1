@@ -87,10 +87,10 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  showAchievementByStudentId = async (id) => {
+  showAchievementByStudentId = async (id, academic) => {
     const message = "Achievement successfully retrieved!";
 
-    let cl = await this.achievementDao.getByStudentId(id);
+    let cl = await this.achievementDao.getByStudentId(id, academic);
 
     if (!cl) {
       return responseHandler.returnSuccess(
@@ -103,10 +103,10 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  showAchievementTopOneByStudentId = async (id) => {
+  showAchievementTopOneByStudentId = async (id, academic) => {
     const message = "Achievement successfully retrieved!";
 
-    let cl = await this.achievementDao.getTopOne(id);
+    let cl = await this.achievementDao.getTopOne(id, academic);
 
     if (!cl) {
       return responseHandler.returnSuccess(

@@ -9,22 +9,22 @@ class AchievementDao extends SuperDao {
     super(Achievement);
   }
 
-  async getByStudentId(student_id) {
+  async getByStudentId(student_id, academic) {
     return Achievement.findAll({
       where: {
         student_id: student_id,
+        ...(academic && { "$student.studentclass.academic_year$": academic })
       },
       order: [["id", "DESC"]],
     });
   }
 
   async getCount(search, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
 
     let classIds = []
 
     if (class_ids?.length) classIds = class_ids
-
     if (class_id) classIds = [class_id]
 
     return Achievement.count({
@@ -41,6 +41,7 @@ class AchievementDao extends SuperDao {
             },
           },
         ],
+        ...(academic && { "$student.studentclass.academic_year$": academic })
       },
       include: [
         {
@@ -66,7 +67,7 @@ class AchievementDao extends SuperDao {
   }
 
   async getAchievementPage(search, offset, limit, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
 
     let classIds = []
 
@@ -88,6 +89,7 @@ class AchievementDao extends SuperDao {
             },
           },
         ],
+        ...(academic && { "$student.studentclass.academic_year$": academic })
       },
       include: [
         {
@@ -115,10 +117,11 @@ class AchievementDao extends SuperDao {
       order: [["id", "DESC"]],
     });
   }
-  async getTopOne(student_id) {
+  async getTopOne(student_id, academic) {
     return Achievement.findOne({
       where: {
         student_id: student_id,
+        ...(academic && { "$student.studentclass.academic_year$": academic })
       },
       order: [["id", "DESC"]],
     });

@@ -37,10 +37,13 @@ class StudentTaskDao extends SuperDao {
     });
   }
 
-  async getByStudentId(student_id, category) {
+  async getByStudentId(student_id, category, academic) {
     if (category === null || category === undefined || category === "") {
       return StudentTask.findAll({
-        where: { "$studentclass.student_id$": student_id },
+        where: { 
+          "$studentclass.student_id$": student_id,
+          ...(academic && { "$studentclass.academic_year$": academic })
+        },
         include: [
           {
             model: StudentClass,
@@ -66,6 +69,7 @@ class StudentTaskDao extends SuperDao {
       where: {
         [Op.or]: [{ "$studentclass.student_id$": student_id }],
         [Op.and]: [{ "$taskcategory.desc$": category }],
+        ...(academic && { "$studentclass.academic_year$": academic })
       },
       include: [
         {
@@ -89,7 +93,7 @@ class StudentTaskDao extends SuperDao {
   }
 
   async getCount(search, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
 
     const where = {
       [Op.or]: [
@@ -147,7 +151,7 @@ class StudentTaskDao extends SuperDao {
     }
 
     if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
-
+    if (academic) where["$studentclass.academic_year$"] = academic
     if (class_id) where["$studentclass.class_id$"] = class_id
 
     return StudentTask.count({
@@ -174,7 +178,7 @@ class StudentTaskDao extends SuperDao {
   }
 
   async getStudentTaskPage(search, offset, limit, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
 
     const where = {
       [Op.or]: [
@@ -232,7 +236,7 @@ class StudentTaskDao extends SuperDao {
     }
 
     if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
-
+    if (academic) where["$studentclass.academic_year$"] = academic
     if (class_id) where["$studentclass.class_id$"] = class_id
 
     return StudentTask.findAll({

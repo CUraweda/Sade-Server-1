@@ -64,7 +64,7 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-async getStudentReportPage(search, offset, limit, filters) {
+  async getStudentReportPage(search, offset, limit, filters) {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       [Op.or]: [
@@ -114,12 +114,13 @@ async getStudentReportPage(search, offset, limit, filters) {
     });
   }
 
-  async getByClassId(id, student_access, semester) {
+  async getByClassId(id, student_access, semester, academic) {
     const where = {
       "$studentclass.class_id$": id,
     }
 
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
+    if (academic) where["$studentclass.academic_year$"] = academic
     where['semester'] = semester
     return StudentReport.findAll({
       where,
@@ -142,11 +143,12 @@ async getStudentReportPage(search, offset, limit, filters) {
     });
   }
 
-  async getByStudentId(id, semester) {
+  async getByStudentId(id, semester, academic) {
     return StudentReport.findAll({
       where: {
         "$studentclass.student_id$": id,
         "$studentclass.is_active$": "Ya",
+        ...(academic && { "$studentclass.academic_year$": academic }), 
         semester: semester,
       },
       include: [
@@ -158,10 +160,11 @@ async getStudentReportPage(search, offset, limit, filters) {
     });
   }
 
-  async getByStudentIdDetails(id, semester) {
+  async getByStudentIdDetails(id, semester, academic) {
     const sReport = await StudentReport.findAll({
       where: {
         "$studentclass.student_id$": id,
+        ...(academic && { "$studentclass.academic_year$": academic }),
         semester: semester,
       },
       include: [

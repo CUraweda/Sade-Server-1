@@ -71,10 +71,11 @@ class StudentAttendanceController {
   showByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
+      const academic = req.query.academic
 
       const resData =
         await this.studentAttendanceService.showStudentAttendanceByStudentId(
-          id
+          id, academic
         );
 
       res.status(resData.statusCode).send(resData.response);
@@ -88,11 +89,13 @@ class StudentAttendanceController {
     try {
       const class_id = req.params.id;
       const att_date = req.query.att_date || "";
+      const academic = req.query.academic;
 
       const resData =
         await this.studentAttendanceService.showStudentAttendanceByClassIdNDate(
           class_id,
-          att_date
+          att_date,
+          academic
         );
 
       res.status(resData.statusCode).send(resData.response);

@@ -133,10 +133,10 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentAttendanceByStudentId = async (id) => {
+  showStudentAttendanceByStudentId = async (id, academic) => {
     const message = "Student Attendance successfully retrieved!";
 
-    let rel = await this.studentAttendanceDao.getByStudentId(id);
+    let rel = await this.studentAttendanceDao.getByStudentId(id, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -149,12 +149,13 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentAttendanceByClassIdNDate = async (class_id, att_date) => {
+  showStudentAttendanceByClassIdNDate = async (class_id, att_date, academic) => {
     const message = "Student Attendance successfully retrieved!";
 
     let rel = await this.studentAttendanceDao.getByClassNDate(
       class_id,
-      att_date
+      att_date,
+      academic
     );
 
     if (!rel) {

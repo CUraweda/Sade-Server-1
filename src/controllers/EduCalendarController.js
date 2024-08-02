@@ -51,11 +51,13 @@ class EduCalendarController {
     try {
       const level = req.query.level || "";
       const semester = req.query.semester || 0;
+      const academic = req.query.academic
 
       const resData =
         await this.eduCalendarService.showEduCalendarByOnGoingWeek(
           level,
-          semester
+          semester,
+          academic
         );
 
       res.status(resData.statusCode).send(resData.response);

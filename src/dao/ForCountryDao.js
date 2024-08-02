@@ -24,6 +24,18 @@ class ForCountryDao extends SuperDao {
     });
   }
 
+  async findById(id) {
+    return ForCountry.findOne({
+      where: { id },
+      include: [
+        {
+          model: models.user,
+          attributes: ["full_name", "avatar"]
+        }
+      ],
+    })
+  }
+
     async getCount(search, filters) {
       const where = {
         [Op.or]: [

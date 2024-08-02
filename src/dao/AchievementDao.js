@@ -35,11 +35,11 @@ class AchievementDao extends SuperDao {
               [Op.like]: "%" + search + "%",
             },
           },
-          {
-            "$student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          // {
+          //   "$student.full_name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
         ],
         ...(academic && { "$student.studentclass.academic_year$": academic })
       },
@@ -83,11 +83,11 @@ class AchievementDao extends SuperDao {
               [Op.like]: "%" + search + "%",
             },
           },
-          {
-            "$student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          // {
+          //   "$student.full_name$": {
+          //     [Op.like]: "%" + search + "%",
+          //   },
+          // },
         ],
         ...(academic && { "$student.studentclass.academic_year$": academic })
       },

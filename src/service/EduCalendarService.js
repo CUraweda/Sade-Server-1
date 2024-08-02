@@ -72,10 +72,10 @@ class EduCalendarService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showEduCalendarByOnGoingWeek = async (level, semester) => {
+  showEduCalendarByOnGoingWeek = async (level, semester, academic) => {
     const message = "Edu Calendar successfully retrieved!";
 
-    let rel = await this.eduCalendarDao.getByOngoingWeek(level, semester);
+    let rel = await this.eduCalendarDao.getByOngoingWeek(level, semester, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -88,14 +88,15 @@ class EduCalendarService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.eduCalendarDao.getCount(search);
+  async showPage(page, limit, search, offset, filter) {
+    const totalRows = await this.eduCalendarDao.getCount(search, filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.eduCalendarDao.getEduCalendarPage(
       search,
       offset,
-      limit
+      limit,
+      filter
     );
 
     return responseHandler.returnSuccess(

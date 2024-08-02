@@ -51,11 +51,13 @@ class EduCalendarController {
     try {
       const level = req.query.level || "";
       const semester = req.query.semester || 0;
+      const academic = req.query.academic
 
       const resData =
         await this.eduCalendarService.showEduCalendarByOnGoingWeek(
           level,
-          semester
+          semester,
+          academic
         );
 
       res.status(resData.statusCode).send(resData.response);
@@ -70,13 +72,17 @@ class EduCalendarController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const academic = req.query.academic
       const offset = limit * page;
 
       const resData = await this.eduCalendarService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          academic
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

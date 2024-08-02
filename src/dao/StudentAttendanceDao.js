@@ -28,10 +28,11 @@ class StudentAttendanceDao extends SuperDao {
     });
   }
 
-  async getByClassNDate(class_id, att_date) {
+  async getByClassNDate(class_id, att_date, academic) {
     return StudentAttendance.findAll({
       where: {
         "$studentclass.class_id$": class_id,
+        ...(academic && { "$studentclass.academic_year$": academic }),
         att_date: sequelize.literal(`DATE(att_date) = '${att_date}'`), // Ekstrak tanggal dari att_date
       },
       include: [
@@ -47,9 +48,12 @@ class StudentAttendanceDao extends SuperDao {
     });
   }
 
-  async getByStudentId(student_id) {
+  async getByStudentId(student_id, academic) {
     return StudentAttendance.findAll({
-      where: { "$studentclass.student_id$": student_id },
+      where: { 
+        "$studentclass.student_id$": student_id,
+        ...(academic && { "$studentclass.academic_year$": academic })
+      },
       include: [
         {
           model: StudentClass,
@@ -93,9 +97,7 @@ class StudentAttendanceDao extends SuperDao {
       "$studentclass.is_active$": "Ya",
     };
 
-    if (academic !== undefined) {
-      whereClause["$studentclass.academic_year$"] = academic;
-    }
+    if (academic !== undefined) whereClause["$studentclass.academic_year$"] = academic;
 
     const attendance = await StudentAttendance.findAll({
       attributes: [
@@ -178,6 +180,7 @@ class StudentAttendanceDao extends SuperDao {
     if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
     if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
     if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
+    if (filters.academic) where["$studentclass.academic_year$"] = filters.academic
 
     return StudentAttendance.count({
       where,
@@ -235,6 +238,7 @@ class StudentAttendanceDao extends SuperDao {
     if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
     if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
     if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
+    if (filters.academic) where["$studentclass.academic_year$"] = filters.academic
 
     return StudentAttendance.findAll({
       where,

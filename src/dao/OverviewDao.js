@@ -102,9 +102,9 @@ class OverviewDao extends SuperDao {
     }
     
     if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
-
-    if (filters.class_id) where["class_id"] = filters.class_id
-
+    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
+    if (filters.academic) where["period"] = filters.academic
+    
     return Overview.count({
       where
     });
@@ -142,7 +142,7 @@ class OverviewDao extends SuperDao {
     }
 
     if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
-
+    if (filters.academic) where["period"] = filters.academic
     if (filters.class_id) where["class_id"] = filters.class_id
 
     return Overview.findAll({

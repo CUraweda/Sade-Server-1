@@ -22,9 +22,9 @@ router.put(
   academicYearController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6]), academicYearController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), academicYearController.show);
 
-router.get("/", auth([1, 2, 3, 4, 5, 6]), academicYearController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), academicYearController.showAll);
 
 router.delete("/delete/:id", auth([1]), academicYearController.delete);
 

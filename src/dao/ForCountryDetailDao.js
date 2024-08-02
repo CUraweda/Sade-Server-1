@@ -94,6 +94,7 @@ class ForCountryDetailDao extends SuperDao {
       include: [
         {
           model: ForCountry,
+          required: true,
           include: [
             {
               model: User,
@@ -159,6 +160,7 @@ class ForCountryDetailDao extends SuperDao {
       include: [
         {
           model: ForCountry,
+          required: true,
           include: [
             {
               model: User,

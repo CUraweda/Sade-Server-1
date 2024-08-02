@@ -122,10 +122,10 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentReportByClassId = async (id, student_access, semester) => {
+  showStudentReportByClassId = async (id, student_access, semester, academic) => {
     const message = "Student report successfully retrieved!";
 
-    let rel = await this.studentReportDao.getByClassId(id, student_access, semester);
+    let rel = await this.studentReportDao.getByClassId(id, student_access, semester, academic);
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
@@ -137,10 +137,10 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentReportByStudentId = async (id, semester) => {
+  showStudentReportByStudentId = async (id, semester, academic) => {
     const message = "Student report successfully retrieved!";
 
-    let rel = await this.studentReportDao.getByStudentId(id, semester);
+    let rel = await this.studentReportDao.getByStudentId(id, semester, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -153,10 +153,10 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentReportByStudentIdDetails = async (id, semester) => {
+  showStudentReportByStudentIdDetails = async (id, semester, academic) => {
     const message = "Student report successfully retrieved!";
 
-    let rel = await this.studentReportDao.getByStudentIdDetails(id, semester);
+    let rel = await this.studentReportDao.getByStudentIdDetails(id, semester, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(

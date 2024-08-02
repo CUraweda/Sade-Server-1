@@ -148,10 +148,10 @@ class StudentTaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentTaskByStudentId = async (id, category) => {
+  showStudentTaskByStudentId = async (id, category, academic) => {
     const message = "Student Task successfully retrieved!";
 
-    let rel = await this.studentTaskDao.getByStudentId(id, category);
+    let rel = await this.studentTaskDao.getByStudentId(id, category, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(

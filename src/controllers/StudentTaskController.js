@@ -174,10 +174,12 @@ class StudentTaskController {
     try {
       var id = req.params.id;
       const cat = req.query.cat || "";
+      const academic = req.query.academic
 
       const resData = await this.studentTaskService.showStudentTaskByStudentId(
         id,
-        cat
+        cat,
+        academic
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -194,7 +196,7 @@ class StudentTaskController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { class_id, with_assign } = req.query
+      const { class_id, with_assign, academic } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -210,7 +212,8 @@ class StudentTaskController {
         offset,
         {
           class_id,
-          class_ids
+          class_ids,
+          academic
         }
       );
 

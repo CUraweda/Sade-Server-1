@@ -111,8 +111,9 @@ class TaskController {
     try {
       const id = req.params.id;
       const cat_id = req.query.cat || "";
-
-      const resData = await this.taskService.showTaskByClassId(id, cat_id);
+      let studentId = req.query.student_id
+      if(req.user.role_id == 7) studentId = req.user.useraccesses[0].student.id
+      const resData = await this.taskService.showTaskByClassId(id, cat_id, studentId);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -129,7 +130,7 @@ class TaskController {
       const search = req.query.search_query || "";
       const offset = limit * page;
 
-      const { class_id, with_assign } = req.query
+      const { class_id, with_assign, academic } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -144,7 +145,8 @@ class TaskController {
         offset,
         {
           class_id,
-          class_ids
+          class_ids,
+          academic
         }
       );
 

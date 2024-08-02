@@ -68,10 +68,10 @@ class EduCalendarDetailService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showEduCalendarDetailByEduId = async (id) => {
+  showEduCalendarDetailByEduId = async (id, academic) => {
     const message = "Edu Calendar Detail successfully retrieved!";
 
-    let rel = await this.eduCalendarDetailDao.getByEduId(id);
+    let rel = await this.eduCalendarDetailDao.getByEduId(id, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -84,14 +84,15 @@ class EduCalendarDetailService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.eduCalendarDetailDao.getCount(search);
+  async showPage(page, limit, search, offset, filter) {
+    const totalRows = await this.eduCalendarDetailDao.getCount(search, filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.eduCalendarDetailDao.getEduCalendarDetailPage(
       search,
       offset,
-      limit
+      limit,
+      filter
     );
 
     return responseHandler.returnSuccess(

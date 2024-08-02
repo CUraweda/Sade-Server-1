@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const Task = models.task;
 const Subjects = models.subjects;
 const Classes = models.classes;
+const TaskDetail = models.taskdetail
 const TaskCategory = models.taskcategory;
 
 class TaskDao extends SuperDao {
@@ -27,7 +28,7 @@ class TaskDao extends SuperDao {
     });
   }
 
-  async getTaskByClassId(classId, categoryId) {
+  async getTaskByClassId(classId, categoryId, student_id) {
     return Task.findAll({
       where: {
         class_id: classId,
@@ -37,13 +38,18 @@ class TaskDao extends SuperDao {
         {
           model: Subjects,
         },
+        {
+          model: TaskDetail,
+          required: false,
+          where: { student_id }
+        },
         { model: Classes },
       ],
     });
   }
 
   async getCount(search, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
 
     const where = {
       [Op.or]: [
@@ -91,7 +97,7 @@ class TaskDao extends SuperDao {
     }
 
     if (class_ids?.length) where["class_id"] = { [Op.in]: class_ids }
-
+    if (academic) where[""]
     if (class_id) where["class_id"] = class_id
 
     return Task.count({

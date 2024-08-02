@@ -53,7 +53,6 @@ class ClassesDao extends SuperDao {
 
       if (formClasses) classIds = formClasses.map(fc => fc.id)
     }
-
     return Classes.count({
       where: {         
         [Op.and]: [
@@ -127,6 +126,8 @@ class ClassesDao extends SuperDao {
         if (formClasses) classIds = formClasses.map(fc => fc.id)
       }
     }
+
+    console.log(levels, classIds )
 
     return Classes.findAll({
       where: {

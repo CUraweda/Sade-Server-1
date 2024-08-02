@@ -207,7 +207,7 @@ class NarrativeReportDao extends SuperDao {
 
   async getByStudentId(id, semester) {
     const sClass = await StudentClass.findOne({
-      where: { student_id: id, is_active: "Ya" },
+      where: { id: id, is_active: "Ya" },
       include: [
         {
           model: Students,

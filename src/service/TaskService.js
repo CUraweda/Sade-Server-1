@@ -85,10 +85,10 @@ class TaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showTaskByClassId = async (id, cat_id) => {
+  showTaskByClassId = async (id, cat_id, studentId) => {
     const message = "Task successfully retrieved!";
 
-    let rel = await this.taskDao.getTaskByClassId(id, cat_id);
+    let rel = await this.taskDao.getTaskByClassId(id, cat_id, studentId);
 
     if (!rel) {
       return responseHandler.returnSuccess(

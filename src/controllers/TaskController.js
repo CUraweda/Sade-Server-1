@@ -111,8 +111,9 @@ class TaskController {
     try {
       const id = req.params.id;
       const cat_id = req.query.cat || "";
-
-      const resData = await this.taskService.showTaskByClassId(id, cat_id);
+      let studentId = null
+      if(req.user.role_id == 7) studentId = req.user.useraccesses[0].student.id
+      const resData = await this.taskService.showTaskByClassId(id, cat_id, studentId);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

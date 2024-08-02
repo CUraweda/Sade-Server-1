@@ -1,6 +1,7 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { required } = require("joi");
 
 const User = models.user;
 const Employee = models.employees
@@ -11,6 +12,8 @@ const Subject = models.subjects
 const FormXtra = models.formextra
 const SubjectXtra = models.subjectextra
 const Headmaster = models.headmaster
+const Students = models.students
+const UserAccess = models.useraccess
 
 class UserDao extends SuperDao {
   constructor() {
@@ -21,6 +24,14 @@ class UserDao extends SuperDao {
     return User.findOne({ 
       where: { email },
       include: [
+        {
+          model: UserAccess,
+          required: false,
+          include: {
+            model: Students,
+            required: false
+          }
+        },
         { 
           model: Employee, 
           required: false, 
@@ -78,7 +89,7 @@ class UserDao extends SuperDao {
                   required: false
                 }
               ]
-            }
+            },
           ]
         }
       ]
@@ -121,6 +132,13 @@ class UserDao extends SuperDao {
     return User.findOne({
       where: { uuid },
       include: [
+        {
+          model: UserAccess,
+          required: false,
+          include: {
+            model: Students,
+          }
+        },
         { 
           model: Employee, 
           required: false, 
@@ -178,7 +196,7 @@ class UserDao extends SuperDao {
                   required: false
                 }
               ]
-            }
+            },
           ]
         }
       ]

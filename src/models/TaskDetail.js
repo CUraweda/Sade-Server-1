@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       work_date: DataTypes.DATE,
       task_file: DataTypes.STRING,
       feedback: DataTypes.STRING,
+      description: DataTypes.STRING
     },
     {
       sequelize,

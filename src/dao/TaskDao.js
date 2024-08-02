@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const Task = models.task;
 const Subjects = models.subjects;
 const Classes = models.classes;
+const TaskDetail = models.taskdetail
 const TaskCategory = models.taskcategory;
 
 class TaskDao extends SuperDao {
@@ -27,7 +28,7 @@ class TaskDao extends SuperDao {
     });
   }
 
-  async getTaskByClassId(classId, categoryId) {
+  async getTaskByClassId(classId, categoryId, student_id) {
     return Task.findAll({
       where: {
         class_id: classId,
@@ -36,6 +37,11 @@ class TaskDao extends SuperDao {
       include: [
         {
           model: Subjects,
+        },
+        {
+          model: TaskDetail,
+          required: false,
+          where: { student_id }
         },
         { model: Classes },
       ],

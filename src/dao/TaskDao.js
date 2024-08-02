@@ -49,7 +49,7 @@ class TaskDao extends SuperDao {
   }
 
   async getCount(search, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
 
     const where = {
       [Op.or]: [
@@ -97,7 +97,7 @@ class TaskDao extends SuperDao {
     }
 
     if (class_ids?.length) where["class_id"] = { [Op.in]: class_ids }
-
+    if (academic) where[""]
     if (class_id) where["class_id"] = class_id
 
     return Task.count({

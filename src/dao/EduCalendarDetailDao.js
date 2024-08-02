@@ -1,6 +1,7 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { fi } = require("date-fns/locale");
 
 const EduCalendarDetail = models.educalendardetails;
 const EduCalendar = models.educalendar;
@@ -21,9 +22,12 @@ class EduCalendarDetailDao extends SuperDao {
     });
   }
 
-  async getByEduId(edu_id) {
+  async getByEduId(edu_id, academic) {
     return EduCalendarDetail.findAll({
-      where: { edu_id },
+      where: {
+        edu_id,
+        ...(academic && { "$educalendar.academic_year$": academic })
+      },
       include: [
         {
           model: EduCalendar,
@@ -32,7 +36,7 @@ class EduCalendarDetailDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, filter) {
     return EduCalendarDetail.count({
       where: {
         [Op.or]: [
@@ -52,11 +56,12 @@ class EduCalendarDetailDao extends SuperDao {
             },
           },
         ],
+        ...(filter.academic && { "$educalendar.academic_year$": filter.academic })
       },
     });
   }
 
-  async getEduCalendarDetailPage(search, offset, limit) {
+  async getEduCalendarDetailPage(search, offset, limit, filter) {
     return EduCalendarDetail.findAll({
       where: {
         [Op.or]: [
@@ -76,6 +81,7 @@ class EduCalendarDetailDao extends SuperDao {
             },
           },
         ],
+        ...(filter.academic && { "$educalendar.academic_year$": filter.academic })
       },
       offset: offset,
       limit: limit,

@@ -140,7 +140,9 @@ class UserService {
       user.password
     );
     user = user.toJSON();
+    
     delete user.password;
+
     if (!isPasswordValid) {
       statusCode = httpStatus.BAD_REQUEST;
       message = "Wrong old Password!";

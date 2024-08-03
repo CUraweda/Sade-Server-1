@@ -88,7 +88,7 @@ class StudentReportService {
 
       const data = await this.studentReportDao.findById(id);
       if (body.nar_teacher_comments || body.nar_parent_comments) {
-        const pdfFileNar = await this.generatePdf(data, temp_dir);
+        const pdfFileNar = await this.generatePdf(data, temp_dir);e
         await this.studentReportDao.updateById(
           { nar_comments_path: pdfFileNar },
           id

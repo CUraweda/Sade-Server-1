@@ -91,7 +91,6 @@ class UserService {
     }
     return responseHandler.returnSuccess(httpStatus.OK, message);
   };
-
   getUserByUuid = async (uuid) => {
     return this.userDao.findUserByUUID(uuid);
   };

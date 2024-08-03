@@ -50,6 +50,8 @@ class AuthController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+
   update = async (req, res) => {
     try {
         await uploadAvatar(req, res);

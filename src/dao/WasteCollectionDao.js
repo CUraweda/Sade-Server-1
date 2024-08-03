@@ -381,15 +381,15 @@ async getWasteCollectionPage(search, offset, limit) {
 }
   async collectionPerWeekByStudentId(id) {
     const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
     const dayOfWeek = today.getDay();
     const startOfWeek = new Date(today);
     const endOfWeek = new Date(today);
-
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust start of the week based on Sunday
     startOfWeek.setDate(diff);
 
-    const daysToAdd = 5 - dayOfWeek + (dayOfWeek === 0 ? 7 : 0); // Adjust end of the week based on Friday
-    endOfWeek.setDate(today.getDate() + daysToAdd);
+    const daysToAdd = 7 - (dayOfWeek == 0 ? dayOfWeek : 1)
+    endOfWeek.setDate(today.getDate() + daysToAdd)
 
     try {
       const wasteTypes = await WasteTypes.findAll({ raw: true });

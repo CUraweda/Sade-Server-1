@@ -60,7 +60,26 @@ class ForCountryDetailDao extends SuperDao {
   }
 
   async getCount(search, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
+    const where = {
+      [Op.or]: [
+        {
+          activity: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          duration: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
 
     let classIds = []
 
@@ -68,29 +87,14 @@ class ForCountryDetailDao extends SuperDao {
 
     if (class_id) classIds = [class_id]
 
+    if (academic) where["$forcountry.academic_year$"] = academic
+
     return ForCountryDetail.count({
-      where: {
-        [Op.or]: [
-          {
-            activity: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            duration: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         {
           model: ForCountry,
+          required: true,
           include: [
             {
               model: User,
@@ -121,7 +125,7 @@ class ForCountryDetailDao extends SuperDao {
   }
 
   async getForCountryDetailPage(search, offset, limit, filters) {
-    const { class_id, class_ids } = filters
+    const { class_id, class_ids, academic } = filters
     const where = {
       [Op.or]: [
         {
@@ -142,6 +146,8 @@ class ForCountryDetailDao extends SuperDao {
       ],
     }
 
+    if (academic) where["$forcountry.academic_year$"] = academic
+
     let classIds = []
 
     if (class_ids?.length) classIds = class_ids
@@ -154,6 +160,7 @@ class ForCountryDetailDao extends SuperDao {
       include: [
         {
           model: ForCountry,
+          required: true,
           include: [
             {
               model: User,

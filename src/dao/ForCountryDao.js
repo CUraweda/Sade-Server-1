@@ -24,41 +24,63 @@ class ForCountryDao extends SuperDao {
     });
   }
 
-    async getCount(search) {
+  async findById(id) {
+    return ForCountry.findOne({
+      where: { id },
+      include: [
+        {
+          model: models.user,
+          attributes: ["full_name", "avatar"]
+        }
+      ],
+    })
+  }
+
+    async getCount(search, filters) {
+      const where = {
+        [Op.or]: [
+          {
+            ["$user.full_name$"]: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      }
+
+      if (filters.academic) where["academic_year"] = filters.academic
+
       return ForCountry.count({
-        where: {
-          [Op.or]: [
-            {
-              code: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
+        where,
+        include: [
+          {
+            model: models.user,
+            attributes: ["full_name", "avatar"]
+          }
+        ],
       });
     }
 
-    async getForCountryPage(search, offset, limit) {
+    async getForCountryPage(search, offset, limit, filters) {
+      const where = {
+        [Op.or]: [
+          {
+            ["$user.full_name$"]: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      }
+
+      if (filters.academic) where["academic_year"] = filters.academic
+
       return ForCountry.findAll({
-        where: {
-          [Op.or]: [
-            {
-              code: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-            {
-              name: {
-                [Op.like]: "%" + search + "%",
-              },
-            },
-          ],
-        },
+        where,
+        include: [
+          {
+            model: models.user,
+            attributes: ["full_name", "avatar"]
+          }
+        ],
         offset: offset,
         limit: limit,
         order: [["id", "DESC"]],

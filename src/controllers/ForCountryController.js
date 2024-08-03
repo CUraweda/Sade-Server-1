@@ -68,12 +68,16 @@ class ForCountryController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { academic } = req.query
 
       const resData = await this.forCountryService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          academic
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

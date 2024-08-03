@@ -78,14 +78,15 @@ class ForCountryService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.forCountryDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.forCountryDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.forCountryDao.getForCountryPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

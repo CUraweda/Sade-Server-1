@@ -15,6 +15,14 @@ class ParentService {
     try {
       let message = "Parent successfully added.";
 
+      if (reqBody.user_id) {
+        let check = await this.parentDao.getCountByWhere({ 
+          user_id: reqBody.user_id, 
+        })
+    
+        if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User parent already linked")
+      }
+  
       let data = await this.parentDao.create(reqBody);
 
       if (!data) {

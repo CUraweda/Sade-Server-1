@@ -13,6 +13,13 @@ class UserAccessService {
     try {
       let message = "User Access successfully added.";
 
+      let check = await this.userAccessDao.getCountByWhere({ 
+        user_id: reqBody.user_id, 
+        student_id: reqBody.student_id 
+      })
+
+      if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User access already linked")
+
       let data = await this.userAccessDao.create(reqBody);
 
       if (!data) {

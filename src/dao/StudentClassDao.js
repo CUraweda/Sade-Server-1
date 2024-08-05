@@ -44,9 +44,9 @@ class StudentClassDao extends SuperDao {
       class_id: class_id,
       is_active: "Ya",
     };
-  
+
     if (academic_year) where["academic_year"] = academic_year;
-  
+
     return StudentClass.findAll({
       where,
       include: [
@@ -59,20 +59,28 @@ class StudentClassDao extends SuperDao {
       ],
     });
   }
-  
 
-  async getAllStudentFromClasses(class_id = []) {
+
+  async getAllStudentFromClasses(class_id = [], search) {
     if (!Array.isArray(class_id)) throw new Error('Role IDs must be provided as an array')
     return StudentClass.findAll({
       where: {
         class_id: { [Op.in]: class_id },
-        is_active: "Ya",
+        is_active: "Ya"
       },
       include: [
         {
           model: Students,
           required: true,
-          include: { model: UserAccess, required: true, include: { model: User } }
+          include: {
+            model: UserAccess, required: true, include: {
+              model: User, where: {
+                ...(search && {
+                  full_name: { [Op.like]: `%${search}%` }
+                })
+              }
+            }
+          }
         }
       ]
     })

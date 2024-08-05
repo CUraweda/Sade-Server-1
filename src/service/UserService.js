@@ -275,10 +275,10 @@ class UserService {
     return responseHandler.returnSuccess(httpStatus.OK, message, {});
   };
 
-  showUsersByRoles = async (roleIds) => {
+  showUsersByRoles = async (roleIds, search) => {
     const message = "Subject successfully retrieved!";
 
-    let rel = await this.userDao.findUsersByRoles(roleIds);
+    let rel = await this.userDao.findUsersByRoles(roleIds, search);
 
     if (!rel) {
       return responseHandler.returnSuccess(

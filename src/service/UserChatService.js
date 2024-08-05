@@ -118,10 +118,10 @@ class UserChatService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  showListChatGuru = async (accessibleRole = [1, 2, 3, 6, 10], classList = []) => {
-    const userData = await this.userDao.findUsersByRoles(accessibleRole)
+  showListChatGuru = async (accessibleRole = [1, 2, 3, 6, 10], classList = [], search) => {
+    const userData = await this.userDao.findUsersByRoles(accessibleRole, search)
     if (classList.length > 0) {
-      const studentData = await this.studentClassDao.getAllStudentFromClasses(classList)
+      const studentData = await this.studentClassDao.getAllStudentFromClasses(classList, search)
       for (let studentClass of studentData) {
         const { useraccesses } = studentClass.student
         userData.push(...useraccesses)

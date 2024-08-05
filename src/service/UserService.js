@@ -169,9 +169,9 @@ class UserService {
 
   updateUser = async (id, body) => {
     const message = "User data successfully updated!";
-  
+
     let user = await this.userDao.findById(id);
-  
+
     if (!user) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
@@ -179,7 +179,7 @@ class UserService {
         {}
       );
     }
-  
+
     const updateData = await this.userDao.updateWhere(
       {
         full_name: body.full_name,
@@ -191,9 +191,9 @@ class UserService {
       },
       { id }
     );
-  
+
     const userData = user.dataValues;
-  
+
     if (userData.avatar && body.avatar) {
       fs.unlink(userData.avatar, (err) => {
         if (err) {
@@ -205,12 +205,11 @@ class UserService {
         console.log("Avatar file deleted successfully.");
       });
     }
-  
+
     if (updateData) {
       return responseHandler.returnSuccess(httpStatus.OK, message, body);
     }
   };
-  
 
   forgotPassword = async (body) => {
     const message = "Password reset link sent!";
@@ -291,16 +290,12 @@ class UserService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
-  
+
   async showPage(page, limit, search, offset) {
     const totalRows = await this.userDao.getCount(search);
     const totalPage = Math.ceil(totalRows / limit);
 
-    const result = await this.userDao.getUserPage(
-      search,
-      offset,
-      limit
-    );
+    const result = await this.userDao.getUserPage(search, offset, limit);
 
     return responseHandler.returnSuccess(
       httpStatus.OK,
@@ -314,7 +309,7 @@ class UserService {
       }
     );
   }
-  
+
   deleteUser = async (id) => {
     const message = "User successfully deleted!";
 
@@ -341,7 +336,6 @@ class UserService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
-
 }
 
 module.exports = UserService;

@@ -33,6 +33,12 @@ router.get(
   userController.show
 )
 router.put(
+  "/change-password",
+  auth([1,2,3,4,5,6,7,8,9,10]),
+  userValidator.changePasswordValidator,
+  userController.updatePassword
+)
+router.put(
   "/update/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userController.update

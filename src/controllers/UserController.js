@@ -51,7 +51,16 @@ class AuthController {
     }
   };
 
-
+  updatePassword = async (req, res) => {
+    try{
+      const user = req.user
+      const resData = await this.userService.changePassword(req.body, user.uuid)
+      res.status(resData.statusCode).send(resData.response);
+    }catch(e){
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  }
   update = async (req, res) => {
     try {
         await uploadAvatar(req, res);

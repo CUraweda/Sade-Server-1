@@ -147,7 +147,7 @@ class StudentService {
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
 
-  showByNis = async (nis) => {
+  showByNis = async (nis, dob) => {
     const message = "Student successfully retrieved!";
 
     let dt = await this.studentDao.findByNis(nis);
@@ -165,3 +165,4 @@ class StudentService {
 }
 
 module.exports = StudentService;
+

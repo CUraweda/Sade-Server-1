@@ -52,10 +52,10 @@ class StudentPaymentReportController {
     };
     showByFilter = async (req, res) => {
       try {
-          const { classes, student, start_date, end_date, payment_category, status } = req.query;
+          const { classes, student, start_date, end_date, payment_category, status, nis_prefix } = req.query;
   
           const resData = await this.studentPaymentReportService.showStudentPaymentReportByFilter(
-              classes, student, start_date, end_date, payment_category, status
+              classes, student, start_date, end_date, payment_category, status, nis_prefix
           );
   
           res.status(resData.statusCode).send(resData.response);
@@ -72,7 +72,7 @@ class StudentPaymentReportController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
-        const { payment_category_id, class_id, student_id, start_paid, end_paid, status } = req.query;
+        const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix } = req.query;
 
         const resData = await this.studentPaymentReportService.showPage(
             page,
@@ -85,7 +85,8 @@ class StudentPaymentReportController {
               student_id,
               start_paid,
               end_paid,
-              status
+              status,
+              nis_prefix
             }
         );
 
@@ -98,7 +99,7 @@ class StudentPaymentReportController {
     exportAll = async (req, res) => {
       try {
           const search = req.query.search_query || "";
-          const { payment_category_id, class_id, student_id, start_paid, end_paid, status } = req.query;
+          const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix } = req.query;
   
           const buffer = await this.studentPaymentReportService.exportPage(
             search, 
@@ -108,7 +109,8 @@ class StudentPaymentReportController {
               student_id,
               start_paid,
               end_paid,
-              status
+              status,
+              nis_prefix
             }
           );
 

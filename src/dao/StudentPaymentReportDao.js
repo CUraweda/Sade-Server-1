@@ -121,6 +121,7 @@ class StudentPaymentReportDao extends SuperDao{
         if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
         if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
         if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.nis_prefix) where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` }
         if (filters.class_id) {
             const students = await StudentClass.findAll({
                 where: {
@@ -170,6 +171,7 @@ class StudentPaymentReportDao extends SuperDao{
         if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
         if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
         if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.nis_prefix) where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` }
         if (filters.class_id) {
             const students = await StudentClass.findAll({
                 where: {

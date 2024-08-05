@@ -71,24 +71,24 @@ class AuthController {
 
   me = async (req, res) => {
     try {
-			const user = await this.userService.getUserByUuid(req.user.uuid);
-			if (user == null) {
-				return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
-			}
+      const user = await this.userService.getUserByUuid(req.user.uuid);
+      if (user == null) {
+        return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
+      }
 
       let userData = user.toJSON()
       delete userData.password
 
-			res.status(httpStatus.OK).json({
-				status: true,
-				code: 200,
-				message: "User information retrieved",
-				data: userData,
-			});
-		} catch (e) {
-			logger.error(e);
-			res.status(httpStatus.BAD_GATEWAY).send(e);
-		}
+      res.status(httpStatus.OK).json({
+        status: true,
+        code: 200,
+        message: "User information retrieved",
+        data: userData,
+      });
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
   }
 
   refreshTokens = async (req, res) => {
@@ -183,8 +183,8 @@ class AuthController {
   showByRoles = async (req, res) => {
     try {
       const ids = req.query.ids.split(",").map((id) => parseInt(id));
-
-      const resData = await this.userService.showUsersByRoles(ids);
+      const { search } = req.query
+      const resData = await this.userService.showUsersByRoles(ids, search);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

@@ -62,10 +62,11 @@ class UserChatController {
 
   showByGuruEmployee = async (req, res) => {
     try {
+      const { search } = req.query
       const { employee } = req.user
       let classData = await this.classesService.showPage(0, 100, { search: '', employee_id: employee.id, is_active: "Y" }, 0)
       classData = classData.response.data.result.map(classesData => { return classesData.id })
-      const data = await this.userChatService.showListChatGuru([1, 2, 3, 6, 10], classData)
+      const data = await this.userChatService.showListChatGuru([1, 2, 3, 6, 10], classData, search)
       res.status(data.statusCode).send(data.response)
     } catch (err) {
       logger.error(err)

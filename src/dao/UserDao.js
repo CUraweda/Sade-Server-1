@@ -21,7 +21,7 @@ class UserDao extends SuperDao {
   }
 
   async findByEmail(email) {
-    return User.findOne({ 
+    return User.findOne({
       where: { email },
       include: [
         {
@@ -32,9 +32,9 @@ class UserDao extends SuperDao {
             required: false
           }
         },
-        { 
-          model: Employee, 
-          required: false, 
+        {
+          model: Employee,
+          required: false,
           attributes: ["id", "full_name"],
           include: [
             {
@@ -43,7 +43,7 @@ class UserDao extends SuperDao {
               where: {
                 is_active: true
               },
-              required: false 
+              required: false
             },
             {
               model: FormTeacher,
@@ -65,7 +65,7 @@ class UserDao extends SuperDao {
               attributes: ["id", "subject_id", "academic_year"],
               where: {
                 is_active: true
-              },  
+              },
               required: false,
               include: [
                 {
@@ -80,7 +80,7 @@ class UserDao extends SuperDao {
               attributes: ["id"],
               where: {
                 is_active: true
-              },  
+              },
               required: false,
               include: [
                 {
@@ -118,13 +118,19 @@ class UserDao extends SuperDao {
     });
   }
 
-  async findUsersByRoles(roleIds) {
+  async findUsersByRoles(roleIds, search) {
     if (!Array.isArray(roleIds)) {
       throw new Error("Role IDs must be provided as an array.");
     }
     return User.findAll({
-      where: { role_id: { [Op.in]: roleIds }, status: 1, email_verified: 1 },
+      where: {
+        role_id: { [Op.in]: roleIds }, status: 1, email_verified: 1,
+        ...(search && {
+          full_name: { [Op.like]: `%${search}%` }
+        })
+      },
       attributes: ["id", "uuid", "role_id", "full_name", "email"],
+      order: [["full_name", "ASC"]]
     });
   }
 
@@ -139,9 +145,9 @@ class UserDao extends SuperDao {
             model: Students,
           }
         },
-        { 
-          model: Employee, 
-          required: false, 
+        {
+          model: Employee,
+          required: false,
           attributes: ["id", "full_name"],
           include: [
             {
@@ -150,7 +156,7 @@ class UserDao extends SuperDao {
               where: {
                 is_active: true
               },
-              required: false 
+              required: false
             },
             {
               model: FormTeacher,
@@ -172,7 +178,7 @@ class UserDao extends SuperDao {
               attributes: ["id", "subject_id", "academic_year"],
               where: {
                 is_active: true
-              },  
+              },
               required: false,
               include: [
                 {
@@ -187,7 +193,7 @@ class UserDao extends SuperDao {
               attributes: ["id"],
               where: {
                 is_active: true
-              },  
+              },
               required: false,
               include: [
                 {
@@ -202,7 +208,7 @@ class UserDao extends SuperDao {
       ]
     });
   }
-  
+
   async getCount(search) {
     return User.count({
       where: {
@@ -221,7 +227,7 @@ class UserDao extends SuperDao {
       },
     });
   }
-  
+
   async getUserPage(search, offset, limit) {
     return User.findAll({
       where: {

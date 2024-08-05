@@ -147,10 +147,10 @@ class StudentService {
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
 
-  showByNis = async (nis) => {
+  showByNis = async (nis, dob) => {
     const message = "Student successfully retrieved!";
-
-    let dt = await this.studentDao.findByNis(nis);
+    if (!dob) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Tolong sertakan tanggal lahir siswa")
+    let dt = await this.studentDao.findByNis(nis, dob);
 
     if (!dt) {
       return responseHandler.returnSuccess(
@@ -165,3 +165,4 @@ class StudentService {
 }
 
 module.exports = StudentService;
+

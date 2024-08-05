@@ -91,7 +91,6 @@ class UserService {
     }
     return responseHandler.returnSuccess(httpStatus.OK, message);
   };
-
   getUserByUuid = async (uuid) => {
     return this.userDao.findUserByUUID(uuid);
   };
@@ -141,7 +140,9 @@ class UserService {
       user.password
     );
     user = user.toJSON();
+    
     delete user.password;
+
     if (!isPasswordValid) {
       statusCode = httpStatus.BAD_REQUEST;
       message = "Wrong old Password!";

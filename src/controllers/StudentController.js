@@ -108,8 +108,8 @@ class StudentController {
   showNis = async (req, res) => {
     try {
       var nis = req.params.id;
-
-      const resData = await this.studentService.showByNis(nis);
+      const { dob } = req.query
+      const resData = await this.studentService.showByNis(nis, dob);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

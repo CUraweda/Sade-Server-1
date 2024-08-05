@@ -384,7 +384,6 @@ async getWasteCollectionPage(search, offset, limit) {
     const dayOfWeek = today.getDay();
     const startOfWeek = new Date(today);
     const endOfWeek = new Date(today);
-
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust start of the week based on Sunday
     startOfWeek.setDate(diff);
 

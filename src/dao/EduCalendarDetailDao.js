@@ -58,6 +58,11 @@ class EduCalendarDetailDao extends SuperDao {
         ],
         ...(filter.academic && { "$educalendar.academic_year$": filter.academic })
       },
+      include: [
+        {
+          model: EduCalendar
+        }
+      ]
     });
   }
 
@@ -83,6 +88,11 @@ class EduCalendarDetailDao extends SuperDao {
         ],
         ...(filter.academic && { "$educalendar.academic_year$": filter.academic })
       },
+      include: [
+        {
+          model: EduCalendar
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

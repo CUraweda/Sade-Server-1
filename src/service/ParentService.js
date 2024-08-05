@@ -4,6 +4,7 @@ const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
 const xlsx = require("xlsx");
+const { Op } = require("sequelize");
 
 class ParentService {
   constructor() {
@@ -73,6 +74,15 @@ class ParentService {
         {}
       );
     }
+
+    let check = await this.parentDao.getCountByWhere({ 
+      id: {
+        [Op.not]: id
+      }, 
+      user_id: body.user_id, 
+    })
+
+    if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User parent already linked")
 
     const updateData = await this.parentDao.updateWhere(
       {

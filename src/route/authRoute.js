@@ -36,6 +36,7 @@ router.put(
 router.post(
   "/forgot-password",
   // auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  userValidator.forgotPasswordValidator,
   authController.forgotPassword
 );
 router.post(

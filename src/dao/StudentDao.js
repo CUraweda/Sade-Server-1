@@ -135,9 +135,7 @@ class StudentDao extends SuperDao {
   async findByNis(nis, dob) {
     return Students.findOne({
       where: {
-        nis, [Op.like]: {
-          dob: `%${dob}%`
-        }
+        nis, dob: { [Op.like]: `%${dob}%` }
       }
     });
   }

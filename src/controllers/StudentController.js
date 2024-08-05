@@ -109,7 +109,6 @@ class StudentController {
     try {
       var nis = req.params.id;
       const { dob } = req.query
-      if(!dob) throw Error('Tolong kirimkan Tanggal Lahir Siswa')
       const resData = await this.studentService.showByNis(nis, dob);
 
       res.status(resData.statusCode).send(resData.response);

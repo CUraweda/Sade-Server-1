@@ -149,8 +149,8 @@ class StudentService {
 
   showByNis = async (nis, dob) => {
     const message = "Student successfully retrieved!";
-
-    let dt = await this.studentDao.findByNis(nis);
+    if (!dob) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Tolong sertakan tanggal lahir siswa")
+    let dt = await this.studentDao.findByNis(nis, dob);
 
     if (!dt) {
       return responseHandler.returnSuccess(

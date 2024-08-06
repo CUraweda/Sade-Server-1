@@ -77,7 +77,7 @@ class ArrearsDao extends SuperDao{
     })
     }
 
-    async getCount(search, classId) {
+    async getCount(search, classId, filters) {
         const where = {
             status: { [Op.like]: "belum lunas" },
             ["$studentpaymentbill.due_date$"]: {
@@ -90,6 +90,8 @@ class ArrearsDao extends SuperDao{
                 {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
             ]    
         }
+
+        if (filters.post_payment_id) where['$studentpaymentbill.payment_post_id$'] = filters.post_payment_id
         
         if (classId) {
             const students = await StudentClass.findAll({
@@ -125,7 +127,7 @@ class ArrearsDao extends SuperDao{
             ]
         })
     }
-    async getStudentBillsPage(search,offset,limit, classId) {
+    async getStudentBillsPage(search,offset,limit, classId, filters) {
         const where = {
             status: { [Op.like]: "belum lunas" },
             ["$studentpaymentbill.due_date$"]: {
@@ -138,6 +140,8 @@ class ArrearsDao extends SuperDao{
                 {"$studentpaymentbill.due_date$": { [Op.like]: "%" + search + "%"}},
             ]    
         }
+
+        if (filters.post_payment_id) where['$studentpaymentbill.payment_post_id$'] = filters.post_payment_id
         
         if (classId) {
             const students = await StudentClass.findAll({

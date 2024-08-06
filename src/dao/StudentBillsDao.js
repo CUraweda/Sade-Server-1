@@ -165,6 +165,7 @@ class StudentBillsDao extends SuperDao {
 
         if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: formatDateForSQL(filters.start_date) }})
         if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: formatDateForSQL(filters.end_date) }})
+        if (filters.post_payment_id) ands.push({ '$studentpaymentbill.payment_post_id$': filters.post_payment_id  })
 
         where[Op.and] = ands
 
@@ -212,16 +213,20 @@ class StudentBillsDao extends SuperDao {
             group: ['paidoff_date']
         })
     } 
-    async getRecentPaidOffBills(start_date, limit = 5) {
-        return StudentBills.findAll({
-            where: {
-                paidoff_at: {
-                    [Op.gte]: formatDateForSQL(start_date)
-                },
-                status: {
-                    [Op.like]: 'belum lunas'
-                },
+    async getRecentPaidOffBills(start_date, limit = 5, filters) {
+        const where = {
+            paidoff_at: {
+                [Op.gte]: formatDateForSQL(start_date)
             },
+            status: {
+                [Op.like]: 'belum lunas'
+            },
+        }
+
+        if (filters.post_payment_id) where['$studentpaymentbill.payment_post_id$'] = filters.post_payment_id
+
+        return StudentBills.findAll({
+            where,
             include: [
                 {
                     model: Students,

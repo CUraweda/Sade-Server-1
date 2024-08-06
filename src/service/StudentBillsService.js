@@ -202,8 +202,8 @@ class StudentBillsService {
 
       return result2.length ? result2 : result
     }
-    getRecentPaidOffBills = async (start_date, limit = 5) => {
-      return this.studentBillsDao.getRecentPaidOffBills(start_date, limit)
+    getRecentPaidOffBills = async (start_date, limit = 5, filters) => {
+      return this.studentBillsDao.getRecentPaidOffBills(start_date, limit, filters)
     }
 }
 

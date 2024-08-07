@@ -35,8 +35,8 @@ class DashboardController {
       });
       const total = await this.studentBillsService.getIncome({
         post_payment_id,
-        start_date: moment(start_date).toDate(),
-        end_date: moment(end_date).toDate()
+        start_date: start_date ? moment(start_date).toDate() : null,
+        end_date: end_date ? moment(end_date).toDate() : null
       });
 
       // in arrears

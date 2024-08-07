@@ -163,9 +163,6 @@ class StudentBillsDao extends SuperDao {
 
         const ands = []
 
-        console.log("INI LE")
-        console.log(filters)
-
         if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: formatDateForSQL(filters.start_date) }})
         if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: formatDateForSQL(filters.end_date) }})
         if (filters.post_payment_id) ands.push({ '$studentpaymentbill.payment_post_id$': filters.post_payment_id  })

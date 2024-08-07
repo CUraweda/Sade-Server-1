@@ -77,7 +77,6 @@ class StudentPaymentReportDao extends SuperDao{
         })
     }   
     async getByFilter(classes, student, start_date, end_date, payment_category, status) {
-        console.log(classes, student, start_date, end_date, payment_category,status)
         const whereClause = {};
     
         if (classes) whereClause["$studentpaymentbill.class_id$"] = classes;

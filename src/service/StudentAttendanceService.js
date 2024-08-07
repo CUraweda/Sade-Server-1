@@ -55,7 +55,6 @@ class StudentAttendanceService {
 
   createStudentAttendanceBulk = async (reqBody) => {
     try {
-      console.log(reqBody);
       let message = "Student Attendance successfully added.";
       const timeTreshold = moment(userConstant.ONTIME, "HH:mm");
 

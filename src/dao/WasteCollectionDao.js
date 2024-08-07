@@ -71,8 +71,6 @@ class WasteCollectionDao extends SuperDao {
       0,
       0
     );
-    console.log(currentDate);
-    console.log(currentDate.getDay());
     const DateNowEnd = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -576,7 +574,6 @@ async getWasteCollectionPage(search, offset, limit) {
     let currentMonthEnd = new Date();
 
     if (is_current === "1") {
-      console.log(is_current);
       currentMonthStart = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),

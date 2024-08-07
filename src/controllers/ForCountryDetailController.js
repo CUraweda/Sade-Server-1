@@ -18,8 +18,6 @@ class ForCountryDetailController {
       await uploadForCountry(req, res);
       const certificate_path = req.file ? req.file.path : null;
       req.body['certificate_path'] = certificate_path
-      console.log("HELLO")
-      console.log(req.body)
       const resData = await this.forCountryDetailService.createForCountryDetail(req.body);
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -30,9 +28,7 @@ class ForCountryDetailController {
 
   update = async (req, res) => {
     try {
-      console.log(req.body)
       await uploadForCountry(req, res);
-      console.log(req.body)
 
 
       const certificate_path = req.file ? req.file.path : null;

@@ -104,10 +104,6 @@ class MessageService {
   updateMessage = async (id, reqBody) => {
     try {
       let message = "Message successfully updated.";
-
-      console.log(id);
-      console.log(reqBody);
-
       let data = await this.messageDao.updateWhere(
         {
           is_read: reqBody.is_read,

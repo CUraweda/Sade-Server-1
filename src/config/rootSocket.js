@@ -6,7 +6,6 @@ const rootSocket = (io) => {
             socket.join(room);
         });
         socket.on('cc', () => {
-            console.log('JIDASGYDAUHIJ')
             io.emit('cc_refresh')
         })
         socket.on('disconnect', () => {

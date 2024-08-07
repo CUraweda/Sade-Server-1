@@ -43,8 +43,6 @@ class NarrativeReportService {
 
 
     let rel = await this.narrativeReportDao.findById(id);
-    console.log(rel)
-    console.log(id)
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -163,7 +161,6 @@ class NarrativeReportService {
 
       // Convert the sheet data to JSON
       const jsonData = xlsx.utils.sheet_to_json(sheet);
-      console.log(jsonData);
       let data = await this.narrativeReportDao.bulkCreate(jsonData);
 
       if (!data) {

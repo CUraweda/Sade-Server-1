@@ -195,7 +195,6 @@ class StudentClassService {
 
       // Convert the sheet data to JSON
       const jsonData = xlsx.utils.sheet_to_json(sheet);
-      console.log(jsonData);
       let data = await this.studentClassDao.bulkCreate(jsonData);
 
       if (!data) {

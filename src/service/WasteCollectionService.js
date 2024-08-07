@@ -232,7 +232,6 @@ class WasteCollectionService {
 
       // Convert the sheet data to JSON
       const jsonData = xlsx.utils.sheet_to_json(sheet);
-      console.log(jsonData);
       let data = await this.wasteCollectionDao.bulkCreate(jsonData);
 
       if (!data) {

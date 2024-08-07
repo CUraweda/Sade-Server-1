@@ -44,7 +44,6 @@ class BookService {
         {}
       );
     }
-    console.log(body);
     const updateData = await this.bookDao.updateById(body, id);
     //KONDISI UPDATE DATA MASIH MENGHAPUS FILE EKSISTING KETIKA COVER DIISI KOSONG, HARUSNYA TIDAK DIHAPUS
     const rData = rel.dataValues;
@@ -128,7 +127,6 @@ class BookService {
 
       // Convert the sheet data to JSON
       const jsonData = xlsx.utils.sheet_to_json(sheet);
-      console.log(jsonData);
       let data = await this.bookDao.bulkCreate(jsonData);
 
       if (!data) {

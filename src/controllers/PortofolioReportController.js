@@ -30,7 +30,6 @@ class PortofolioReportController {
       var file_path = req.file ? req.file.path : null;
 
       const formData = { ...req.body, file_path };
-      // console.log(formData);
       const { error } = schema.validate(formData, {
         abortEarly: false,
         allowUnknown: true,
@@ -51,8 +50,6 @@ class PortofolioReportController {
           formData.student_report_id,
           formData.type
         );
-
-      // console.log(checkExistance.id);
 
       if (checkExistance) {
         resData = await this.portofolioReportService.updatePortofolioReport(

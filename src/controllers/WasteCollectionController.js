@@ -184,8 +184,6 @@ class WasteCollectionController {
       var id = req.params.id;
       const is_current = req.query.is_current || true;
 
-      console.log("Controller", is_current);
-
       const resData =
         await this.wasteCollectionService.showTargetAchievementByStudentId(
           id,

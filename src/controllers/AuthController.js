@@ -142,7 +142,6 @@ class AuthController {
       await uploadAvatar(req, res);
 
       var id = req.params.id;
-      console.log(req.file);
       const responseData = await this.userService.updateUser(id, req);
 
       // if (req.file === undefined) {

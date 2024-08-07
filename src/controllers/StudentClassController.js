@@ -69,7 +69,7 @@ class StudentClassController {
 
       const resData = await this.studentClassService.showStudentByClass(
         id,
-        academic
+        
       );
 
       res.status(resData.statusCode).send(resData.response);

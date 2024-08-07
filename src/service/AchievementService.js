@@ -50,7 +50,6 @@ class AchievementService {
 
     //delete file if exist
     const rData = cl.dataValues;
-    console.log(rData);
     if (rData.certificate_path) {
       // console.log(rData.cover);
       if (body.certificate_path) {

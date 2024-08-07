@@ -77,7 +77,7 @@ class ArrearsDao extends SuperDao{
     })
     }
 
-    async getCount(search, classId, filters) {
+    async getCount(search, classId, filters = {}) {
         const where = {
             status: { [Op.like]: "belum lunas" },
             ["$studentpaymentbill.due_date$"]: {
@@ -127,7 +127,7 @@ class ArrearsDao extends SuperDao{
             ]
         })
     }
-    async getStudentBillsPage(search,offset,limit, classId, filters) {
+    async getStudentBillsPage(search,offset,limit, classId, filters = {}) {
         const where = {
             status: { [Op.like]: "belum lunas" },
             ["$studentpaymentbill.due_date$"]: {

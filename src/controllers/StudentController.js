@@ -107,8 +107,9 @@ class StudentController {
 
   showNis = async (req, res) => {
     try {
-      var nis = req.params.id;
-      const { dob } = req.query
+      let nis = req.params.id, dob
+      const specifyDOBRoles = [7, 8]
+      if (specifyDOBRoles.includes(req.user.role)) dob = req.query.dob || ""
       const resData = await this.studentService.showByNis(nis, dob);
 
       res.status(resData.statusCode).send(resData.response);

@@ -155,8 +155,7 @@ class WasteCollectionController {
     try {
       var id = req.params.id;
 
-      const resData =
-        await this.wasteCollectionService.showRecapPerWeekByStudentId(id);
+      const resData = await this.wasteCollectionService.showRecapPerWeekByStudentId(id);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

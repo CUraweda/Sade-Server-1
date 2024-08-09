@@ -178,8 +178,10 @@ class NarrativeReportService {
     }
   };
 
-  exportReportByStudentId = async (id, semester) => {
+  exportReportByStudentId = async (id, semester, reportId) => {
     let message = "Narrative Report successfully exported!";
+    if (!semester) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Please specify Semester Query");
+    if (!reportId) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Please specify Report ID Query");
 
     let rel = await this.narrativeReportDao.getByStudentId(id, semester);
 
@@ -195,24 +197,11 @@ class NarrativeReportService {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    const studentRepData = await this.studentReportDao.getByStudentId(
-      id,
-      semester
-    );
-
     const pdfFile = await this.generatePdf(rel, dir);
 
-    if (pdfFile && studentRepData.length > 0) {
-      await this.studentReportDao.updateWhere(
-        {
-          narrative_path: pdfFile,
-        },
-        { id: studentRepData[0].id }
-      );
-    } else {
-      message =
-        "Narrative Report successfully exported, but student report data not found, check again !";
-    }
+    await this.studentReportDao.updateWhere(
+      { narrative_path: pdfFile }, { id: reportId }
+    );
 
     return responseHandler.returnSuccess(httpStatus.OK, message, {
       path: pdfFile,

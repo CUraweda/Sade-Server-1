@@ -369,7 +369,6 @@ class WasteCollectionDao extends SuperDao {
     endOfWeek.setDate(today.getDate() + daysToAdd);
     endOfWeek = endOfWeek.toISOString().split('T')[0] + "T23:59:59.999Z"
 
-
     try {
       const wasteTypes = await WasteTypes.findAll({ raw: true });
       const weekdays = await WeekDay.findAll({ raw: true });
@@ -576,7 +575,6 @@ class WasteCollectionDao extends SuperDao {
       currentMonthEnd = new Date(year, month + 1, 0);
     }
     
-    console.log(currentMonthStart, currentMonthEnd)
 
     return WasteCollection.findAll({
       where: {

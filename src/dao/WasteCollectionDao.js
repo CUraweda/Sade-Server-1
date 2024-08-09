@@ -525,15 +525,18 @@ async getWasteCollectionPage(search, offset, limit) {
   async recapPerWeekByStudentId(id) {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const startOfWeek = new Date(today);
-    const endOfWeek = new Date(today);
+    let startOfWeek = new Date(today);
+    let endOfWeek = new Date(today);
 
+    
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust start of the week based on Sunday
     startOfWeek.setDate(diff);
-
+    startOfWeek = startOfWeek.toISOString().split('T')[0] + "T00:00:00.000Z"
+    
     const daysToAdd = 5 - dayOfWeek + (dayOfWeek === 0 ? 7 : 0); // Adjust end of the week based on Friday
     endOfWeek.setDate(today.getDate() + daysToAdd);
-
+    endOfWeek = endOfWeek.toISOString().split('T')[0] + "T23:59:59.999Z"
+    
     return WeekDay.findAll({
       attributes: [
         [sequelize.literal("weekday.name"), "name"],

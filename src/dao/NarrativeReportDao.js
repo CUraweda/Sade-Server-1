@@ -271,6 +271,7 @@ class NarrativeReportDao extends SuperDao {
 
     const {
       academic_year,
+      student_id,
       class: { class_name },
       student: { full_name, nisn, nis },
     } = sClass;
@@ -284,6 +285,7 @@ class NarrativeReportDao extends SuperDao {
     const result = {
       academic_year,
       class_name,
+      student_id,
       semester,
       full_name,
       nisn,

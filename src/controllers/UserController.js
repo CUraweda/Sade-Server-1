@@ -101,8 +101,8 @@ class AuthController {
 
   changePassword = async (req, res) => {
     try{
-      const user = req.user
       const resData = await this.userService.changePassword(req.body, req.user.uuid)
+      res.status(resData.statusCode).send(resData.response)
     }catch(e){
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);

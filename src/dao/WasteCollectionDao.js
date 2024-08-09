@@ -63,32 +63,10 @@ class WasteCollectionDao extends SuperDao {
     const studentId = id;
 
     const currentDate = new Date();
-    const DateNowStart = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate().toString().padStart(2, "0"),
-      0,
-      0,
-      0
-    );
-    const DateNowEnd = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate().toString().padStart(2, "0"),
-      23,
-      59,
-      59
-    );
-    const firstDayOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      1
-    );
-    const lastDayOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      0
-    );
+    const dateNowStart = new Date(currentDate).toISOString().split('T')[0] + "T00:00:00.000Z"
+    const dateNowEnd = new Date(currentDate).toISOString().split('T')[0] + "T23:59:59.999Z"
+    const firstDayOfMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1)).toISOString().split('T')[0] + "T00:00:00.000Z";
+    const lastDayOfMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)).toISOString().split('T')[0] + "T23:59:59.999Z";
 
     return WasteCollection.findAll({
       attributes: [
@@ -128,8 +106,8 @@ class WasteCollectionDao extends SuperDao {
       },
       group: ["student_class_id"],
       replacements: {
-        nowStart: DateNowStart,
-        nowEnd: DateNowEnd,
+        nowStart: dateNowStart,
+        nowEnd: dateNowEnd,
         startDate: firstDayOfMonth,
         endDate: lastDayOfMonth,
       },
@@ -152,241 +130,245 @@ class WasteCollectionDao extends SuperDao {
     });
   }
 
-async getFilteredCount(filterOptions) {
-  const whereClause = {};
+  async getFilteredCount(filterOptions) {
+    const whereClause = {};
 
     if (filterOptions.waste_type_id) {
-        whereClause['waste_type_id'] = filterOptions.waste_type_id;
+      whereClause['waste_type_id'] = filterOptions.waste_type_id;
     }
 
     if (filterOptions.class_id) {
-        whereClause['$studentclass.class_id$'] = filterOptions.class_id;
+      whereClause['$studentclass.class_id$'] = filterOptions.class_id;
     }
     if (filterOptions.start_date && filterOptions.end_date) {
-        const startDate = new Date(filterOptions.start_date);
-        const endDate = new Date(filterOptions.end_date);
-        
-        startDate.setHours(0, 0, 0, 0); 
-        endDate.setHours(23, 59, 59, 999);
-        
-        whereClause['collection_date'] = {
-            [Op.between]: [startDate, endDate]
-        };
+      const startDate = new Date(filterOptions.start_date);
+      const endDate = new Date(filterOptions.end_date);
+
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      whereClause['collection_date'] = {
+        [Op.between]: [startDate, endDate]
+      };
     } else if (filterOptions.start_date) {
-        const startDate = new Date(filterOptions.start_date);
-        startDate.setHours(0, 0, 0, 0);
-        whereClause['collection_date'] = {
-            [Op.gte]: startDate
-        };
+      const startDate = new Date(filterOptions.start_date);
+      startDate.setHours(0, 0, 0, 0);
+      whereClause['collection_date'] = {
+        [Op.gte]: startDate
+      };
     } else if (filterOptions.end_date) {
-        const endDate = new Date(filterOptions.end_date);
-        endDate.setHours(23, 59, 59, 999); 
-        whereClause['collection_date'] = {
-            [Op.lte]: endDate
-        };
+      const endDate = new Date(filterOptions.end_date);
+      endDate.setHours(23, 59, 59, 999);
+      whereClause['collection_date'] = {
+        [Op.lte]: endDate
+      };
     }
-    
+
     return WasteCollection.count({
-        where: whereClause,
-        include: [
-          {
-            model: StudentClass,
-            as: 'studentclass',
-            include: [
-              {
-                model: Students,
-                as: 'student',
-                attributes: ["nis", "full_name"]
-              }
-            ],
-            attributes: ["*"]
-          },
-          {
-            model: WasteTypes,
-            as: 'wastetype',
-            attributes: ["id", "code", "name", "price"]
-          },
-        ],
-        order: [['collection_date', 'ASC']] // Adjust the sorting as per your requirements
+      where: whereClause,
+      include: [
+        {
+          model: StudentClass,
+          as: 'studentclass',
+          include: [
+            {
+              model: Students,
+              as: 'student',
+              attributes: ["nis", "full_name"]
+            }
+          ],
+          attributes: ["*"]
+        },
+        {
+          model: WasteTypes,
+          as: 'wastetype',
+          attributes: ["id", "code", "name", "price"]
+        },
+      ],
+      order: [['collection_date', 'ASC']] // Adjust the sorting as per your requirements
     });
-}
-async getCount(search) {
-  return WasteCollection.count({
-    where: {
-      [Op.or]: [
-        {
-          '$studentclass.student.nis$': {
-            [Op.like]: "%" + search + "%",
+  }
+  async getCount(search) {
+    return WasteCollection.count({
+      where: {
+        [Op.or]: [
+          {
+            '$studentclass.student.nis$': {
+              [Op.like]: "%" + search + "%",
+            },
           },
+          {
+            '$studentclass.student.full_name$': {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            collection_date: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            waste_type_id: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            weight: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+        ],
+      },
+      include: [
+        {
+          model: StudentClass,
+          as: 'studentclass',
+          include: [
+            {
+              model: Students,
+              as: 'student',
+              attributes: ["nis", "full_name"]
+            }
+          ],
+          attributes: ["*"]
         },
         {
-          '$studentclass.student.full_name$': {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          collection_date: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          waste_type_id: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          weight: {
-            [Op.like]: "%" + search + "%",
-          },
+          model: WasteTypes,
+          as: 'wastetype',
+          attributes: ["id", "code", "name", "price"]
         },
       ],
-    },
-    include: [
-      {
-        model: StudentClass,
-        as: 'studentclass',
-        include: [
+    });
+  }
+  async getWasteCollectionPage(search, offset, limit) {
+    return WasteCollection.findAll({
+      where: {
+        [Op.or]: [
           {
-            model: Students,
-            as: 'student',
-            attributes: ["nis", "full_name"]
-          }
+            "$studentclass.student.nis$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            "$studentclass.student.full_name$": {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            collection_date: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            waste_type_id: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
+          {
+            weight: {
+              [Op.like]: "%" + search + "%",
+            },
+          },
         ],
-        attributes: ["*"]
       },
-      {
-        model: WasteTypes,
-        as: 'wastetype',
-        attributes: ["id", "code", "name", "price"]
-      },
-    ],
-  });
-}
-async getWasteCollectionPage(search, offset, limit) {
-  return WasteCollection.findAll({
-    where: {
-      [Op.or]: [
+      include: [
         {
-          "$studentclass.student.nis$": {
-            [Op.like]: "%" + search + "%",
-          },
+          model: StudentClass,
+          as: 'studentclass',
+          include: [
+            {
+              model: Students,
+              as: 'student',
+              attributes: ["nis", "full_name", "class"]
+            }
+          ],
+          attributes: ["id", "class_id"]
         },
         {
-          "$studentclass.student.full_name$": {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          collection_date: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          waste_type_id: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          weight: {
-            [Op.like]: "%" + search + "%",
-          },
+          model: WasteTypes,
+          as: 'wastetype',
+          attributes: ["id", "code", "name", "price"]
         },
       ],
-    },
-    include: [
-      {
-        model: StudentClass,
-        as: 'studentclass',
-        include: [
-          {
-            model: Students,
-            as: 'student',
-            attributes: ["nis", "full_name", "class"]
-          }
-        ],
-        attributes: ["id", "class_id"]
-      },
-      {
-        model: WasteTypes,
-        as: 'wastetype',
-        attributes: ["id", "code", "name", "price"]
-      },
-    ],
-    limit: limit,  // Add this line
-    offset: offset  // Add this line
-  });
-}
+      limit: limit,  // Add this line
+      offset: offset  // Add this line
+    });
+  }
 
   async getByFilter(filterOptions, limit, offset) {
     const whereClause = {};
 
     if (filterOptions.waste_type_id) {
-        whereClause['waste_type_id'] = filterOptions.waste_type_id;
+      whereClause['waste_type_id'] = filterOptions.waste_type_id;
     }
 
     if (filterOptions.class_id) {
-        whereClause['$studentclass.class_id$'] = filterOptions.class_id;
+      whereClause['$studentclass.class_id$'] = filterOptions.class_id;
     }
     if (filterOptions.start_date && filterOptions.end_date) {
-        const startDate = new Date(filterOptions.start_date);
-        const endDate = new Date(filterOptions.end_date);
-        
-        startDate.setHours(0, 0, 0, 0); 
-        endDate.setHours(23, 59, 59, 999);
-        
-        whereClause['collection_date'] = {
-            [Op.between]: [startDate, endDate]
-        };
+      const startDate = new Date(filterOptions.start_date);
+      const endDate = new Date(filterOptions.end_date);
+
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      whereClause['collection_date'] = {
+        [Op.between]: [startDate, endDate]
+      };
     } else if (filterOptions.start_date) {
-        const startDate = new Date(filterOptions.start_date);
-        startDate.setHours(0, 0, 0, 0);
-        whereClause['collection_date'] = {
-            [Op.gte]: startDate
-        };
+      const startDate = new Date(filterOptions.start_date);
+      startDate.setHours(0, 0, 0, 0);
+      whereClause['collection_date'] = {
+        [Op.gte]: startDate
+      };
     } else if (filterOptions.end_date) {
-        const endDate = new Date(filterOptions.end_date);
-        endDate.setHours(23, 59, 59, 999); 
-        whereClause['collection_date'] = {
-            [Op.lte]: endDate
-        };
+      const endDate = new Date(filterOptions.end_date);
+      endDate.setHours(23, 59, 59, 999);
+      whereClause['collection_date'] = {
+        [Op.lte]: endDate
+      };
     }
-    
+
     return WasteCollection.findAll({
-        where: whereClause,
-        include: [
+      where: whereClause,
+      include: [
+        {
+          model: StudentClass,
+          as: 'studentclass',
+          attributes: ["id", "class_id"],
+          include: [
             {
-                model: StudentClass,
-                as: 'studentclass',
-                attributes: ["id", "class_id"],
-                include: [
-                    {
-                        model: Students,
-                        as: 'student',
-                        attributes: ["nis", "full_name", "class"]
-                    }
-                ]
-            },
-            {
-                model: WasteTypes,
-                as: 'wastetype',
-                attributes: ["id", "code", "name", "price"]
+              model: Students,
+              as: 'student',
+              attributes: ["nis", "full_name", "class"]
             }
-        ],
-        order: [['collection_date', 'ASC']],
-        limit: limit,  
-        offset: offset 
+          ]
+        },
+        {
+          model: WasteTypes,
+          as: 'wastetype',
+          attributes: ["id", "code", "name", "price"]
+        }
+      ],
+      order: [['collection_date', 'ASC']],
+      limit: limit,
+      offset: offset
     });
-}
+  }
   async collectionPerWeekByStudentId(id) {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    const startOfWeek = new Date(today);
-    const endOfWeek = new Date(today);
+    let startOfWeek = new Date(today);
+    let endOfWeek = new Date(today);
+
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust start of the week based on Sunday
     startOfWeek.setDate(diff);
+    startOfWeek = startOfWeek.toISOString().split('T')[0] + "T00:00:00.000Z"
 
     const daysToAdd = 5 - dayOfWeek + (dayOfWeek === 0 ? 7 : 0); // Adjust end of the week based on Friday
     endOfWeek.setDate(today.getDate() + daysToAdd);
+    endOfWeek = endOfWeek.toISOString().split('T')[0] + "T23:59:59.999Z"
+
 
     try {
       const wasteTypes = await WasteTypes.findAll({ raw: true });
@@ -528,15 +510,15 @@ async getWasteCollectionPage(search, offset, limit) {
     let startOfWeek = new Date(today);
     let endOfWeek = new Date(today);
 
-    
+
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust start of the week based on Sunday
     startOfWeek.setDate(diff);
     startOfWeek = startOfWeek.toISOString().split('T')[0] + "T00:00:00.000Z"
-    
+
     const daysToAdd = 5 - dayOfWeek + (dayOfWeek === 0 ? 7 : 0); // Adjust end of the week based on Friday
     endOfWeek.setDate(today.getDate() + daysToAdd);
     endOfWeek = endOfWeek.toISOString().split('T')[0] + "T23:59:59.999Z"
-    
+
     return WeekDay.findAll({
       attributes: [
         [sequelize.literal("weekday.name"), "name"],
@@ -577,16 +559,8 @@ async getWasteCollectionPage(search, offset, limit) {
     let currentMonthEnd = new Date();
 
     if (is_current === "1") {
-      currentMonthStart = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
-      );
-      currentMonthEnd = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() + 1,
-        0
-      );
+      currentMonthStart = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1)).toISOString().split('T')[0] + "T00:00:00.000Z";
+      currentMonthEnd = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)).toISOString().split('T')[0] + "T23:59:59.999Z";
     } else {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth() - 1; // Subtract 1 to get the previous month
@@ -601,6 +575,8 @@ async getWasteCollectionPage(search, offset, limit) {
       currentMonthStart = new Date(year, month, day);
       currentMonthEnd = new Date(year, month + 1, 0);
     }
+    
+    console.log(currentMonthStart, currentMonthEnd)
 
     return WasteCollection.findAll({
       where: {
@@ -628,7 +604,7 @@ async getWasteCollectionPage(search, offset, limit) {
       ],
       group: ["student_class_id"],
     });
-    
+
   }
 
   async getTotalWeight(startDate, endDate) {
@@ -650,6 +626,6 @@ async getWasteCollectionPage(search, offset, limit) {
     const result = await WasteCollection.sum('weight', { where: whereClause });
     return result;
   }
-  
+
 }
 module.exports = WasteCollectionDao;

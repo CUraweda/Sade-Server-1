@@ -17,7 +17,7 @@ router.post(
 
 router.put(
   "/update/:id",
-  auth([1, 5]),
+  auth([1, 6, 5]),
   employeeValidator.employeeCreateUpdateValidator,
   employeeController.update
 );

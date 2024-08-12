@@ -145,22 +145,22 @@ class NumberReportService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
-  
+
   deleteAllNumberReports = async () => {
     const message = "All Number Reports successfully deleted!";
-  
+
     let rel = await this.numberReportDao.deleteAll();
-  
+
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
         "No Number Reports found to delete!"
       );
     }
-  
+
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
-  
+
 
   showNumberReportByStudentId = async (id, semester) => {
     const message = "Number Report successfully retrieved!";
@@ -659,12 +659,12 @@ class NumberReportService {
     });
     let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
     let subjects = await this.subjectDao.getAll(data)
-    if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
+    if (!subjects || subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
     subjects.forEach((subject, i) => {
-      if(!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
-      if(!rowsData[subject.code][1]){
+      if (!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
+      if (!rowsData[subject.code][1]) {
         rowsData[subject.code].push(subject.name)
-        rowsData[subject.code].push(formatter.format( subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0),)
+        rowsData[subject.code].push(formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0),)
         rowsData[subject.code].push("0,00")
         rowsData[subject.code].push("nol")
       }
@@ -676,10 +676,10 @@ class NumberReportService {
         rowsData[item.subject_code][4] = item.grade_text
       }
     }
-    
+
     return { rowsData }
   }
-  
+
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";
 

@@ -85,7 +85,7 @@ class SuperDao {
                 .then((result) => {
                     return result;
                 })
-                .catch((e) => {
+            .catch((e) => {
                     logger.error(e);
                     console.log(e);
                 });

@@ -222,7 +222,7 @@ class NumberReportService {
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
-        "Number Report not found!",
+        "Number Report or other data not found!",
         {}
       );
     }

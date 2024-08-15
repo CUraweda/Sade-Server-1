@@ -1,14 +1,17 @@
 const httpStatus = require("http-status");
 const StudentClassDao = require("../dao/StudentClassDao");
+const StudentDao = require("../dao/StudentDao")
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
 const xlsx = require("xlsx");
 const { Op } = require("sequelize");
-
+const ClassesDao = require("../dao/ClassesDao");
 class StudentClassService {
   constructor() {
     this.studentClassDao = new StudentClassDao();
+    this.studentDao = new StudentDao()
+    this.classDao = new ClassesDao()
   }
 
   // createStudentClass = async (reqBody) => {
@@ -43,7 +46,7 @@ class StudentClassService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
 
-      // Update another record with the same student_id and academic_year not equal to reqBody.academic_year
+      await this.studentDao.updateClass(data.student_id, data.class_id)
       await this.studentClassDao.updateWhere(
         { is_active: "Tidak" }, // Update fields
         {

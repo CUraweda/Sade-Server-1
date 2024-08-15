@@ -210,6 +210,10 @@ class NumberReportDao extends SuperDao {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+
+    const student = await Students.findById(id)
+    if(!student) return false
+
     const personality = await StudentPersonality.findAll({
       where: { "$studentclass.student.id$": id },
       include: [
@@ -233,6 +237,8 @@ class NumberReportDao extends SuperDao {
         },
       ],
     });
+
+    if(personality.length < 1) return false
 
     const attendance = await this.studentAttendance.getRecapByStudentId(
       id,
@@ -272,6 +278,8 @@ class NumberReportDao extends SuperDao {
       order: [[{ model: Subjects }, 'id', 'ASC']],
     });
 
+    if(reports.length < 1) return false
+
     // Extracting necessary information
     const {
       studentreport: {
@@ -287,6 +295,8 @@ class NumberReportDao extends SuperDao {
     const signers = await ReportSigners.findAll({
       where: { class_id: class_id },
     });
+
+    if(signers.length < 1) return false
 
     const { head, form_teacher, sign_at } = signers[0] || {};
 

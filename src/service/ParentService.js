@@ -83,14 +83,14 @@ class ParentService {
       );
     }
 
-    // let check = await this.parentDao.getCountByWhere({ 
-    //   id: {
-    //     [Op.not]: id
-    //   }, 
-    //   user_id: body.user_id, 
-    // })
+    let check = await this.parentDao.getCountByWhere({ 
+      id: {
+        [Op.not]: id
+      }, 
+      user_id: body.user_id, 
+    })
 
-    // if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User parent already linked")
+    if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User parent already linked")
 
     const updateData = await this.parentDao.updateWhere(
       {

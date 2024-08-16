@@ -65,13 +65,15 @@ class UserAccessController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const { ortu_only, level, class_name } = req.query  
       const offset = limit * page;
 
       const resData = await this.userAccessService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        { ortu_only, level, class_name }
       );
 
       res.status(resData.statusCode).send(resData.response);

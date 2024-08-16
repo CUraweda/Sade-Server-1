@@ -85,7 +85,7 @@ class StudentClassController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const classId = req.query.class_id || "";
-      const academicYear = req.query.academic || "";
+      const academicYear = req.query.academic || "";z
       const offset = limit * page;
 
       const resData = await this.studentClassService.showPage(

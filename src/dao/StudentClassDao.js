@@ -105,7 +105,7 @@ class StudentClassDao extends SuperDao {
     });
   }
 
-  async getCount(search, classId, academic) {
+  async getCount(search, classId, academic, class_id) {
     const where = {
       [Op.or]: [
         {

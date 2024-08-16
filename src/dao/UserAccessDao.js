@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const UserAccess = models.useraccess;
 const Students = models.students;
 const Users = models.user;
+const StudentClass = models.studentclass
 const Parents = models.parents;
 const Roles = models.roles;
 
@@ -29,7 +30,8 @@ class UserAccessDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(search, filter) {
+    const { ortu_only, level, class_name } = filter
     return UserAccess.count({
       where: {
         [Op.or]: [
@@ -44,19 +46,25 @@ class UserAccessDao extends SuperDao {
             },
           },
         ],
+        ...(ortu_only === "1" && { "$user.role_id$": 8 }),
+        ...(level && { "$student.level$": { [Op.like]: `%${level}%` } }),
+        ...(class_name && { "$student.class$": { [Op.like]: `%${class_name}%` } })
       },
       include: [
         {
           model: Students,
+          required: true,
         },
         {
           model: Users,
+          required: true
         },
       ],
     });
   }
-
-  async getUserAccessPage(search, offset, limit) {
+  
+  async getUserAccessPage(search, offset, limit, filter) {
+    const { ortu_only, level, class_name } = filter
     return UserAccess.findAll({
       where: {
         [Op.or]: [
@@ -71,14 +79,20 @@ class UserAccessDao extends SuperDao {
             },
           },
         ],
+        ...(ortu_only === "1" && { "$user.role_id$": 8 }),
+        ...(level && { "$student.level$": { [Op.like]: `%${level}%` } }),
+        ...(class_name && { "$student.class$": { [Op.like]: `%${class_name}%` } })
+
       },
       offset, limit,
       include: [
         {
           model: Students,
+          required: true
         },
         {
           model: Users,
+          required: true,
           attributes: ["id", "uuid", "role_id", "full_name", "email"],
           include: [
             {

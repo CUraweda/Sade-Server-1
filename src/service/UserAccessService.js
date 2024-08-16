@@ -79,14 +79,15 @@ class UserAccessService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.userAccessDao.getCount(search);
+  async showPage(page, limit, search, offset, filter) {
+    const totalRows = await this.userAccessDao.getCount(search, filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.userAccessDao.getUserAccessPage(
       search,
       offset,
-      limit
+      limit,
+      filter
     );
 
     return responseHandler.returnSuccess(

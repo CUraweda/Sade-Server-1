@@ -23,7 +23,8 @@ class ParentValidator {
 			field_of_work: Joi.string().optional(),
       user_id: Joi.number().integer().optional(),
       latitude: Joi.number().optional(),
-      longitude: Joi.number().optional()
+      longitude: Joi.number().optional(),
+      nik: Joi.string().optional()
 		});
 
     // schema options

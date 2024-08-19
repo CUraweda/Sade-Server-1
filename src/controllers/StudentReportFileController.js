@@ -108,11 +108,16 @@ class StudentReportFileController {
       const { employee } = req.user;
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
-      const search = req.query.search_query || "";
       const offset = limit * page;
 
-      const { class_id, student_id, academic, semester, with_assign } =
-        req.query;
+      const {
+        search_query,
+        class_id,
+        student_id,
+        academic,
+        semester,
+        with_assign,
+      } = req.query;
 
       let class_ids = [];
       if (employee && with_assign == "Y") {
@@ -133,11 +138,11 @@ class StudentReportFileController {
         limit,
         offset,
         {
-          search,
+          search: search_query,
           student_id,
           academic,
           semester,
-          class_ids: [...class_ids, class_id],
+          class_ids: class_id ? [class_id] : class_ids,
         }
       );
 
@@ -163,7 +168,7 @@ class StudentReportFileController {
 
   downloadFile = async (req, res) => {
     try {
-      const filePath = req.query.filepath;
+      const filePath = req.query.file_path;
 
       if (!filePath) {
         return res.status(httpStatus.BAD_REQUEST).send({

@@ -29,9 +29,6 @@ class UserDao extends SuperDao {
           required: false,
           include: {
             model: Students,
-            attributes: {
-              exclude: ["student_id"]
-            }  
           }
         },
         {
@@ -145,9 +142,6 @@ class UserDao extends SuperDao {
           required: false,
           include: {
             model: Students,
-            attributes: {
-              exclude: ["student_id"]
-            }  
           }
         },
         {

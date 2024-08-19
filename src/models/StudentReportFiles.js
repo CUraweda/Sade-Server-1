@@ -9,12 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      StudentReportFiles.hasMany(models.students, { foreignKey: "student_id" });
+      StudentReportFiles.belongsTo(models.students, {
+        foreignKey: "student_id",
+      });
+
     }
   }
   StudentReportFiles.init(
     {
-      student_id: DataTypes.INTEGER,
+      user_id: DataTypes.INTEGER,
       file_path: DataTypes.STRING,
       academic_year: DataTypes.STRING,
       semester: DataTypes.INTEGER,

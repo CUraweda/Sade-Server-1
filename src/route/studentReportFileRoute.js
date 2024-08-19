@@ -16,4 +16,10 @@ router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), controller.showAll);
 
 router.delete("/delete/:id", auth([1, 6]), controller.delete);
 
+router.get(
+  "/download",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  controller.downloadFile
+);
+
 module.exports = router;

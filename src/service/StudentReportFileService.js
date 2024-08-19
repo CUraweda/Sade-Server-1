@@ -30,6 +30,17 @@ class StudentReportFileService {
         "Data rapor siswa Tidak Ada"
       );
 
+    const dataVal = dataExist.dataValues;
+    if (dataVal.file_path) {
+      if (body.file_path) {
+        fs.unlink(dataVal.file_path, (err) => {
+          if (err) {
+            console.log("Cannot delete student report file");
+          }
+        });
+      }
+    }
+
     const data = await this.studentReportFileDao.updateWhere(body, { id });
     if (!data)
       return responseHandler.returnError(
@@ -38,13 +49,29 @@ class StudentReportFileService {
       );
 
     return responseHandler.returnSuccess(
-      httpStatus.CREATED,
+      httpStatus.OK,
       "Data rapor siswa Berhasil diperbaharui",
       {}
     );
   };
 
   delete = async (id) => {
+    const dataExist = await this.studentReportFileDao.findById(id);
+    if (!dataExist)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Data rapor siswa Tidak Ada"
+      );
+
+    const dataVal = dataExist.dataValues;
+    if (dataVal.file_path) {
+      fs.unlink(dataVal.file_path, (err) => {
+        if (err) {
+          console.log("Cannot delete student report file");
+        }
+      });
+    }
+
     const data = await this.studentReportFileDao.deleteByWhere({ id });
     if (!data)
       return responseHandler.returnError(
@@ -53,7 +80,7 @@ class StudentReportFileService {
       );
 
     return responseHandler.returnSuccess(
-      httpStatus.CREATED,
+      httpStatus.OK,
       "Data rapor siswa Berhasil dihapus",
       {}
     );

@@ -1,5 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
+const { Op } = require("sequelize");
 
 const StudentReportFiles = models.studentreportfiles;
 const StudentClass = models.studentclass;
@@ -15,7 +16,7 @@ class StudentReportFilesDao extends SuperDao {
 
     if (academic) where["academic_year"] = academic;
     if (semester) where["semester"] = semester;
-    if (class_ids) {
+    if (Array.isArray(class_ids) && class_ids.length > 0) {
       const students = await StudentClass.findAll({
         where: {
           class_id: {
@@ -44,7 +45,7 @@ class StudentReportFilesDao extends SuperDao {
 
     if (academic) where["academic_year"] = academic;
     if (semester) where["semester"] = semester;
-    if (class_ids) {
+    if (Array.isArray(class_ids) && class_ids.length > 0) {
       const students = await StudentClass.findAll({
         where: {
           class_id: {
@@ -58,7 +59,7 @@ class StudentReportFilesDao extends SuperDao {
     }
     if (student_id) where["student_id"] = student_id;
 
-    return StudentReportFiles.count({
+    return StudentReportFiles.findAll({
       where,
       include: [
         {

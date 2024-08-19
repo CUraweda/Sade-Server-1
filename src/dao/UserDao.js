@@ -137,13 +137,13 @@ class UserDao extends SuperDao {
     return User.findOne({
       where: { uuid },
       include: [
-        {
-          model: UserAccess,
-          required: false,
-          include: {
-            model: Students,
-          }
-        },
+        // {
+        //   model: UserAccess,
+        //   required: false,
+        //   include: {
+        //     model: Students,
+        //   }
+        // },
         {
           model: Employee,
           required: false,

@@ -11,8 +11,21 @@ class StudentReportFilesDao extends SuperDao {
     super(StudentReportFiles);
   }
 
-  async getCount({ student_id, academic, semester, class_ids }) {
-    const where = {};
+  async getCount({ search, student_id, academic, semester, class_ids }) {
+    const where = {
+      [Op.or]: [
+        {
+          ["$student.full_name$"]: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          ["academic_year"]: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    };
 
     if (academic) where["academic_year"] = academic;
     if (semester) where["semester"] = semester;
@@ -40,8 +53,25 @@ class StudentReportFilesDao extends SuperDao {
     });
   }
 
-  async getPage(offset, limit, { student_id, academic, semester, class_ids }) {
-    const where = {};
+  async getPage(
+    offset,
+    limit,
+    { search, student_id, academic, semester, class_ids }
+  ) {
+    const where = {
+      [Op.or]: [
+        {
+          ["$student.full_name$"]: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          ["academic_year"]: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    };
 
     if (academic) where["academic_year"] = academic;
     if (semester) where["semester"] = semester;

@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const StudentReportFileDao = require("../dao/StudentReportFileDao");
 const responseHandler = require("../helper/responseHandler");
+const fs = require("fs");
 
 class StudentReportFileService {
   constructor() {

@@ -20,6 +20,9 @@ class UserAccessDao extends SuperDao {
       include: [
         {
           model: Students,
+          attributes: {
+            exclude: ["student_id"]
+          },
           include: [
             {
               model: Parents,
@@ -53,6 +56,9 @@ class UserAccessDao extends SuperDao {
       include: [
         {
           model: Students,
+          attributes: {
+            exclude: ["student_id"]
+          },    
           required: true,
         },
         {
@@ -88,7 +94,10 @@ class UserAccessDao extends SuperDao {
       include: [
         {
           model: Students,
-          required: true
+          required: true,
+          attributes: {
+            exclude: ["student_id"]
+          },
         },
         {
           model: Users,

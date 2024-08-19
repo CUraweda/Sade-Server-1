@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   StudentReportFiles.init(
     {
-      user_id: DataTypes.INTEGER,
+      student_id: DataTypes.INTEGER,
       file_path: DataTypes.STRING,
       academic_year: DataTypes.STRING,
       semester: DataTypes.INTEGER,

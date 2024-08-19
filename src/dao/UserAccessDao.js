@@ -20,6 +20,7 @@ class UserAccessDao extends SuperDao {
       include: [
         {
           model: Students,
+          required: true,
           attributes: {
             exclude: ["student_id"]
           },

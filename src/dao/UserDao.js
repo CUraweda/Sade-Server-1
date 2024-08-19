@@ -24,13 +24,16 @@ class UserDao extends SuperDao {
     return User.findOne({
       where: { email },
       include: [
-        // {
-        //   model: UserAccess,
-        //   required: false,
-        //   include: {
-        //     model: Students,
-        //   }
-        // },
+        {
+          model: UserAccess,
+          required: false,
+          include: {
+            model: Students,
+            attributes: {
+              exclude: ["student_id"]
+            }  
+          }
+        },
         {
           model: Employee,
           required: false,
@@ -137,13 +140,16 @@ class UserDao extends SuperDao {
     return User.findOne({
       where: { uuid },
       include: [
-        // {
-        //   model: UserAccess,
-        //   required: false,
-        //   include: {
-        //     model: Students,
-        //   }
-        // },
+        {
+          model: UserAccess,
+          required: false,
+          include: {
+            model: Students,
+            attributes: {
+              exclude: ["student_id"]
+            }  
+          }
+        },
         {
           model: Employee,
           required: false,

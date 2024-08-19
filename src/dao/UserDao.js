@@ -29,7 +29,6 @@ class UserDao extends SuperDao {
           required: false,
           include: {
             model: Students,
-            required: false
           }
         },
         {

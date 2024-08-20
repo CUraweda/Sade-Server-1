@@ -65,7 +65,7 @@ class AuthController {
     try {
         await uploadAvatar(req, res);
         
-        const user_file = req.file ? req.file.path : null;
+        const user_file = req.file?.path ?? null;
         let formData;
         
         if (user_file) formData = { ...req.body, avatar: user_file };

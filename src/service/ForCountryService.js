@@ -25,6 +25,28 @@ class ForCountryService {
       );
     }
   };
+
+  createBulkForCountry = async (reqBody) => {
+    try {
+      const { user_ids } = reqBody
+      delete reqBody.user_ids
+      const body = user_ids.map(user_id => ({
+        ...reqBody, user_id
+      }))
+
+      let data = await this.forCountryDao.bulkCreate(body);
+      if (!data) {
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, "Failed To Bulk Create For Country");
+      }
+      return responseHandler.returnSuccess(httpStatus.CREATED, "Successfully Bulk Create For Country", data);
+    } catch (e) {
+      logger.error(e);
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Something went wrong!"
+      );
+    }
+  };
   
   updateForCountry = async (id, body) => {
     const message = "One day for your country successfully updated!";

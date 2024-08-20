@@ -2,7 +2,6 @@ const httpStatus = require("http-status");
 const UserAccessDao = require("../dao/UserAccessDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
-const { userConstant } = require("../config/constant");
 
 class UserAccessService {
   constructor() {

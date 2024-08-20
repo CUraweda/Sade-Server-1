@@ -14,6 +14,12 @@ router.post(
   //   forCountryValidator.forCountryCreateUpdateValidator,
   forCountryController.create
 );
+router.post(
+  "/create-bulk",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  //   forCountryValidator.forCountryCreateUpdateValidator,
+  forCountryController.createBulk
+);
 
 router.put(
   "/update/:id",

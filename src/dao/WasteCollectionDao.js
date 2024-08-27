@@ -74,7 +74,7 @@ class WasteCollectionDao extends SuperDao {
           sequelize.fn(
             "SUM",
             sequelize.literal(
-              "DISTINCT CASE WHEN DATE(`wastecollection`.`collection_date`) BETWEEN :nowStart AND :nowEnd THEN weight END"
+              "CASE WHEN DATE(`wastecollection`.`collection_date`) BETWEEN :nowStart AND :nowEnd THEN weight END"
             )
           ),
           "today",
@@ -83,7 +83,7 @@ class WasteCollectionDao extends SuperDao {
           sequelize.fn(
             "SUM",
             sequelize.literal(
-              "DISTINCT CASE WHEN DATE(`wastecollection`.`collection_date`) BETWEEN :startDate AND :endDate THEN `weight` END"
+              "CASE WHEN DATE(`wastecollection`.`collection_date`) BETWEEN :startDate AND :endDate THEN `weight` END"
             )
           ),
           "this_month",

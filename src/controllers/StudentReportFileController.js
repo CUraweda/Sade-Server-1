@@ -153,6 +153,29 @@ class StudentReportFileController {
     }
   };
 
+  showByStudent = async (req, res) => {
+    try {
+      const studentId = req.params.student_id
+      const {academic, semester, search_query} = req.query
+
+      const resData = await this.studentReportFileController.showPage(
+        0,
+        undefined,
+        0,
+        {
+          search: search_query,
+          student_id: studentId,
+          academic,
+          semester
+        }
+      )
+      res.status(resData.statusCode).send({...resData.response, data: resData.response.data.result});
+    } catch(e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);      
+    }
+  }
+
   delete = async (req, res) => {
     try {
       var id = req.params.id;

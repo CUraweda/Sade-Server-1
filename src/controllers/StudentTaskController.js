@@ -59,7 +59,6 @@ class StudentTaskController {
       var up_file = req.file ? req.file.path : null;
 
       const formData = { ...req.body, up_file };
-      console.log(req.body)
       const { error } = schema.validate(formData, {
         abortEarly: false,
         allowUnknown: true,

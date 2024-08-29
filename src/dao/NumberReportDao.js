@@ -211,7 +211,7 @@ class NumberReportDao extends SuperDao {
       maximumFractionDigits: 2,
     });
 
-    const student = await Students.findById(id)
+    const student = await Students.findOne({ where: { id } })
     if(!student) return false
 
     const personality = await StudentPersonality.findAll({

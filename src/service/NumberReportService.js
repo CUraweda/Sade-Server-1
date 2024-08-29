@@ -166,10 +166,11 @@ class NumberReportService {
     const message = "Number Report successfully retrieved!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester);
+    console.log(rel)
 
     if (!rel) {
       return responseHandler.returnSuccess(
-        httpStatus.OK,
+        httpStatus.NOT_FOUND,
         "Number Report not found!",
         {}
       );
@@ -217,11 +218,11 @@ class NumberReportService {
   exportReportByStudentId = async (id, semester) => {
     const message = "Number Report successfully exported!";
 
-    let rel = await this.numberReportDao.getByStudentId(id, semester);
+    let rel = await this.numberReportDao.getByStudentId(id, semester, true);
 
     if (!rel) {
       return responseHandler.returnSuccess(
-        httpStatus.OK,
+        httpStatus.NOT_FOUND,
         "Number Report or other data not found!",
         {}
       );

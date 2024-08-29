@@ -205,15 +205,17 @@ class NumberReportDao extends SuperDao {
     });
   }
 
-  async getByStudentId(id, semester) {
+  async getByStudentId(id, semester, strict = false) {
     const formatter = new Intl.NumberFormat("id-ID", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
 
     const student = await Students.findOne({ where: { id } })
+    console.log(student)
     if(!student) return false
-
+    console.log(student)
+    
     const personality = await StudentPersonality.findAll({
       where: { "$studentclass.student.id$": id },
       include: [
@@ -238,7 +240,7 @@ class NumberReportDao extends SuperDao {
       ],
     });
 
-    if(personality.length < 1) return false
+    if( strict && personality.length < 1) return false
 
     const attendance = await this.studentAttendance.getRecapByStudentId(
       id,
@@ -278,7 +280,7 @@ class NumberReportDao extends SuperDao {
       order: [[{ model: Subjects }, 'id', 'ASC']],
     });
 
-    if(reports.length < 1) return false
+    if( strict && reports.length < 1) return false
 
     // Extracting necessary information
     const {
@@ -296,7 +298,7 @@ class NumberReportDao extends SuperDao {
       where: { class_id: class_id },
     });
 
-    if(signers.length < 1) return false
+    if(strict && signers.length < 1) return false
 
     const { head, form_teacher, sign_at } = signers[0] || {};
 

@@ -147,7 +147,6 @@ class UserDao extends SuperDao {
         {
           model: Employee,
           required: false,
-          attributes: ["id", "full_name"],
           include: [
             {
               model: Headmaster,

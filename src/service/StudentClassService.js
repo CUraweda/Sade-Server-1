@@ -35,9 +35,24 @@ class StudentClassService {
   //   }
   // };
 
+  updateAndSecureStudentClasss = async (secured_id, student_data) => {
+    const { student_id, class_id } = student_data
+    await this.studentDao.updateClass(student_id, class_id)
+    return await this.studentClassDao.updateWhere(
+      { is_active: "Tidak" },
+      {
+        student_id,
+        is_active: "Ya",
+        id: { [Op.not]: secured_id }
+      }
+    );
+
+  }
+
   createStudentClass = async (reqBody) => {
     try {
       let message = "Student Class successfully added.";
+
 
       let data = await this.studentClassDao.create(reqBody);
 
@@ -46,15 +61,7 @@ class StudentClassService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
 
-      await this.studentDao.updateClass(data.student_id, data.class_id)
-      await this.studentClassDao.updateWhere(
-        { is_active: "Tidak" }, // Update fields
-        {
-          student_id: reqBody.student_id,
-          academic_year: { [Op.ne]: reqBody.academic_year }, // Not equal condition
-        }
-      );
-
+      await this.updateAndSecureStudentClasss(data.id, data)
       return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
     } catch (e) {
       logger.error(e);
@@ -88,9 +95,9 @@ class StudentClassService {
       { id }
     );
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
-    }
+    if (!updateData) return responseHandler.returnError(httpStatus.NOT_FOUND, "Failed to udpate student class");
+    if (body.is_active === "Ya") await this.updateAndSecureStudentClasss(id, body)
+    return responseHandler.returnSuccess(httpStatus.OK, message, {});
   };
 
   showStudentClass = async (id) => {

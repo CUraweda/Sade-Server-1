@@ -161,11 +161,11 @@ class StudentDao extends SuperDao {
   }
 
   async updateClass(student_id, class_id) {
-    const classData = await Classes.findOne({ id: class_id })
+    const classData = await Classes.findOne({ where: { id: class_id } })
     return Students.update({
       class: classData.class_name,
       level: classData.level
-    }, { where: { id: student_id } })
+    }, { where: { id: student_id} })
   }
 }
 module.exports = StudentDao;

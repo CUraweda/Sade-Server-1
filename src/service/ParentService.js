@@ -111,7 +111,8 @@ class ParentService {
         field_of_work: body.field_of_work,
         user_id: body.user_id,
         latitude: body.latitude,
-        longitude: body.longitude
+        longitude: body.longitude,
+        nik: body.nik
       },
       { id }
     );

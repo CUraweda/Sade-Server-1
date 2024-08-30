@@ -254,6 +254,8 @@ class StudentAttendanceDao extends SuperDao {
           // Other options related to the association can be specified here
         },
       ],
+      offset: offset,
+      limit: limit,
       order: [
         [{ model: StudentClass, as: 'studentclass' }, { model: Students, as: 'student' }, 'full_name', 'ASC'],
       ],

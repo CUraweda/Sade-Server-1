@@ -142,15 +142,18 @@ class AuthController {
       await uploadAvatar(req, res);
 
       var id = req.params.id;
-      const responseData = await this.userService.updateUser(id, req);
-
-      // if (req.file === undefined) {
-      //   return res.status(httpStatus.BAD_REQUEST).send({
-      //     status: false,
-      //     code: httpStatus.BAD_REQUEST,
-      //     message: "Please upload a file!",
-      //   });
-      // }
+      const { full_name, email, role_id, status, email_verified } = req.body;
+      const file = req.file;
+  
+      const responseData = await this.userService.updateUser(id, { full_name, email, role_id, status, email_verified, file });
+  
+      if (req.file === undefined) {
+        return res.status(httpStatus.BAD_REQUEST).send({
+          status: false,
+          code: httpStatus.BAD_REQUEST,
+          message: "Please upload a file!",
+        });
+      }
 
       res.status(responseData.statusCode).send(responseData.response);
     } catch (e) {

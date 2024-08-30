@@ -4,7 +4,7 @@ const path = require("node:path");
 
 const fs = require("fs");
 
-const dir = "./avatar/";
+const dir = "./files/old_reports/";
 
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
@@ -17,19 +17,19 @@ var storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     // console.log(file.originalname);
-    cb(null, Date.now() + path.extname(file.originalname)); //Appending extension
+    cb(null, Date.now() + "_old_report" + path.extname(file.originalname)); //Appending extension
   },
 });
 
 //file filter for extention
 var fileFilter = function (req, file, cb) {
   // console.log(file.mimetype);
-  const allowedMimes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+  const allowedMimes = ["application/pdf"];
 
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb("Please upload only jpg, jpeg, png, gif file.", false);
+    cb("Please upload only pdf file.", false);
   }
 };
 
@@ -39,7 +39,7 @@ const uploadFile = multer({
   storage: storage,
   limits: { fileSize: 5000000 },
   fileFilter: fileFilter,
-}).single("avatar");
+}).single("file");
 
 let uploadFileMiddleware = util.promisify(uploadFile);
 module.exports = uploadFileMiddleware;

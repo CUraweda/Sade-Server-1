@@ -187,7 +187,7 @@ class UserService {
         role_id: body.role_id,
         status: body.status,
         email_verified: body.email_verified,
-        avatar: body.avatar || null,
+        avatar: body.avatar?.path || null,
       },
       { id }
     );

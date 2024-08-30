@@ -15,7 +15,7 @@ class ClassesDao extends SuperDao {
   }
 
   async getCount(filter) {
-    const { search, employee_id } = filter
+    const { search, employee_id, is_active } = filter
     let levels = [], classIds = []
 
     if (employee_id) {

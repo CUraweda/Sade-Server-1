@@ -111,12 +111,12 @@ class StudentReportFileController {
       const offset = limit * page;
 
       const {
-        search_query,
-        class_id,
-        student_id,
-        academic,
-        semester,
-        with_assign,
+        search_query = "",
+        class_id = "",
+        student_id = "",
+        academic = "",
+        semester = "",
+        with_assign = "",
       } = req.query;
 
       let class_ids = [];
@@ -156,7 +156,7 @@ class StudentReportFileController {
   showByStudent = async (req, res) => {
     try {
       const studentId = req.params.student_id
-      const {academic, semester, search_query} = req.query
+      const {academic = "", semester = "", search_query = ""} = req.query
 
       const resData = await this.studentReportFileController.showPage(
         0,

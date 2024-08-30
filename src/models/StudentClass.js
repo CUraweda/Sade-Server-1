@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       academic_year: DataTypes.STRING,
       student_id: DataTypes.INTEGER,
       class_id: DataTypes.INTEGER,
-      is_active: DataTypes.BOOLEAN,
+      is_active: DataTypes.STRING,
     },
     {
       sequelize,

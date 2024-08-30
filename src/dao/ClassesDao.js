@@ -131,7 +131,7 @@ class ClassesDao extends SuperDao {
 
     return Classes.findAll({
       where: {
-        ...(is_active == "Y" && { is_active: true }),
+        // ...(is_active == "Y" && { is_active: true }),
         [Op.and]: [
           (employee_id && {
             [Op.or]: {

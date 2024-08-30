@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       is_active: DataTypes.STRING,
     },
     {
-      sequelize,
+    sequelize,
       modelName: "studentclass",
       tableName: "tbl_students_in_class",
       underscored: true,

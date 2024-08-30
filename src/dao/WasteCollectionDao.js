@@ -63,55 +63,36 @@ class WasteCollectionDao extends SuperDao {
     const studentId = id;
 
     const currentDate = new Date();
-    const dateNowStart = new Date(currentDate).toISOString().split('T')[0] + "T00:00:00.000Z"
-    const dateNowEnd = new Date(currentDate).toISOString().split('T')[0] + "T23:59:59.999Z"
+    const currentDateNumber = currentDate.getDate()
     const firstDayOfMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 1)).toISOString().split('T')[0] + "T00:00:00.000Z";
     const lastDayOfMonth = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)).toISOString().split('T')[0] + "T23:59:59.999Z";
 
-    return WasteCollection.findAll({
-      attributes: [
-        [
-          sequelize.fn(
-            "SUM",
-            sequelize.literal(
-              "DISTINCT CASE WHEN DATE(`wastecollection`.`collection_date`) BETWEEN :nowStart AND :nowEnd THEN weight END"
-            )
-          ),
-          "today",
-        ],
-        [
-          sequelize.fn(
-            "SUM",
-            sequelize.literal(
-              "DISTINCT CASE WHEN DATE(`wastecollection`.`collection_date`) BETWEEN :startDate AND :endDate THEN `weight` END"
-            )
-          ),
-          "this_month",
-        ],
-      ],
+    let data = { today: 0, this_month: 0 }
+    const collections = await WasteCollection.findAll({
+      where: {
+        "$studentclass.student.id$": studentId,
+        "$studentclass.student.is_active$": "Ya",
+        collection_date: { [Op.between]: [firstDayOfMonth, lastDayOfMonth] }
+      },
       include: [
         {
           model: StudentClass,
           include: [
             {
-              model: Students,
-            },
-          ],
-          attributes: [],
-        },
-      ],
-      where: {
-        "$studentclass.student.id$": studentId,
-        "$studentclass.student.is_active$": "Ya",
-      },
-      group: ["student_class_id"],
-      replacements: {
-        nowStart: dateNowStart,
-        nowEnd: dateNowEnd,
-        startDate: firstDayOfMonth,
-        endDate: lastDayOfMonth,
-      },
-    });
+              model: Students
+            }
+          ]
+        }
+      ]
+    })
+
+    for (let collection of collections) {
+      data.this_month += collection.weight
+      const date = collection.collection_date.getDate()
+      if (date === currentDateNumber) data.today += collection.weight
+    }
+
+    return data
   }
 
   async getById(id) {
@@ -371,41 +352,50 @@ class WasteCollectionDao extends SuperDao {
 
     try {
       const wasteTypes = await WasteTypes.findAll({ raw: true });
-      const weekdays = await WeekDay.findAll({ raw: true });
+      const weekdays = await WeekDay.findAll({ raw: true })
 
-      const result = [];
-
-      for (const wasteType of wasteTypes) {
-        const wasteTypeData = {
+      let formatData = {}, weekdayFormat = {}
+      for (let weekday of weekdays) weekdayFormat[weekday.name] = 0
+      for (let wasteType of wasteTypes) {
+        formatData[wasteType.id] = {
           waste_type: wasteType.name,
-          weekday: {},
-        };
-
-        for (const weekday of weekdays) {
-          const collection = await WasteCollection.findOne({
-            where: {
-              student_class_id: id,
-              collection_date: {
-                [Op.between]: [startOfWeek, endOfWeek],
-              },
-              waste_type_id: wasteType.id,
-              day_id: weekday.id,
-            },
-            attributes: [
-              [sequelize.fn("SUM", sequelize.col("weight")), "totalWeight"], // Calculate total weight
-            ],
-            raw: true,
-          });
-
-          wasteTypeData.weekday[weekday.name.toLowerCase()] = collection
-            ? collection.totalWeight || 0
-            : 0;
+          weekday: { ...weekdayFormat }
         }
-
-        result.push(wasteTypeData);
       }
 
-      return result;
+      const collections = await this.getByDate(startOfWeek, endOfWeek, { student_class_id: id })
+      for (let collection of collections) formatData[collection.waste_type_id].weekday[collection.weekday.name] += collection.weight
+
+      // const result = [];
+
+      // for (const wasteType of wasteTypes) {
+      //   const wasteTypeData = {
+      //     waste_type: wasteType.name,
+      //     weekday: {},
+      //   };
+
+      //   for (const weekday of weekdays) {
+      //     const collection = await WasteCollection.findOne({
+      //       where: {
+      //         student_class_id: id,
+      //         waste_type_id: wasteType.id,
+      //         day_id: weekday.id,
+      //       },
+      //       attributes: [
+      //         [sequelize.fn("SUM", sequelize.col("weight")), "totalWeight"], // Calculate total weight
+      //       ],
+      //       raw: true,
+      //     });
+
+      //     wasteTypeData.weekday[weekday.name.toLowerCase()] = collection
+      //       ? collection.totalWeight || 0
+      //       : 0;
+      //   }
+
+      //   result.push(wasteTypeData);
+      // }
+
+      return Object.values(formatData)
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -509,7 +499,6 @@ class WasteCollectionDao extends SuperDao {
     let startOfWeek = new Date(today);
     let endOfWeek = new Date(today);
 
-
     const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust start of the week based on Sunday
     startOfWeek.setDate(diff);
     startOfWeek = startOfWeek.toISOString().split('T')[0] + "T00:00:00.000Z"
@@ -518,38 +507,60 @@ class WasteCollectionDao extends SuperDao {
     endOfWeek.setDate(today.getDate() + daysToAdd);
     endOfWeek = endOfWeek.toISOString().split('T')[0] + "T23:59:59.999Z"
 
-    return WeekDay.findAll({
-      attributes: [
-        [sequelize.literal("weekday.name"), "name"],
-        [
-          sequelize.fn("SUM", sequelize.literal("wastecollections.weight")),
-          "weight",
-        ],
-      ],
+    const weekdays = await WeekDay.findAll()
+    const collections = await WasteCollection.findAll({
+      where: {
+        "$studentclass.student_id$": id,
+        "$studentclass.is_active$": "Ya",
+        collection_date: { [Op.between]: [startOfWeek, endOfWeek] }
+      },
       include: [
         {
-          model: WasteCollection,
-          attributes: [],
-          required: false,
-          include: [
-            {
-              model: StudentClass,
-              attributes: [],
-              required: true,
-            },
-          ],
-          where: {
-            "$wastecollections.studentclass.student_id$": id,
-            "$wastecollections.studentclass.is_active$": "Ya",
-            collection_date: {
-              [Op.between]: [startOfWeek, endOfWeek],
-            },
-          },
-        },
-      ],
-      order: [["id", "ASC"]],
-      group: ["name"],
-    });
+          model: StudentClass
+        }
+      ]
+    })
+
+    let weekDatas = {}
+    for (let weekday of weekdays) { weekDatas[weekday.id] = { name: weekday.name, weight: 0 } }
+    for (let collection of collections) {
+      const dayNumber = collection.collection_date.getDay() - 1
+      weekDatas[dayNumber].weight += collection.weight
+    }
+
+    return weekDatas
+    // return WeekDay.findAll({
+    //   attributes: [
+    //     [sequelize.literal("weekday.name"), "name"],
+    //     [
+    //       sequelize.fn("SUM", sequelize.literal("wastecollections.weight")),
+    //       "weight",
+    //     ],
+    //   ],
+    //   include: [
+    //     {
+    //       model: WasteCollection,
+    //       attributes: [],
+    //       required: false,
+    //       include: [
+    //         {
+    //           model: StudentClass,
+    //           attributes: [],
+    //           required: true,
+    //         },
+    //       ],
+    //       where: {
+    //         "$wastecollections.studentclass.student_id$": id,
+    //         "$wastecollections.studentclass.is_active$": "Ya",
+    //         collection_date: {
+    //           [Op.between]: [startOfWeek, endOfWeek],
+    //         },
+    //       },
+    //     },
+    //   ],
+    //   order: [["id", "ASC"]],
+    //   group: ["name"],
+    // });
   }
 
   async targetAchievement(id, is_current) {
@@ -574,7 +585,7 @@ class WasteCollectionDao extends SuperDao {
       currentMonthStart = new Date(year, month, day);
       currentMonthEnd = new Date(year, month + 1, 0);
     }
-    
+
 
     return WasteCollection.findAll({
       where: {
@@ -625,5 +636,22 @@ class WasteCollectionDao extends SuperDao {
     return result;
   }
 
+
+  async getByDate(start, end, filter) {
+    const { student_class_id } = filter
+    return WasteCollection.findAll({
+      where: {
+        student_class_id,
+        collection_date: {
+          [Op.between]: [start, end],
+        },
+      },
+      include: [
+        {
+          model: WeekDay
+        }
+      ]
+    })
+  }
 }
 module.exports = WasteCollectionDao;

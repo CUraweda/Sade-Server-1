@@ -524,8 +524,8 @@ class WasteCollectionDao extends SuperDao {
     let weekDatas = {}
     for (let weekday of weekdays) { weekDatas[weekday.id] = { name: weekday.name, weight: 0 } }
     for (let collection of collections) {
-      const dayNumber = collection.collection_date.getDay() - 1
-      weekDatas[dayNumber].weight += collection.weight
+      const dayNumber = collection.collection_date.getDay()
+      if(weekDatas[dayNumber]) weekDatas[dayNumber].weight += collection.weight
     }
 
     return weekDatas

@@ -12,14 +12,14 @@ class ForCountryDetailValidator {
     async forCountryDetailsCreateUpdateValidator(req, res, next) {
         // create schema object
         const schema = Joi.object({
-            for_country_id: Joi.number(),
+            for_country_id: Joi.number().integer(),
             activity: Joi.string(),
             status: Joi.string().valid("Menunggu Pelaksanaan", "Dalam Pelaksanaan", "Selesai"),
             is_date_approved: Joi.boolean(),
             file: Joi.any(),
             duration: Joi.number(),
             plan_date: Joi.string(),
-            student_id: Joi.number().allow(null)
+            student_id: Joi.number().integer()
         }).options({ convert: true })
 
         // validate request body against schema

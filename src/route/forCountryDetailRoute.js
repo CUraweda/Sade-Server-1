@@ -11,15 +11,20 @@ const validator = new ForCountryDetailValidator()
 
 router.post(
   "/create",
-  uploadFileMiddleware,
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   validator.forCountryDetailsCreateUpdateValidator,
   forCountryDetailController.create
 );
 
+router.post(
+  "/add",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  validator.forCountryDetailAddValidator,
+  forCountryDetailController.create
+);
+
 router.put(
   "/update/:id",
-  uploadFileMiddleware,
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   validator.forCountryDetailsCreateUpdateValidator,
   forCountryDetailController.update

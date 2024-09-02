@@ -331,7 +331,7 @@ class NumberReportDao extends SuperDao {
       sign_at,
     };
 
-    return {  status: true, result};
+    return result;
   }
 
   async filteredByParams(academic, semester, classId) {

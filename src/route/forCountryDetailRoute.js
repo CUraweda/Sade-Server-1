@@ -4,12 +4,14 @@ const ForCountryDetailValidator = require("../validator/ForCountryDetailValidato
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const uploadFileMiddleware = require("../middlewares/uploadForCountryDetail");
 
 const forCountryDetailController = new ForCountryDetailController();
 const validator = new ForCountryDetailValidator()
 
 router.post(
   "/create",
+  uploadFileMiddleware,
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   validator.forCountryDetailsCreateUpdateValidator,
   forCountryDetailController.create
@@ -17,6 +19,7 @@ router.post(
 
 router.put(
   "/update/:id",
+  uploadFileMiddleware,
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   validator.forCountryDetailsCreateUpdateValidator,
   forCountryDetailController.update

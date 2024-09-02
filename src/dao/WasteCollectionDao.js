@@ -364,6 +364,8 @@ class WasteCollectionDao extends SuperDao {
         }
       }
 
+      console.log(formatData)
+
       const collections = await this.getByDate(startOfWeek, endOfWeek, { student_class_id: id })
       for (let collection of collections){
         const { waste_type_id, weekday, weight } = collection

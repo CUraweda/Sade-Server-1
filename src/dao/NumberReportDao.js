@@ -212,9 +212,7 @@ class NumberReportDao extends SuperDao {
     });
 
     const student = await Students.findOne({ where: { id } })
-    console.log(student)
-    if(!student) return false
-    console.log(student)
+    if(!student) return { status: false, note: "Student Tidak Ditemukan" }
     
     const personality = await StudentPersonality.findAll({
       where: { "$studentclass.student.id$": id },
@@ -240,7 +238,7 @@ class NumberReportDao extends SuperDao {
       ],
     });
 
-    if( strict && personality.length < 1) return false
+    if( strict && personality.length < 1) return { status: false, note: "Student Personality Tidak Ditemukan" }
 
     const attendance = await this.studentAttendance.getRecapByStudentId(
       id,
@@ -280,7 +278,7 @@ class NumberReportDao extends SuperDao {
       order: [[{ model: Subjects }, 'id', 'ASC']],
     });
 
-    if( strict && reports.length < 1) return false
+    if( strict && reports.length < 1) return { status: false, note: "Number Report Tidak Ditemukan" }
 
     // Extracting necessary information
     const {
@@ -298,7 +296,7 @@ class NumberReportDao extends SuperDao {
       where: { class_id: class_id },
     });
 
-    if(strict && signers.length < 1) return false
+    // if(strict && signers.length < 1) return { status: false, note: "Signers Tidak Ditemukan" }
 
     const { head, form_teacher, sign_at } = signers[0] || {};
 

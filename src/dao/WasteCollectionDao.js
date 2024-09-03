@@ -357,14 +357,21 @@ class WasteCollectionDao extends SuperDao {
       let formatData = {}, weekdayFormat = {}
       for (let weekday of weekdays) weekdayFormat[weekday.name] = 0
       for (let wasteType of wasteTypes) {
+        const rawWeekDay = weekdayFormat
         formatData[wasteType.id] = {
           waste_type: wasteType.name,
-          weekday: { ...weekdayFormat }
+          weekday: { ...rawWeekDay }
         }
       }
 
+      console.log(formatData)
+
       const collections = await this.getByDate(startOfWeek, endOfWeek, { student_class_id: id })
-      for (let collection of collections) formatData[collection.waste_type_id].weekday[collection.weekday.name] += collection.weight
+      for (let collection of collections){
+        const { waste_type_id, weekday, weight } = collection
+        if(!formatData[waste_type_id]) continue
+        formatData[waste_type_id].weekday[weekday.name] += weight
+      } 
 
       // const result = [];
 
@@ -524,8 +531,8 @@ class WasteCollectionDao extends SuperDao {
     let weekDatas = {}
     for (let weekday of weekdays) { weekDatas[weekday.id] = { name: weekday.name, weight: 0 } }
     for (let collection of collections) {
-      const dayNumber = collection.collection_date.getDay() - 1
-      weekDatas[dayNumber].weight += collection.weight
+      const dayNumber = collection.collection_date.getDay()
+      if(weekDatas[dayNumber]) weekDatas[dayNumber].weight += collection.weight
     }
 
     return weekDatas

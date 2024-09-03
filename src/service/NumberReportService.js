@@ -220,11 +220,9 @@ class NumberReportService {
 
     let rel = await this.numberReportDao.getByStudentId(id, semester, true);
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.NOT_FOUND,
-        "Number Report or other data not found!",
-        {}
+    if (rel?.note) {
+      return responseHandler.returnError(
+        httpStatus.UNPROCESSABLE_ENTITY, rel.note
       );
     }
 

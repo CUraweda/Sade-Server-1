@@ -535,7 +535,7 @@ class WasteCollectionDao extends SuperDao {
       if(weekDatas[dayNumber]) weekDatas[dayNumber].weight += collection.weight
     }
 
-    return weekDatas
+    return Object.values(weekDatas)
     // return WeekDay.findAll({
     //   attributes: [
     //     [sequelize.literal("weekday.name"), "name"],

@@ -24,12 +24,12 @@ var storage = multer.diskStorage({
 //file filter for extention
 var fileFilter = function (req, file, cb) {
   // console.log(file.mimetype);
-  const allowedMimes = ["application/pdf"];
+  const allowedMimes = ["application/pdf", 'image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
 
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb("Please upload only pdf file.", false);
+    cb("Please upload only pdf or image file.", false);
   }
 };
 

@@ -187,7 +187,6 @@ class PortofolioReportService {
   };
 
   mergePDFs = async (pdf1, pdf2) => {
-    console.log("WHERTE TF IT IS FROM",pdf1, pdf2)
     try {
       const pdfBytes1 = await fs.readFile(pdf1);
       const pdfBytes2 = await fs.readFile(pdf2);

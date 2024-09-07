@@ -20,35 +20,36 @@ class LessonPlanDao extends SuperDao {
     }
     getLessonPlanPage = async (search, offset, limit) => {
         return LessonPlan.findAll({
-            // where: {
-            //     [Op.or]: [
-            //         {
-            //             assignments_name: {
-            //                 [Op.like]: "%" + search + "%",
-            //             },
-            //         },
-            //         {
-            //             subjects_name: {
-            //                 [Op.like]: "%" + search + "%",
-            //             },
-            //         },
-            //         {
-            //             class: {
-            //                 [Op.like]: "%" + search + "%",
-            //             },
-            //         },
-            //         {
-            //             description: {
-            //                 [Op.like]: "%" + search + "%",
-            //             },
-            //         },
-            //     ],
-            // },
+            where: {
+                [Op.or]: [
+                    {
+                        subjects_name: {
+                            [Op.like]: "%" + search + "%",
+                        },
+                    },
+                    {
+                        assignments_name: {
+                            [Op.like]: "%" + search + "%",
+                        },
+                    },
+                    {
+                        class: {
+                            [Op.like]: "%" + search + "%",
+                        },
+                    },
+                    {
+                        description: {
+                            [Op.like]: "%" + search + "%",
+                        },
+                    },
+                ],
+            },
             offset: offset,
             limit: limit,
             order: [["id", "ASC"]],
         });
     }
+
 
     getCount = async (search) => {
         return LessonPlan.count({

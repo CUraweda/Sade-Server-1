@@ -16,7 +16,7 @@ class ParentValidator {
 			relationship_to_student: Joi.string().optional(),
 			address: Joi.string().optional(),
 			phone: Joi.string().optional(),
-			email: Joi.string().email().optional(),
+			email: Joi.string().email().optional().allow(null),
 			com_priority: Joi.string().optional().allow(null),
 			last_education: Joi.string().optional(),
 			salary: Joi.string().optional(),

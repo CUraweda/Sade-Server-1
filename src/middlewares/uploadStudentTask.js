@@ -28,6 +28,9 @@ var fileFilter = function (req, file, cb) {
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "application/pdf",
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
   ];
 
   if (allowedMimes.includes(file.mimetype)) {

@@ -204,8 +204,7 @@ class PortofolioReportService {
         message = "Failed to merge Portofolio report. One or more PDF files are missing!";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-      const data = mergedPDF
-      return responseHandler.returnSuccess(httpStatus.OK, message, data);
+      return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
     } catch (error) {
       logger.error("Error merging portfolio report:", error);
       return responseHandler.returnError(httpStatus.BAD_REQUEST, error.message);

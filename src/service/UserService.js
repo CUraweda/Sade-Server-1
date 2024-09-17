@@ -49,7 +49,16 @@ class UserService {
       userData = userData.toJSON();
       delete userData.password;
 
-      const url = config.webUrl + `/verifikasi/${uuid}`; //Link web to verify
+      let url 
+      switch(userBody.role_id){
+        case 12:
+          url = config.hrdWebUrl + `/verifikasi/${uuid}`
+          break;
+          default:
+          url = config.webUrl + `/verifikasi/${uuid}`; //Link web to verify
+          break;
+      }
+
       const mailBody = "./src/register.html";
 
       // Add Nodemailer

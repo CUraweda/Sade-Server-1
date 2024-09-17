@@ -144,24 +144,57 @@ class PortofolioReportService {
           pdf2 = data.file_path;
         }
       }
-  
       const convertImageToPDF = async (imagePath) => {
-        const outputPDFPath = imagePath.replace(/\.(jpg|jpeg|png)$/i, '.pdf');
-        const imageBuffer = await sharp(imagePath).toBuffer();
-        const pdfDoc = await pdfLib.PDFDocument.create();
-        const image = await pdfDoc.embedJpg(imageBuffer); 
-        const page = pdfDoc.addPage([image.width, image.height]);
-        page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
-        const pdfBytes = await pdfDoc.save();
-        fs.writeFile(outputPDFPath, pdfBytes);
-        return outputPDFPath;
+        try {
+          const outputPDFPath = imagePath.replace(/\.(jpg|jpeg|png)$/i, '.pdf');
+          
+          const imageBuffer = await sharp(imagePath).toBuffer();
+          const pdfDoc = await pdfLib.PDFDocument.create();
+      
+          let image;
+          
+          if (/\.(jpg|jpeg)$/i.test(imagePath)) {
+            image = await pdfDoc.embedJpg(imageBuffer);
+          } else if (/\.png$/i.test(imagePath)) {
+            image = await pdfDoc.embedPng(imageBuffer);
+          } else {
+            throw new Error("Unsupported image format. Please use JPG, JPEG, or PNG.");
+          }
+      
+          const page = pdfDoc.addPage([image.width, image.height]);
+          page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+      
+          const pdfBytes = await pdfDoc.save();
+          await fs.writeFile(outputPDFPath, pdfBytes);
+          return outputPDFPath;
+        } catch (error) {
+          console.error("Error converting image to PDF:", error);
+          throw new Error("Failed to convert image to PDF. Please check the image format and try again.");
+        }
+      };      
+      const validateImageFile = async (imagePath) => {
+        try {
+          await sharp(imagePath).metadata();
+          return true; // Image is valid
+        } catch (error) {
+          console.error("Invalid image file:", error);
+          return false; // Image is invalid
+        }
       };
   
       if (pdf1 && (/\.(jpg|jpeg|png)$/i).test(pdf1)) {
-        pdf1 = await convertImageToPDF(pdf1);
+        if (await validateImageFile(pdf1)) {
+          pdf1 = await convertImageToPDF(pdf1);
+        } else {
+          return responseHandler.returnError(httpStatus.BAD_REQUEST, "Invalid image file.");
+        }
       }
       if (pdf2 && (/\.(jpg|jpeg|png)$/i).test(pdf2)) {
-        pdf2 = await convertImageToPDF(pdf2);
+        if (await validateImageFile(pdf2)) {
+          pdf2 = await convertImageToPDF(pdf2);
+        } else {
+          return responseHandler.returnError(httpStatus.BAD_REQUEST, "Invalid image file.");
+        }
       }
   
       if (pdf1 && pdf2) {

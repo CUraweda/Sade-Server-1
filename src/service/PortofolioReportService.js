@@ -7,6 +7,8 @@ const { userConstant } = require("../config/constant");
 const fs = require("fs").promises;
 const { PDFDocument } = require("pdf-lib");
 const path = require("path");
+const pdfLib = require('pdf-lib');
+const sharp = require('sharp');
 
 const dir = "./files/portofolio_reports/";
 
@@ -126,14 +128,14 @@ class PortofolioReportService {
   mergePortofolioReport = async (id) => {
     try {
       let message = "Portofolio report successfully merged!";
-
       const datas = await this.portofolioReportDao.findByWhere({
         student_report_id: id,
       });
-
+  
       let pdf1 = "";
       let pdf2 = "";
-
+      let mergedPDF = "";
+  
       for (const data of datas) {
         if (data.type === "Orang Tua") {
           pdf1 = data.file_path;
@@ -142,12 +144,32 @@ class PortofolioReportService {
           pdf2 = data.file_path;
         }
       }
+  
+      const convertImageToPDF = async (imagePath) => {
+        const outputPDFPath = imagePath.replace(/\.(jpg|jpeg|png)$/i, '.pdf');
+        const imageBuffer = await sharp(imagePath).toBuffer();
+        const pdfDoc = await pdfLib.PDFDocument.create();
+        const image = await pdfDoc.embedJpg(imageBuffer); 
+        const page = pdfDoc.addPage([image.width, image.height]);
+        page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+        const pdfBytes = await pdfDoc.save();
+        fs.writeFile(outputPDFPath, pdfBytes);
+        return outputPDFPath;
+      };
+  
+      if (pdf1 && (/\.(jpg|jpeg|png)$/i).test(pdf1)) {
+        pdf1 = await convertImageToPDF(pdf1);
+      }
+      if (pdf2 && (/\.(jpg|jpeg|png)$/i).test(pdf2)) {
+        pdf2 = await convertImageToPDF(pdf2);
+      }
+  
       if (pdf1 && pdf2) {
-        var mergedPDF = await this.mergePDFs(pdf1, pdf2);
+        mergedPDF = await this.mergePDFs(pdf1, pdf2);
         const commentData = await this.studentReportDao.findById(id);
-
+        
         if (commentData.por_comments_path == null) {
-          const message = "Portofolio comments is empty. Please make comment first"
+          const message = "Portofolio comments are empty. Please make a comment first.";
           return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
         }
         if (commentData) {
@@ -155,8 +177,12 @@ class PortofolioReportService {
         }
 
         let check = await this.portofolioReportDao.getByStudentReportId(id, "Merged");
-        if (check) { await fs.promises.unlink(check.file_path,  (err) => { console.log(err) }) }
-
+        if (check) {
+          await fs.promises.unlink(check.file_path, (err) => {
+            if (err) console.log(err);
+          });
+        }
+        
         if (!check) {
           check = await this.portofolioReportDao.create({
             student_report_id: id,
@@ -169,16 +195,15 @@ class PortofolioReportService {
             check.id
           );
         }
-
+        
         await this.studentReportDao.updateWhere(
           { portofolio_path: mergedPDF },
           { id }
         );
       } else {
-        message = "Failed to merge Portofolio report. One or more PDF file is missing!";
+        message = "Failed to merge Portofolio report. One or more PDF files are missing!";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-
       return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
     } catch (error) {
       logger.error("Error merging portfolio report:", error);

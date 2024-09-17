@@ -39,6 +39,7 @@
     "redis": "^4.0.6",
     "sequelize": "^6.6.5",
     "sequelize-cli": "^6.6.2",
+    "sharp": "^0.33.5",
     "socket.io": "^4.4.1",
     "uuid": "^10.0.0",
     "winston": "^3.3.3",

@@ -11,14 +11,14 @@ const announcementValidator = new AnnouncementValidator();
 router.post(
   "/create",
   auth([1, 2, 3, 4, 5, 6]),
-  announcementValidator.announcementCreateUpdateValidator,
+  // announcementValidator.announcementCreateUpdateValidator,
   announcementController.create
 );
 
 router.put(
   "/update/:id",
   auth([1, 2, 3, 4, 5, 6]),
-  announcementValidator.announcementCreateUpdateValidator,
+  // announcementValidator.announcementCreateUpdateValidator,
   announcementController.update
 );
 

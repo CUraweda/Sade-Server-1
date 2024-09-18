@@ -137,17 +137,16 @@ class PortofolioReportService {
       let mergedPDF = "";
   
       for (const data of datas) {
-        if (data.type === "Orang Tua") {
+        if (data.type === "Guru") {
           pdf1 = data.file_path;
         }
-        if (data.type === "Guru") {
+        if (data.type === "Orang Tua") {
           pdf2 = data.file_path;
         }
       }
       const convertImageToPDF = async (imagePath) => {
         try {
           const outputPDFPath = imagePath.replace(/\.(jpg|jpeg|png)$/i, '.pdf');
-          
           const imageBuffer = await sharp(imagePath).toBuffer();
           const pdfDoc = await pdfLib.PDFDocument.create();
       
@@ -161,8 +160,35 @@ class PortofolioReportService {
             throw new Error("Unsupported image format. Please use JPG, JPEG, or PNG.");
           }
       
-          const page = pdfDoc.addPage([image.width, image.height]);
-          page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+          const A4_WIDTH = 595.28; 
+          const A4_HEIGHT = 841.89;
+      
+          const { width: imgWidth, height: imgHeight } = image;
+      
+          const imgAspectRatio = imgWidth / imgHeight;
+          const A4AspectRatio = A4_WIDTH / A4_HEIGHT;
+      
+          let width, height;
+      
+          if (imgAspectRatio > A4AspectRatio) {
+            width = A4_WIDTH;
+            height = A4_WIDTH / imgAspectRatio;
+          } else {
+            height = A4_HEIGHT;
+            width = A4_HEIGHT * imgAspectRatio;
+          }
+      
+          const page = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
+      
+          const x = (A4_WIDTH - width) / 2;
+          const y = (A4_HEIGHT - height) / 2;
+      
+          page.drawImage(image, {
+            x, 
+            y, 
+            width,
+            height
+          });
       
           const pdfBytes = await pdfDoc.save();
           await fs.writeFile(outputPDFPath, pdfBytes);
@@ -171,14 +197,14 @@ class PortofolioReportService {
           console.error("Error converting image to PDF:", error);
           throw new Error("Failed to convert image to PDF. Please check the image format and try again.");
         }
-      };      
+      };        
       const validateImageFile = async (imagePath) => {
         try {
           await sharp(imagePath).metadata();
-          return true; // Image is valid
+          return true; 
         } catch (error) {
           console.error("Invalid image file:", error);
-          return false; // Image is invalid
+          return false;
         }
       };
   
@@ -271,7 +297,7 @@ class PortofolioReportService {
       return outputPath;
     } catch (error) {
       console.error("Error merging PDFs:", error);
-      throw error; // Re-throw the error for the caller to handle
+      throw error;
     }
   };
 

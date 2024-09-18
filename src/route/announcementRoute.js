@@ -34,13 +34,27 @@ router.get(
   announcementController.showBetween
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), announcementController.showAll);
-router.get("/get-by-class/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), announcementController.showByClass);
+router.get(
+  "/",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  announcementController.showAll
+);
+router.get(
+  "/get-by-class/:id",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  announcementController.showByClass
+);
 
 router.delete(
   "/delete/:id",
   auth([1, 2, 3, 4, 5, 6]),
   announcementController.delete
+);
+
+router.get(
+  "/download/:id",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  announcementController.downloadFile
 );
 
 module.exports = router;

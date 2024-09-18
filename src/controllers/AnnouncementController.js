@@ -200,6 +200,52 @@ class AnnouncementController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+  downloadFile = async (req, res) => {
+    try {
+      const data = await this.announcementService.showAnnouncement(
+        req.params.id
+      );
+      const filePath = data.response.data.file_path;
+
+      // Check if file path is provided
+      if (!filePath) {
+        return res.status(httpStatus.BAD_REQUEST).send({
+          status: false,
+          code: httpStatus.BAD_REQUEST,
+          message: "File path not provided.",
+        });
+      }
+
+      // Check if file exists
+      if (fs.existsSync(filePath)) {
+        // Set appropriate headers
+        const filename = path.basename(filePath);
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${filename}"`
+        );
+
+        // Create read stream and pipe to response
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+      } else {
+        res.status(httpStatus.NOT_FOUND).send({
+          status: false,
+          code: httpStatus.NOT_FOUND,
+          message: "File not found.",
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+        status: false,
+        code: httpStatus.INTERNAL_SERVER_ERROR,
+        message: e.message,
+      });
+    }
+  };
 }
 
 module.exports = AnnouncementController;

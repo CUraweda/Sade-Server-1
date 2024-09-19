@@ -107,7 +107,6 @@ class ClassesDao extends SuperDao {
 
         if (subjects.length) levels = subjects.map(s => s.level)
       }
-      console.log(levels)
       
       if (with_form_class == "Y") {
         const formClasses = await Classes.findAll({
@@ -128,9 +127,8 @@ class ClassesDao extends SuperDao {
         if (formClasses) classIds = formClasses.map(fc => fc.id)
       }
   }
-  console.log(classIds)
 
-    return Classes.findAll({
+  return Classes.findAll({
       where: {
         ...(is_active == "Y" && { is_active: true }),
         [Op.and]: [

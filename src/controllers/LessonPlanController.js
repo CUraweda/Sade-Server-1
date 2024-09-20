@@ -21,8 +21,8 @@ class LessonPlanController {
 
     showAll = async (req, res) => {
         try {
-            const page = parseInt(req.query.page) || 0;
-            const limit = parseInt(req.query.limit) || 10;
+            const page = +req.query.page || 0;
+            const limit = +req.query.limit || 10;
             const search = req.query.search || '';
             const offset = limit * page;
 
@@ -42,7 +42,8 @@ class LessonPlanController {
 
     showOne = async (req, res) => {
         try {
-            const id = req.params.id;
+            const id = +req.params.id;
+            if (!id) res.status(httpStatus.UNPROCESSABLE_ENTITY).send("Please provide an ID");
 
             const resData = await this.lessonPlanService.showOne(id);
 
@@ -87,7 +88,8 @@ class LessonPlanController {
 
     update = async (req, res) => {
         try {
-            const id = req.params.id;
+            const id = +req.params.id;
+            if (!id) res.status(httpStatus.UNPROCESSABLE_ENTITY).send("Please provide an ID");
 
             await uploadLessonPlan(req, res);
 
@@ -126,7 +128,8 @@ class LessonPlanController {
 
     delete = async (req, res) => {
         try {
-            const id = req.params.id;
+            const id = +req.params.id;
+            if (!id) res.status(httpStatus.UNPROCESSABLE_ENTITY).send("Please provide an ID");
 
             const resData = await this.lessonPlanService.deleteLessonPlan(id);
 

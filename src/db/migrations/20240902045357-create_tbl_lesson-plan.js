@@ -15,8 +15,8 @@ module.exports = {
       subjects_name: {
         type: Sequelize.STRING,
       },
-      class: {
-        type: Sequelize.STRING,
+      class_id: {
+        type: Sequelize.INTEGER,
       },
       file_path: {
         type: Sequelize.STRING,

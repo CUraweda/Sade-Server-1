@@ -8,13 +8,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      LessonPlan.belongsTo(models.classes, {
+        foreignKey: "class_id",
+      });
     }
   }
   LessonPlan.init({
     assignments_name: DataTypes.STRING,
     subjects_name: DataTypes.STRING,
-    class: DataTypes.STRING,
+    class_id: DataTypes.INTEGER,
     file_path: DataTypes.STRING,
     description: DataTypes.TEXT,
   }, {

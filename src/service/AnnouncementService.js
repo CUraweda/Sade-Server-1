@@ -42,6 +42,8 @@ class AnnouncementService {
         date_end: body.date_end,
         announcement_desc: body.announcement_desc,
         class_id: body.class_id,
+        file_path: body.file_path ?? null,
+        file_type: body.file_type ?? null,
       },
       { id }
     );

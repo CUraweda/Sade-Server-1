@@ -123,7 +123,7 @@ class StudentAttendanceDao extends SuperDao {
   async getRecapByStudentId(id, semester, academic) {
     const studentId = id;
 
-    const statuses = ["Hadir", "Sakit", "Izin", "Tanpa Keterangan"];
+    const statuses = ["Hadir", "Sakit", "Izin", "Alfa"];
 
     const attendancePromises = statuses.map((status) => {
       return this.getAttendanceByStatus(studentId, semester, academic, status);
@@ -135,7 +135,7 @@ class StudentAttendanceDao extends SuperDao {
       hadir: hadir.length > 0 ? hadir[0].count : "0",
       sakit: sakit.length > 0 ? sakit[0].count : "0",
       izin: izin.length > 0 ? izin[0].count : "0",
-      tanpa_keterangan: alfa.length > 0 ? alpa[0].count : "0",
+      tanpa_keterangan: alfa.length > 0 ? alfa[0].count : "0",
     };
 
     return result;

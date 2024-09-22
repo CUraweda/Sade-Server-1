@@ -68,10 +68,26 @@ class EduCalendarDetailService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showEduCalendarDetailByEduId = async (id, academic) => {
+  showEduCalendarDetailByEduId = async (id, teacher_id, academic) => {
     const message = "Edu Calendar Detail successfully retrieved!";
 
-    let rel = await this.eduCalendarDetailDao.getByEduId(id, academic);
+    let rel = await this.eduCalendarDetailDao.getByEduId(id, teacher_id, academic);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Edu Calendar Detail not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  showEduCalendarDetailByTeacherId = async (id, academic) => {
+    const message = "Edu Calendar Detail successfully retrieved!";
+
+    let rel = await this.eduCalendarDetailDao.getByTeacherId(id, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(

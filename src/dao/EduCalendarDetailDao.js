@@ -22,10 +22,24 @@ class EduCalendarDetailDao extends SuperDao {
     });
   }
 
-  async getByEduId(edu_id, academic) {
+  async getByEduId(edu_id, teacher_id, academic) {
     return EduCalendarDetail.findAll({
       where: {
         edu_id,
+        teacher_id,
+        ...(academic && { "$educalendar.academic_year$": academic })
+      },
+      include: [
+        {
+          model: EduCalendar,
+        },
+      ],
+    });
+  }
+  async getByTeacherId(teacher_id, academic) {
+    return EduCalendarDetail.findAll({
+      where: {
+        teacher_id,
         ...(academic && { "$educalendar.academic_year$": academic })
       },
       include: [

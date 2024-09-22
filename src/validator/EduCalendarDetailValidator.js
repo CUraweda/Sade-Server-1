@@ -6,6 +6,7 @@ class EduCalendarDetailValidator {
   async eduCalendarDetailCreateUpdateValidator(req, res, next) {
     // create schema object
     const schema = Joi.object({
+      teacher_id: Joi.number().required(),
       edu_id: Joi.number().required(),
       start_date: Joi.date().required(),
       end_date: Joi.date().required(),

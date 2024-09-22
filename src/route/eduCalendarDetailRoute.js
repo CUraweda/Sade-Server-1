@@ -29,6 +29,12 @@ router.get(
 );
 
 router.get(
+  "/show-by-teacher/:id",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  eduCalendarDetailController.showByTeacherId
+)
+
+router.get(
   "/show-by-edu/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   eduCalendarDetailController.showByEduId

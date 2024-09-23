@@ -10,7 +10,7 @@ const uploadLessonPlan = require('../middlewares/uploadLessonPlan');
 const schema = Joi.object({
     assignments_name: Joi.string().required(),
     subjects_name: Joi.string().required(),
-    class: Joi.string().required(),
+    class_id: Joi.number().required(),
     description: Joi.string().allow('', null),
 });
 

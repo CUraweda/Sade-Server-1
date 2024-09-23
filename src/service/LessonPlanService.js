@@ -32,7 +32,7 @@ class LessonPlanService {
     }
 
     showOne = async (id) => {
-        const rel = await this.lessonPlanDao.findById(id);
+        const rel = await this.lessonPlanDao.getById(id);
 
         if (!rel) {
             return responseHandler.returnError(
@@ -59,7 +59,7 @@ class LessonPlanService {
     };
 
     updateLessonPlan = async (id, body) => {
-        const { assignments_name, subjects_name, clasess, file_path, description } = body;
+        const { assignments_name, subjects_name, class_id, file_path, description } = body;
 
         const message = 'Lesson Plan successfully updated!';
 
@@ -76,7 +76,7 @@ class LessonPlanService {
             {
                 assignments_name,
                 subjects_name,
-                class: clasess,
+                class_id,
                 file_path,
                 description,
             },

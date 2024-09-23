@@ -17,6 +17,11 @@ module.exports = {
       },
       class_id: {
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
+        references: {
+          model: "ref_classes",
+          key: "id",
+        },
       },
       file_path: {
         type: Sequelize.STRING,

@@ -3,21 +3,23 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const LessonPlan = models.lessonplan;
+const Classes = models.classes;
 
 class LessonPlanDao extends SuperDao {
     constructor() {
         super(LessonPlan);
     }
+
     getById = async (id) => {
-        return LessonPlan.findAll({
+        return LessonPlan.findOne({
             where: { id },
-            include: [
-                {
-                    model: LessonPlan,
-                },
-            ],
+            include: {
+                model: Classes,
+                attributes: ["id", "level", "class_name"],
+            },
         });
     }
+
     getLessonPlanPage = async (search, offset, limit) => {
         return LessonPlan.findAll({
             where: {
@@ -32,24 +34,17 @@ class LessonPlanDao extends SuperDao {
                             [Op.like]: "%" + search + "%",
                         },
                     },
-                    {
-                        class: {
-                            [Op.like]: "%" + search + "%",
-                        },
-                    },
-                    {
-                        description: {
-                            [Op.like]: "%" + search + "%",
-                        },
-                    },
                 ],
+            },
+            include: {
+                model: Classes,
+                attributes: ["id", "level", "class_name"],
             },
             offset: offset,
             limit: limit,
-            order: [["id", "ASC"]],
+            order: [["id", "DESC"]],
         });
     }
-
 
     getCount = async (search) => {
         return LessonPlan.count({
@@ -62,16 +57,6 @@ class LessonPlanDao extends SuperDao {
                     },
                     {
                         subjects_name: {
-                            [Op.like]: "%" + search + "%",
-                        },
-                    },
-                    {
-                        class: {
-                            [Op.like]: "%" + search + "%",
-                        },
-                    },
-                    {
-                        description: {
                             [Op.like]: "%" + search + "%",
                         },
                     },

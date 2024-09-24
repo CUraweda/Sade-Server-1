@@ -26,7 +26,7 @@ class StudentService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
 
-      let data = await this.studentDao.create(regqBody);
+      let data = await this.studentDao.create(reqBody);
 
       if (!data) {
         message = "Failed to add student.";

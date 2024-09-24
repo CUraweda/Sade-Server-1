@@ -14,9 +14,15 @@ class StudentService {
     try {
       let message = "Student successfully added.";
       const nis = reqBody.nis
-      let validator = await this.studentDao.findOneByWhere({nis})
-      if (validator) {
-        message = "Nis already exists";
+      let nis_validator = await this.studentDao.findOneByWhere({nis})
+      if (nis_validator) {
+        message = "NIS already exists";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
+      const nisn = reqBody.nisn
+      let nisn_validator = await this.studentDao.findOneByWhere({nisn})
+      if (nisn_validator) {
+        message = "NISN already exists";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
 

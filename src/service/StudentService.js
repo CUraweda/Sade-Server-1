@@ -13,6 +13,12 @@ class StudentService {
   createStudent = async (reqBody) => {
     try {
       let message = "Student successfully added.";
+      const nis = reqBody.nis
+      let validator = await this.studentDao.findOneByWhere({nis})
+      if (validator) {
+        message = "Nis already exists";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
 
       let data = await this.studentDao.create(reqBody);
 

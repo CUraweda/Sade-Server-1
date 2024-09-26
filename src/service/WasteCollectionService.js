@@ -25,7 +25,7 @@ class WasteCollectionService {
       const dayIndex = date.getDay();
       const body = {
         student_class_id: reqBody.student_class_id,
-        collection_date: reqBody.collection_date,
+        collection_date: date,
         day_id: dayIndex,
         waste_type_id: reqBody.waste_type_id, 
         weight: reqBody.weight,
@@ -116,12 +116,13 @@ class WasteCollectionService {
     );
   }
 
-  async getWasteCollectionByFilter(waste_type_id, class_id, start_date, end_date, page, limit, search, offset) {
+  async getWasteCollectionByFilter(waste_type_id, class_id, start_date, end_date, weight, page, limit, search, offset) {
     const filterOptions = {
         waste_type_id: waste_type_id || null,
         class_id: class_id || null,
         start_date: start_date || null,
-        end_date: end_date || null
+        end_date: end_date || null,
+        weight: weight || null
     };
     const totalRows = await this.wasteCollectionDao.getFilteredCount(filterOptions);
     const totalPage = Math.ceil(totalRows / limit);

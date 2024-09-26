@@ -77,10 +77,10 @@ class WasteCollectionController {
       const search = req.query.search_query || "";
       const offset = limit * page;
       
-        const { waste_type_id, class_id, start_date, end_date } = req.query;
+        const { waste_type_id, class_id, start_date, end_date, weight } = req.query;
 
         const resData = await this.wasteCollectionService.getWasteCollectionByFilter(
-            waste_type_id, class_id, start_date, end_date,
+            waste_type_id, class_id, start_date, end_date, weight,
         page,
         limit,
         search,

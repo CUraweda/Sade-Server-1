@@ -117,9 +117,15 @@ class WasteCollectionDao extends SuperDao {
     if (filterOptions.waste_type_id) {
       whereClause['waste_type_id'] = filterOptions.waste_type_id;
     }
-
+    
     if (filterOptions.class_id) {
       whereClause['$studentclass.class_id$'] = filterOptions.class_id;
+    }
+    if (filterOptions.weight) {
+      const weightValue = parseFloat(filterOptions.weight);
+      if (!isNaN(weightValue)) {
+        whereClause['weight'] = weightValue;
+      }
     }
     if (filterOptions.start_date && filterOptions.end_date) {
       const startDate = new Date(filterOptions.start_date);
@@ -166,7 +172,10 @@ class WasteCollectionDao extends SuperDao {
           attributes: ["id", "code", "name", "price"]
         },
       ],
-      order: [['collection_date', 'ASC']] // Adjust the sorting as per your requirements
+      order: [
+        ['collection_date', 'DESC']
+        ['weight', 'ASC']
+      ]
     });
   }
   async getCount(search) {
@@ -286,6 +295,12 @@ class WasteCollectionDao extends SuperDao {
     if (filterOptions.class_id) {
       whereClause['$studentclass.class_id$'] = filterOptions.class_id;
     }
+    if (filterOptions.weight) {
+      const weightValue = parseFloat(filterOptions.weight);
+      if (!isNaN(weightValue)) {
+        whereClause['weight'] = weightValue;
+      }
+    }
     if (filterOptions.start_date && filterOptions.end_date) {
       const startDate = new Date(filterOptions.start_date);
       const endDate = new Date(filterOptions.end_date);
@@ -331,7 +346,10 @@ class WasteCollectionDao extends SuperDao {
           attributes: ["id", "code", "name", "price"]
         }
       ],
-      order: [['collection_date', 'ASC']],
+      order: [
+        ['collection_date', 'DESC'],
+        ['weight', 'ASC']
+      ],
       limit: limit,
       offset: offset
     });

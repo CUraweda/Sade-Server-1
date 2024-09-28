@@ -14,6 +14,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.addColumn('tbl_lesson_plan', 'class', { type: Sequelize.STRING });
+    await queryInterface.removeColumn('tbl_lesson_plan', 'class_id');
   }
 };

@@ -37,7 +37,7 @@ class UserService {
       userBody.status = userConstant.STATUS_ACTIVE;
       userBody.role_id = userBody.role_id;
       userBody.full_name = userBody.full_name;
-      userBody.email_verified = userBody.role_id === 11 ? userConstant.EMAIL_VERIFIED_FALSE : userConstant.EMAIL_VERIFIED_TRUE
+      userBody.email_verified = userBody.role_id != 11 ? userConstant.EMAIL_VERIFIED_FALSE : userConstant.EMAIL_VERIFIED_TRUE
 
       let userData = await this.userDao.create(userBody);
 

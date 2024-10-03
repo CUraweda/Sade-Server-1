@@ -73,11 +73,11 @@ class StudentReportDao extends SuperDao {
             [Op.like]: "%" + search + "%",
           },
         },
-        // {
-        //   student_access: {
-        //     [Op.like]: "%" + search + "%",
-        //   },
-        // },
+        {
+          student_access: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
       ],
     }
     if (academic) where["$studentclass.academic_year$"] = academic
@@ -89,6 +89,8 @@ class StudentReportDao extends SuperDao {
     if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
 
     if (class_id) where["$studentclass.class_id$"] = class_id
+
+    console.log(JSON.stringify(where))
 
     return StudentReport.findAll({
       where,

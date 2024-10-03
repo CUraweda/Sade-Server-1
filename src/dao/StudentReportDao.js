@@ -21,16 +21,16 @@ class StudentReportDao extends SuperDao {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       [Op.or]: [
-        {
-          nar_parent_comments: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          student_access: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
+        // {
+        //   nar_parent_comments: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
+        // {
+        //   student_access: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
       ],
     }
 
@@ -68,16 +68,16 @@ class StudentReportDao extends SuperDao {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       [Op.or]: [
-        {
-          nar_parent_comments: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
-        {
-          student_access: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
+        // {
+        //   nar_parent_comments: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
+        // {
+        //   student_access: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
       ],
     }
     if (academic) where["$studentclass.academic_year$"] = academic
@@ -89,8 +89,6 @@ class StudentReportDao extends SuperDao {
     if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
 
     if (class_id) where["$studentclass.class_id$"] = class_id
-
-    console.log(JSON.stringify(where))
 
     return StudentReport.findAll({
       where,

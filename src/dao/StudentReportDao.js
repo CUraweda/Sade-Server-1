@@ -73,11 +73,11 @@ class StudentReportDao extends SuperDao {
             [Op.like]: "%" + search + "%",
           },
         },
-        {
-          student_access: {
-            [Op.like]: "%" + search + "%",
-          },
-        },
+        // {
+        //   student_access: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
       ],
     }
     if (academic) where["$studentclass.academic_year$"] = academic

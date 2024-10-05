@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       grade: DataTypes.STRING,
       email: DataTypes.STRING,
       user_id: DataTypes.INTEGER,
+      is_asessor: DataTypes.BOOLEAN
     },
     {
       sequelize,

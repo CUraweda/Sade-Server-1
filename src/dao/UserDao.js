@@ -34,7 +34,7 @@ class UserDao extends SuperDao {
         {
           model: Employee,
           required: false,
-          attributes: ["id", "full_name"],
+          attributes: ["id", "full_name", "is_asessor"],
           include: [
             {
               model: Headmaster,

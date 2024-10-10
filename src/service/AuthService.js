@@ -43,7 +43,7 @@ class AuthService {
       }
 
       if (!isEmailVerified) {
-        statusCode = httpStatus.OK;
+        statusCode = httpStatus.UNPROCESSABLE_ENTITY;
         message = "Email not verified!";
         return responseHandler.returnError(statusCode, message, user);
       }

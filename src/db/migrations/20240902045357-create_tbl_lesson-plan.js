@@ -15,13 +15,8 @@ module.exports = {
       subjects_name: {
         type: Sequelize.STRING,
       },
-      class_id: {
-        type: Sequelize.INTEGER,
-        onDelete: "CASCADE",
-        references: {
-          model: "ref_classes",
-          key: "id",
-        },
+      class: {
+        type: Sequelize.STRING,
       },
       file_path: {
         type: Sequelize.STRING,

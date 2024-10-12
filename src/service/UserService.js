@@ -37,7 +37,7 @@ class UserService {
       userBody.status = userConstant.STATUS_ACTIVE;
       userBody.role_id = userBody.role_id;
       userBody.full_name = userBody.full_name;
-      userBody.email_verified = userConstant.EMAIL_VERIFIED_FALSE;
+      userBody.email_verified = userConstant.EMAIL_VERIFIED_FALSE
 
       let userData = await this.userDao.create(userBody);
 
@@ -51,7 +51,7 @@ class UserService {
 
       let url 
       switch(userBody.role_id){
-        case 12:
+        case 11:
           url = config.hrdWebUrl + `/verifikasi/${uuid}`
           break;
           default:

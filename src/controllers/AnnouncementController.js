@@ -35,15 +35,17 @@ class AnnouncementController {
         allowUnknown: true,
         stripUnknown: true,
       });
-
+      console.log(error)
+      
       if (error) {
         const errorMessage = error.details
-          .map((details) => {
-            return details.message;
-          })
-          .join(", ");
+        .map((details) => {
+          return details.message;
+        })
+        .join(", ");
         return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
       }
+      console.log("MASUK",req.body)
 
       const resData = await this.announcementService.createAnnouncement(
         formData
@@ -153,7 +155,7 @@ class AnnouncementController {
       const search = req.query.search_query || "";
       const offset = limit * page;
       const { start_date, end_date, class_id, with_assign } = req.query;
-
+  
       let class_ids = [];
       if (employee && with_assign == "Y") {
         const empClasses = await this.classService.showPage(
@@ -167,7 +169,7 @@ class AnnouncementController {
             ?.map((c) => c.id ?? "")
             .filter((c) => c != "") ?? [];
       }
-
+      const int_class_id = parseInt(class_id, 10)
       const resData = await this.announcementService.showPage(
         page,
         limit,
@@ -176,17 +178,17 @@ class AnnouncementController {
         {
           start_date,
           end_date,
-          class_id,
-          class_ids,
+          int_class_id,  
+          class_ids
         }
       );
-
+  
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
-  };
+  };  
 
   delete = async (req, res) => {
     try {

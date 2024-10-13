@@ -2,6 +2,7 @@ const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
 const { formatDateForSQL } = require("../helper/utils");
+const { Sequelize } = require('sequelize');
 
 const Announcement = models.announcements;
 const Classes = models.classes
@@ -29,26 +30,45 @@ class AnnouncementDao extends SuperDao {
           },
         },
       ],
-    }
-
+    };
+  
     if (filters.start_date && filters.end_date) {
-      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))]
-      where[Op.or] = {
-        date_start: { [Op.between]: dates },
-        date_end: { [Op.between]: dates }
-      }
-    } 
-
-    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
-
-    if (filters.class_id) where["class_id"] = filters.class_id
-
+      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))];
+      where[Op.and] = [
+        {
+          date_start: { [Op.between]: dates },
+          date_end: { [Op.between]: dates },
+        },
+      ];
+    }
+  
+      
+    if (filters.int_class_id) {
+      where[Op.and] = where[Op.and] || [];
+      where[Op.and].push(
+        Sequelize.literal(`JSON_CONTAINS(class_ids, '[${filters.int_class_id}]')`)
+      );
+    }
+  
+    // Optional: Filtering by multiple class_ids, if needed
+    // if (filters.class_ids?.length) {
+    //   where[Op.and] = where[Op.and] || [];
+    //   filters.class_ids.forEach((classId) => {
+    //     where[Op.and].push({
+    //       class_ids: {
+    //         [Op.contains]: [classId],
+    //       },
+    //     });
+    //   });
+    // }
+  
     return Announcement.count({
       where,
     });
   }
 
   async getAnnouncementPage(search, offset, limit, filters) {
+    console.log("AMAN 4")         
     const where = {
       [Op.or]: [
         {
@@ -57,33 +77,38 @@ class AnnouncementDao extends SuperDao {
           },
         },
       ],
-    }
+    };
 
     if (filters.start_date && filters.end_date) {
-      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))]
+      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))];
       where[Op.or] = {
         date_start: { [Op.between]: dates },
-        date_end: { [Op.between]: dates }
-      }
-    } 
+        date_end: { [Op.between]: dates },
+      };
+    }
 
-    if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
+    if (filters.int_class_id) {
+      where[Op.and] = where[Op.and] || [];
+      where[Op.and].push(
+        Sequelize.literal(`JSON_CONTAINS(class_ids, '[${filters.int_class_id}]')`)
+      );
+    }
+  
 
-    if (filters.class_id) where["class_id"] = filters.class_id
+    // if (filters.class_ids?.length) {
+    //   where[Op.or] = filters.class_ids.map((classId) => 
+    //     Sequelize.literal(`JSON_CONTAINS(class_ids, '["${classId}"]')`)
+    //   );
+    // }
 
     return Announcement.findAll({
       where,
-      include: [
-        {
-          model: Classes,
-          attributes: ["id", "class_name"]
-        }
-      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
     });
   }
+
   async getAllBetween(start, end, classId) {
     const startDate = new Date(start + " 00:00:00");
     const endDate = new Date(end + " 23:59:59");

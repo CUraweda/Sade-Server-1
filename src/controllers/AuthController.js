@@ -55,7 +55,7 @@ class AuthController {
       const code = user.statusCode;
       let tokens = {};
       if (user.response.status) {
-        tokens = await this.tokenService.generateAuthTokens(data);
+        tokens = await this.tokenService.generateAuthTokens(data);  
       }
       res.status(user.statusCode).send({ status, code, message, data, tokens });
     } catch (e) {

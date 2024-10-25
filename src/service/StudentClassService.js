@@ -1,14 +1,17 @@
 const httpStatus = require("http-status");
 const StudentClassDao = require("../dao/StudentClassDao");
+const StudentDao = require("../dao/StudentDao")
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
 const xlsx = require("xlsx");
 const { Op } = require("sequelize");
-
+const ClassesDao = require("../dao/ClassesDao");
 class StudentClassService {
   constructor() {
     this.studentClassDao = new StudentClassDao();
+    this.studentDao = new StudentDao()
+    this.classDao = new ClassesDao()
   }
 
   // createStudentClass = async (reqBody) => {
@@ -32,9 +35,24 @@ class StudentClassService {
   //   }
   // };
 
+  updateAndSecureStudentClasss = async (secured_id, student_data) => {
+    const { student_id, class_id } = student_data
+    await this.studentDao.updateClass(student_id, class_id)
+    return await this.studentClassDao.updateWhere(
+      { is_active: "Tidak" },
+      {
+        student_id,
+        is_active: "Ya",
+        id: { [Op.not]: secured_id }
+      }
+    );
+
+  }
+
   createStudentClass = async (reqBody) => {
     try {
       let message = "Student Class successfully added.";
+
 
       let data = await this.studentClassDao.create(reqBody);
 
@@ -43,15 +61,7 @@ class StudentClassService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
 
-      // Update another record with the same student_id and academic_year not equal to reqBody.academic_year
-      await this.studentClassDao.updateWhere(
-        { is_active: "Tidak" }, // Update fields
-        {
-          student_id: reqBody.student_id,
-          academic_year: { [Op.ne]: reqBody.academic_year }, // Not equal condition
-        }
-      );
-
+      await this.updateAndSecureStudentClasss(data.id, data)
       return responseHandler.returnSuccess(httpStatus.CREATED, message, data);
     } catch (e) {
       logger.error(e);
@@ -85,9 +95,9 @@ class StudentClassService {
       { id }
     );
 
-    if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
-    }
+    if (!updateData) return responseHandler.returnError(httpStatus.NOT_FOUND, "Failed to udpate student class");
+    if (body.is_active === "Ya") await this.updateAndSecureStudentClasss(id, body)
+    return responseHandler.returnSuccess(httpStatus.OK, message, {});
   };
 
   showStudentClass = async (id) => {
@@ -163,6 +173,11 @@ class StudentClassService {
     );
   }
 
+  showClassByStudent = async (id) => {
+    const rel = await this.studentClassDao.getByStudentId(id)
+    return responseHandler.returnSuccess(httpStatus.OK, "Student Class Successfully Retrived", rel);
+  }
+
   deleteStudentClass = async (id) => {
     const message = "Student Class successfully deleted!";
 
@@ -190,7 +205,6 @@ class StudentClassService {
 
       // Convert the sheet data to JSON
       const jsonData = xlsx.utils.sheet_to_json(sheet);
-      console.log(jsonData);
       let data = await this.studentClassDao.bulkCreate(jsonData);
 
       if (!data) {

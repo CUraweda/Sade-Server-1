@@ -55,7 +55,7 @@ class AuthController {
       const code = user.statusCode;
       let tokens = {};
       if (user.response.status) {
-        tokens = await this.tokenService.generateAuthTokens(data);
+        tokens = await this.tokenService.generateAuthTokens(data);  
       }
       res.status(user.statusCode).send({ status, code, message, data, tokens });
     } catch (e) {
@@ -71,21 +71,24 @@ class AuthController {
 
   me = async (req, res) => {
     try {
-			const user = await this.userService.getUserByUuid(req.user.uuid);
-			if (user == null) {
-				return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
-			}
+      const user = await this.userService.getUserByUuid(req.user.uuid);
+      if (user == null) {
+        return res.status(httpStatus.NOT_FOUND).send('User Not Found!');
+      }
 
-			res.status(httpStatus.OK).json({
-				status: true,
-				code: 200,
-				message: "User information retrieved",
-				data: user,
-			});
-		} catch (e) {
-			logger.error(e);
-			res.status(httpStatus.BAD_GATEWAY).send(e);
-		}
+      let userData = user.toJSON()
+      delete userData.password
+
+      res.status(httpStatus.OK).json({
+        status: true,
+        code: 200,
+        message: "User information retrieved",
+        data: userData,
+      });
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
   }
 
   refreshTokens = async (req, res) => {
@@ -139,16 +142,18 @@ class AuthController {
       await uploadAvatar(req, res);
 
       var id = req.params.id;
-      console.log(req.file);
-      const responseData = await this.userService.updateUser(id, req);
-
-      // if (req.file === undefined) {
-      //   return res.status(httpStatus.BAD_REQUEST).send({
-      //     status: false,
-      //     code: httpStatus.BAD_REQUEST,
-      //     message: "Please upload a file!",
-      //   });
-      // }
+      const { full_name, email, role_id, status, email_verified } = req.body;
+      const file = req.file;
+  
+      const responseData = await this.userService.updateUser(id, { full_name, email, role_id, status, email_verified, file });
+  
+      if (req.file === undefined) {
+        return res.status(httpStatus.BAD_REQUEST).send({
+          status: false,
+          code: httpStatus.BAD_REQUEST,
+          message: "Please upload a file!",
+        });
+      }
 
       res.status(responseData.statusCode).send(responseData.response);
     } catch (e) {
@@ -180,8 +185,8 @@ class AuthController {
   showByRoles = async (req, res) => {
     try {
       const ids = req.query.ids.split(",").map((id) => parseInt(id));
-
-      const resData = await this.userService.showUsersByRoles(ids);
+      const { search } = req.query
+      const resData = await this.userService.showUsersByRoles(ids, search);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

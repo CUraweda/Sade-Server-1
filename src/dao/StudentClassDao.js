@@ -1,10 +1,13 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { required } = require("joi");
 
 const StudentClass = models.studentclass;
 const Students = models.students;
+const User = models.user
 const Classes = models.classes;
+const UserAccess = models.useraccess
 const Reports = models.studentreports;
 
 class StudentClassDao extends SuperDao {
@@ -22,13 +25,28 @@ class StudentClassDao extends SuperDao {
       ],
     });
   }
+
+  getByStudentId(student_id) {
+    return StudentClass.findAll({
+      where: { student_id },
+      include: [
+        {
+          model: Students
+        },
+        {
+          model: Classes
+        }
+      ]
+    })
+  }
   async getByClasses(class_id, academic_year) {
     const where = {
       class_id: class_id,
       is_active: "Ya",
-    }
+    };
 
-    if (academic_year) where["academic_year"] = academic_year
+    if (academic_year) where["academic_year"] = academic_year;
+
     return StudentClass.findAll({
       where,
       include: [
@@ -36,8 +54,36 @@ class StudentClassDao extends SuperDao {
           model: Students,
         },
       ],
-      order: [["id", "ASC"]],
+      order: [
+        [{ model: Students, as: 'student' }, 'full_name', 'ASC'],
+      ],
     });
+  }
+
+
+  async getAllStudentFromClasses(class_id = [], search) {
+    if (!Array.isArray(class_id)) throw new Error('Role IDs must be provided as an array')
+    return StudentClass.findAll({
+      where: {
+        class_id: { [Op.in]: class_id },
+        is_active: "Ya"
+      },
+      include: [
+        {
+          model: Students,
+          required: true,
+          include: {
+            model: UserAccess, required: true, include: {
+              model: User, where: {
+                ...(search && {
+                  full_name: { [Op.like]: `%${search}%` }
+                })
+              }
+            }
+          }
+        }
+      ]
+    })
   }
 
   async getByLevel(level, academic_year) {
@@ -59,7 +105,7 @@ class StudentClassDao extends SuperDao {
     });
   }
 
-  async getCount(search, classId, academic) {
+  async getCount(search, classId, academic, class_id) {
     const where = {
       [Op.or]: [
         {
@@ -91,7 +137,7 @@ class StudentClassDao extends SuperDao {
     }
 
     if (classId) where['class_id'] = parseInt(classId);
-		if (academic) where['academic_year'] = academic;
+    if (academic) where['academic_year'] = academic;
 
     return StudentClass.count({
       where,
@@ -144,7 +190,7 @@ class StudentClassDao extends SuperDao {
 
     if (classId) where['class_id'] = parseInt(classId)
     if (academic) where['academic_year'] = academic;
-    
+
     return StudentClass.findAll({
       where,
       offset: offset,

@@ -17,35 +17,42 @@ class DashboardController {
   }
 
   adminKeuangan = async (req, res) => {
+    const {start_date, end_date, post_payment_id} = req.query
+
     try {
       // time
-      const now = moment().toDate(),
-        monthAgo = moment().subtract(30, "days").toDate(),
-        weekAgo = moment().subtract(7, "days").toDate();
+      const now = moment().toDate();
 
       // income
       const thisMonth = await this.studentBillsService.getIncome({
-        start_date: monthAgo,
+        start_date: moment(now).startOf('month').toDate(),
         end_date: now,
+        post_payment_id
       });
       const thisDay = await this.studentBillsService.getIncome({
         start_date: now,
+        post_payment_id
       });
-      const total = await this.studentBillsService.getIncome();
+      const total = await this.studentBillsService.getIncome({
+        post_payment_id,
+        start_date: start_date ? moment(start_date).toDate() : null,
+        end_date: end_date ? moment(end_date).toDate() : null
+      });
 
       // in arrears
-      const inArrears = await this.studentArrearsService.showPage(0, 1, '');
+      const inArrears = await this.studentArrearsService.showPage(0, 1, '', 0, '', { post_payment_id });
       const countInArrears = inArrears?.response?.data?.totalRows ?? 0;
 
       // lunas percentage
-      const totalBills = await this.studentPaymentReportService.showPage(0, 1, '', 0, {})
-      const totalLunasBills = await this.studentPaymentReportService.showPage(0, 1, '', 0, {status: 'lunas'})
+      const totalBills = await this.studentPaymentReportService.showPage(0, 1, '', 0, { post_payment_id })
+      const totalLunasBills = await this.studentPaymentReportService.showPage(0, 1, '', 0, {status: 'lunas', post_payment_id})
       const percentageLunas = (totalLunasBills?.response?.data?.totalRows ?? 0) / (totalBills?.response?.data?.totalRows ?? 0) * 100
       
       // bills
       const recentBills = await this.studentBillsService.getRecentPaidOffBills(
-        weekAgo,
-        7
+        moment().subtract(7, "days").toDate(),
+        7,
+        post_payment_id
       );      
 
       return res.status(httpStatus.OK).send({
@@ -65,6 +72,18 @@ class DashboardController {
       return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
     }
   };
+
+  keuanganChart = async (req, res) => {
+    try {
+      const {start_date, end_date, post_payment_id} = req.query
+
+      const chart = await this.studentBillsService.getIncomeGroupDate({start_date, end_date, post_payment_id})
+      return res.status(httpStatus.OK).send(chart)
+    } catch (error) {
+      logger.error(error);
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);      
+    }
+  }
 
   adminTimbangan = async (req, res) => {
     try {
@@ -154,7 +173,7 @@ class DashboardController {
       const formattedNow = formatDateToYYYYMMDD(now);
       const formattedOneMonthAgo = formatDateToYYYYMMDD(oneMonthAgo);
 
-      const { waste_type_id, start_date, end_date } = req.query;
+      const { waste_type_id, start_date, end_date, class_id } = req.query;
 
       // Use provided dates or defaults
       const startDate = start_date ? start_date : formattedOneMonthAgo;
@@ -163,7 +182,8 @@ class DashboardController {
       const chartData = await this.wasteSalesService.getDetailChartData(
         waste_type_id,
         startDate,
-        endDate
+        endDate,
+        class_id
       );
 
       return res.status(httpStatus.OK).send(chartData);
@@ -192,14 +212,15 @@ class DashboardController {
       const formattedNow = formatDateToYYYYMMDD(now);
       const formattedOneMonthAgo = formatDateToYYYYMMDD(oneMonthAgo);
 
-      const { start_date, end_date } = req.query;
+      const { start_date, end_date, class_id } = req.query;
 
       const startDate = start_date ? start_date : formattedOneMonthAgo;
       const endDate = end_date ? end_date : formattedNow;
 
       const chartData = await this.wasteSalesService.getChartData(
         startDate,
-        endDate
+        endDate,
+        class_id
       );
 
       return res.status(httpStatus.OK).send(chartData);

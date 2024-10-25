@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 
 const WasteCollection = models.wastecollection;
 const WasteTypes = models.wastetypes;
+const StudentClass = models.studentclass
 
 class WasteSalesDao extends SuperDao {
   async countWasteSummary(wastetypeId, startDate, endDate) {
@@ -113,7 +114,7 @@ class WasteSalesDao extends SuperDao {
     });
   }
   
-  async getDetailChart(wastetypeId, startDate, endDate) {
+  async getDetailChart(wastetypeId, startDate, endDate, classId) {
     const whereClause = {};
   
     if (startDate && endDate) {
@@ -136,10 +137,17 @@ class WasteSalesDao extends SuperDao {
     if (wastetypeId) {
       whereClause.waste_type_id = wastetypeId;
     }
+
+    if (classId) whereClause["$studentclass.class_id$"] = classId
   
     const results = await WasteCollection.findAll({
       where: whereClause,
       include: [
+        {
+          model: StudentClass,
+          as: 'studentclass',
+          attributes: []
+        },
         {
           model: WasteTypes,
           as: 'wastetype',
@@ -174,7 +182,7 @@ class WasteSalesDao extends SuperDao {
     });
   }
 
-  async getChartData(startDate, endDate, wasteTypeId = null) {
+  async getChartData(startDate, endDate, wasteTypeId = null, classId) {
     const whereClause = {
       collection_date: {
         [Op.between]: [
@@ -188,9 +196,16 @@ class WasteSalesDao extends SuperDao {
       whereClause.waste_type_id = wasteTypeId;
     }
 
+    if (classId) whereClause["$studentclass.class_id$"] = classId
+
     const results = await WasteCollection.findAll({
       where: whereClause,
       include: [
+        {
+          model: StudentClass,
+          as: 'studentclass',
+          attributes: []
+        },
         {
           model: WasteTypes,
           as: 'wastetype',

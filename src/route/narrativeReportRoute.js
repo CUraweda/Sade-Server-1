@@ -42,7 +42,7 @@ router.post("/import", auth([1, 3]), narrativeReportController.importExcel);
 
 router.get(
   "/generate/:id",
-  auth([1, 3, 6]),
+  auth([1, 3, 6, 8]),
   narrativeReportController.exportByStudentId
 );
 

@@ -50,6 +50,18 @@ class StudentClassController {
     }
   };
 
+  
+  showByStudent = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const resData = await this.studentClassService.showClassByStudent(id);
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  }
+
   showByClass = async (req, res) => {
     try {
       const id = req.params.id;
@@ -57,7 +69,7 @@ class StudentClassController {
 
       const resData = await this.studentClassService.showStudentByClass(
         id,
-        academic
+        
       );
 
       res.status(resData.statusCode).send(resData.response);

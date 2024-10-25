@@ -50,7 +50,6 @@ class AchievementService {
 
     //delete file if exist
     const rData = cl.dataValues;
-    console.log(rData);
     if (rData.certificate_path) {
       // console.log(rData.cover);
       if (body.certificate_path) {
@@ -87,10 +86,10 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  showAchievementByStudentId = async (id) => {
+  showAchievementByStudentId = async (id, academic) => {
     const message = "Achievement successfully retrieved!";
 
-    let cl = await this.achievementDao.getByStudentId(id);
+    let cl = await this.achievementDao.getByStudentId(id, academic);
 
     if (!cl) {
       return responseHandler.returnSuccess(
@@ -103,10 +102,10 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  showAchievementTopOneByStudentId = async (id) => {
+  showAchievementTopOneByStudentId = async (id, academic) => {
     const message = "Achievement successfully retrieved!";
 
-    let cl = await this.achievementDao.getTopOne(id);
+    let cl = await this.achievementDao.getTopOne(id, academic);
 
     if (!cl) {
       return responseHandler.returnSuccess(
@@ -119,14 +118,15 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.achievementDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.achievementDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.achievementDao.getAchievementPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

@@ -10,14 +10,14 @@ const userChatValidator = new UserChatValidator();
 
 router.post(
   "/create",
-  auth([1, 3]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userChatValidator.userChatCreateUpdateValidator,
   userChatController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 3]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   userChatValidator.userChatCreateUpdateValidator,
   userChatController.update
 );
@@ -34,6 +34,8 @@ router.get(
   userChatController.showUserBetweenId
 );
 
+router.get('/show-by-guru', auth([6]), userChatController.showByGuruEmployee)
+
 router.get(
   "/show-by-user/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
@@ -48,6 +50,6 @@ router.get(
 
 // router.get("/", auth([1, 2, 3, 4, 5, 6]), userChatController.showAll);
 
-router.delete("/delete/:id", auth([1, 3]), userChatController.delete);
+router.delete("/delete/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), userChatController.delete);
 
 module.exports = router;

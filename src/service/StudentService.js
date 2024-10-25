@@ -13,6 +13,18 @@ class StudentService {
   createStudent = async (reqBody) => {
     try {
       let message = "Student successfully added.";
+      const nis = reqBody.nis
+      let nis_validator = await this.studentDao.findOneByWhere({nis})
+      if (nis_validator) {
+        message = "NIS already exists";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
+      const nisn = reqBody.nisn
+      let nisn_validator = await this.studentDao.findOneByWhere({nisn})
+      if (nisn_validator) {
+        message = "NISN already exists";
+        return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
+      }
 
       let data = await this.studentDao.create(reqBody);
 
@@ -43,7 +55,6 @@ class StudentService {
 
       // Convert the sheet data to JSON
       const jsonData = xlsx.utils.sheet_to_json(sheet);
-      console.log(jsonData);
       let data = await this.studentDao.bulkCreate(jsonData);
 
       if (!data) {
@@ -147,10 +158,10 @@ class StudentService {
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
 
-  showByNis = async (nis) => {
+  showByNis = async (nis, dob) => {
     const message = "Student successfully retrieved!";
-
-    let dt = await this.studentDao.findByNis(nis);
+    if (dob === "") return responseHandler.returnError(httpStatus.BAD_REQUEST, "Tolong sertakan tanggal lahir siswa")
+    let dt = await this.studentDao.findByNis(nis, dob);
 
     if (!dt) {
       return responseHandler.returnSuccess(
@@ -165,3 +176,4 @@ class StudentService {
 }
 
 module.exports = StudentService;
+

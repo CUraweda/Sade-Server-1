@@ -4,6 +4,7 @@ const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
 const xlsx = require("xlsx");
+const { Op } = require("sequelize");
 
 class ParentService {
   constructor() {
@@ -14,6 +15,14 @@ class ParentService {
     try {
       let message = "Parent successfully added.";
 
+      if (reqBody.user_id) {
+        let check = await this.parentDao.getCountByWhere({ 
+          user_id: reqBody.user_id, 
+        })
+    
+        if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User parent already linked")
+      }
+  
       let data = await this.parentDao.create(reqBody);
 
       if (!data) {
@@ -74,6 +83,15 @@ class ParentService {
       );
     }
 
+    let check = await this.parentDao.getCountByWhere({ 
+      id: {
+        [Op.not]: id
+      }, 
+      user_id: body.user_id, 
+    })
+
+    if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User parent already linked")
+
     const updateData = await this.parentDao.updateWhere(
       {
         student_id: body.student_id,
@@ -93,7 +111,8 @@ class ParentService {
         field_of_work: body.field_of_work,
         user_id: body.user_id,
         latitude: body.latitude,
-        longitude: body.longitude
+        longitude: body.longitude,
+        nik: body.nik
       },
       { id }
     );
@@ -139,6 +158,22 @@ class ParentService {
     const message = "Parent successfully retrieved!";
 
     let dt = await this.parentDao.findOneByWhere({ user_id })
+
+    if (!dt) {
+      return responseHandler.returnSuccess(
+        httpStatus.NOT_FOUND,
+        "Parent not found!",
+        {}
+      )
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt)
+  }
+
+  showByName = async (name) => {
+    const message = "Parent successfully retrieved!";
+
+    let dt = await this.parentDao.findOneByWhere({ name })
 
     if (!dt) {
       return responseHandler.returnSuccess(

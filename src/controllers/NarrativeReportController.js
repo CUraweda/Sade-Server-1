@@ -27,7 +27,6 @@ class NarrativeReportController {
     try {
       var id = req.params.id;
 
-      console.log(req.body)
       const resData = await this.narrativeReportService.updateNarrativeReport(
         id,
         req.body
@@ -124,12 +123,15 @@ class NarrativeReportController {
   exportByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
-      const semester = req.query.semester;
+      const { semester, report_id } = req.query
 
       const resData = await this.narrativeReportService.exportReportByStudentId(
         id,
-        semester
+        semester,
+        report_id
       );
+
+      console.log(resData)
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

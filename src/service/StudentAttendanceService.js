@@ -55,7 +55,6 @@ class StudentAttendanceService {
 
   createStudentAttendanceBulk = async (reqBody) => {
     try {
-      console.log(reqBody);
       let message = "Student Attendance successfully added.";
       const timeTreshold = moment(userConstant.ONTIME, "HH:mm");
 
@@ -133,10 +132,10 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentAttendanceByStudentId = async (id) => {
+  showStudentAttendanceByStudentId = async (id, academic) => {
     const message = "Student Attendance successfully retrieved!";
 
-    let rel = await this.studentAttendanceDao.getByStudentId(id);
+    let rel = await this.studentAttendanceDao.getByStudentId(id, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -149,12 +148,13 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentAttendanceByClassIdNDate = async (class_id, att_date) => {
+  showStudentAttendanceByClassIdNDate = async (class_id, att_date, academic) => {
     const message = "Student Attendance successfully retrieved!";
 
     let rel = await this.studentAttendanceDao.getByClassNDate(
       class_id,
-      att_date
+      att_date,
+      academic
     );
 
     if (!rel) {
@@ -208,14 +208,15 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.studentAttendanceDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.studentAttendanceDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentAttendanceDao.getStudentAttendancePage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

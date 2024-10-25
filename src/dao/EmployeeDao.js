@@ -3,6 +3,7 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const Employees = models.employees;
+const User = models.user
 
 class EmployeesDao extends SuperDao {
   constructor() {
@@ -85,7 +86,7 @@ class EmployeesDao extends SuperDao {
             work_start_date: {
               [Op.like]: "%" + search + "%",
             },
-          },
+        },
           {
             occupation: {
               [Op.like]: "%" + search + "%",
@@ -111,9 +112,26 @@ class EmployeesDao extends SuperDao {
     });
   }
 
-  async getEmployeesPage(search, offset, limit) {
+  async getByUserId(user_id) {
+    return Employees.findAll({
+      where: { user_id }
+    })
+  }
+
+  async getEmployeesPage(filter, offset, limit) {
+    const { isGuru, search, isAssign } = filter
     return Employees.findAll({
       where: {
+        ...(isGuru && { is_teacher: isGuru }),
+        ...(isAssign && {
+          user_id: {
+            ...(isAssign != "N" ? {
+              [Op.not]: null
+            } : {
+              [Op.is]: null
+            })
+          }
+        }),
         [Op.or]: [
           {
             employee_no: {
@@ -202,6 +220,11 @@ class EmployeesDao extends SuperDao {
           },
         ],
       },
+      include: [
+        {
+          model: User,
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

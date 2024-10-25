@@ -5,6 +5,7 @@ const uploadTask = require("../middlewares/uploadTask");
 const Joi = require("joi");
 const path = require("path");
 const fs = require("fs");
+const ClassesService = require("../service/ClassesService");
 
 const schema = Joi.object({
   class_id: Joi.number().required(),
@@ -22,6 +23,7 @@ const schema = Joi.object({
 class TaskController {
   constructor() {
     this.taskService = new TaskService();
+    this.classService = new ClassesService()
   }
 
   create = async (req, res) => {
@@ -109,8 +111,9 @@ class TaskController {
     try {
       const id = req.params.id;
       const cat_id = req.query.cat || "";
-
-      const resData = await this.taskService.showTaskByClassId(id, cat_id);
+      let studentId = req.query.student_id
+      if(req.user.role_id == 7) studentId = req.user.useraccesses[0].student.id
+      const resData = await this.taskService.showTaskByClassId(id, cat_id, studentId);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -121,16 +124,30 @@ class TaskController {
 
   showAll = async (req, res) => {
     try {
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
 
+      const { class_id, with_assign, academic } = req.query
+
+      let class_ids = []
+      if (employee && with_assign == "Y") {
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id }, 0)
+        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+      }
+
       const resData = await this.taskService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          class_id,
+          class_ids,
+          academic
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

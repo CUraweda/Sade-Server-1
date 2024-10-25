@@ -54,6 +54,7 @@ module.exports = {
   dbName: envVar.DB_NAME,
   baseUrl: envVar.BASE_URL,
   webUrl: envVar.WEB_URL,
+  hrdWebUrl: envVar.HRD_WEB_URL,
   jwt: {
     secret: envVar.JWT_SECRET,
     accessExpirationMinutes: envVar.JWT_ACCESS_EXPIRATION_MINUTES,

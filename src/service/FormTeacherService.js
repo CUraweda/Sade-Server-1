@@ -48,7 +48,7 @@ class FormTeacherService {
         class_id: body.class_id,
         employee_id: body.employee_id,
         academic_year: body.academic_year,
-        status: body.status,
+        is_active: body.is_active,
       },
       { id }
     );
@@ -74,14 +74,14 @@ class FormTeacherService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.formTeacherDao.getCount(search);
+  async showPage(page, limit, filter, offset) {
+    const totalRows = await this.formTeacherDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.formTeacherDao.getFormTeacherPage(
-      search,
+      filter,
       offset,
-      limit
+      limit,
     );
 
     return responseHandler.returnSuccess(

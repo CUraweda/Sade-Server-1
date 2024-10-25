@@ -5,11 +5,12 @@ const uploadForCountry = require("../middlewares/uploadForCountry");
 
 const path = require("path");
 const fs = require("fs");
+const ClassesService = require("../service/ClassesService");
 
 class ForCountryDetailController {
   constructor() {
     this.forCountryDetailService = new ForCountryDetailService();
-
+    this.classService = new ClassesService();
   }
 
   create = async (req, res) => {
@@ -27,9 +28,7 @@ class ForCountryDetailController {
 
   update = async (req, res) => {
     try {
-      console.log(req.body)
       await uploadForCountry(req, res);
-      console.log(req.body)
 
 
       const certificate_path = req.file ? req.file.path : null;
@@ -99,16 +98,29 @@ class ForCountryDetailController {
 
   showAll = async (req, res) => {
     try {
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { class_id, with_assign, academic } = req.query
+
+      let class_ids = []
+      if (employee && with_assign == "Y") {
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id }, 0)
+        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+      }
 
       const resData = await this.forCountryDetailService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          class_id,
+          class_ids,
+          academic
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

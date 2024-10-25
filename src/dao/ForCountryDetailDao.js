@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const ForCountryDetail = models.forcountrydetails;
 const ForCountry = models.forcountry;
 const User = models.user
+const Student = models.students
 
 class ForCountryDetailDao extends SuperDao {
   constructor() {
@@ -58,59 +59,131 @@ class ForCountryDetailDao extends SuperDao {
     })
   }
 
-  async getCount(search) {
-    return ForCountryDetail.count({
-      where: {
-        [Op.or]: [
-          {
-            activity: {
-              [Op.like]: "%" + search + "%",
-            },
+  async getCount(search, filters) {
+    const { class_id, class_ids, academic } = filters
+    const where = {
+      [Op.or]: [
+        {
+          activity: {
+            [Op.like]: "%" + search + "%",
           },
-          {
-            duration: {
-              [Op.like]: "%" + search + "%",
-            },
+        },
+        {
+          duration: {
+            [Op.like]: "%" + search + "%",
           },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
           },
-        ],
-      },
-    });
-  }
+        },
+      ],
+    }
 
-  async getForCountryDetailPage(search, offset, limit) {
-    return ForCountryDetail.findAll({
-      where: {
-        [Op.or]: [
-          {
-            activity: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            duration: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+    let classIds = []
+
+    if (class_ids?.length) classIds = class_ids
+
+    if (class_id) classIds = [class_id]
+
+    if (academic) where["$forcountry.academic_year$"] = academic
+
+    return ForCountryDetail.count({
+      where,
       include: [
         {
           model: ForCountry,
+          required: true,
           include: [
             {
               model: User,
-              attributes: ["full_name"]
+              attributes: ["full_name"],
             },
+          ]
+        },
+        {
+          model: Student,
+          attributes: ["id", "full_name"],
+          required: classIds.length > 0,
+          include: [
+            {
+              model: models.studentclass,
+              required: classIds.length > 0,
+              ...(classIds.length && {
+                where: {
+                  class_id: {
+                    [Op.in]: classIds
+                  }
+                },
+              })
+            }
+          ]
+        }
+      ],
+    });
+  }
+
+  async getForCountryDetailPage(search, offset, limit, filters) {
+    const { class_id, class_ids, academic } = filters
+    const where = {
+      [Op.or]: [
+        {
+          activity: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          duration: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (academic) where["$forcountry.academic_year$"] = academic
+
+    let classIds = []
+
+    if (class_ids?.length) classIds = class_ids
+
+    if (class_id) classIds = [class_id]
+
+
+    return ForCountryDetail.findAll({
+      where,
+      include: [
+        {
+          model: ForCountry,
+          required: true,
+          include: [
+            {
+              model: User,
+              attributes: ["full_name"],
+            },
+          ]
+        },
+        {
+          model: Student,
+          attributes: ["id", "full_name"],
+          required: classIds.length > 0,
+          include: [
+            {
+              model: models.studentclass,
+              required: classIds.length > 0,
+              ...(classIds.length && {
+                where: {
+                  class_id: {
+                    [Op.in]: classIds
+                  }
+                },
+              })
+            }
           ]
         }
       ],

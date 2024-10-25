@@ -9,11 +9,14 @@ const employeeRoute = require("./employeeRoute");
 const roleRoute = require("./roleRoute");
 const wasteTypeRoute = require("./wasteTypeRoute");
 const subjectRoute = require("./subjectRoute");
+const subjectExtraRoute = require("./subjectExtraRoute");
 const studentClassRoute = require("./studentClassRoute");
 const studentAttendanceRoute = require("./studentAttendanceRoute");
 const wasteCollectionRoute = require("./wasteCollectionRoute");
 const userAccessRoute = require("./userAccessRoute");
 const formTeacherRoute = require("./formTeacherRoute");
+const formSubjectRoute = require("./formSubjectRoute");
+const formExtraRoute = require("./formExtraRoute");
 const eduCalendarRoute = require("./eduCalendarRoute");
 const eduCalendarDetailRoute = require("./eduCalendarDetailRoute");
 const bookCategoryRoute = require("./bookCategoryRoute");
@@ -67,6 +70,9 @@ const studentPaymentReportRoute = require("./studentPaymentReportRoute")
 const wasteOfficerRoute = require("./wasteOfficerRoute")
 const wasteSalesRoute = require("./wasteSalesRoute")
 const dashboardRoute = require("./DashboardRoute")
+const headmasterRoute = require("./HeadmasterRoute")
+const studentReportFileRoute = require("./studentReportFileRoute")
+const lessonPlanRoute = require("./lessonPlanRoute")
 
 const router = express.Router();
 
@@ -112,6 +118,10 @@ const defaultRoutes = [
     route: subjectRoute,
   },
   {
+    path: "/subject-extra",
+    route: subjectExtraRoute,
+  },
+  {
     path: "/student-class",
     route: studentClassRoute,
   },
@@ -130,6 +140,14 @@ const defaultRoutes = [
   {
     path: "/form-teacher",
     route: formTeacherRoute,
+  },
+  {
+    path: "/form-subject",
+    route: formSubjectRoute,
+  },
+  {
+    path: "/form-extra",
+    route: formExtraRoute,
   },
   {
     path: "/edu-calendar",
@@ -342,6 +360,18 @@ const defaultRoutes = [
   {
     path: "/dashboard",
     route: dashboardRoute
+  },
+  {
+    path: "/headmaster",
+    route: headmasterRoute
+  },
+  {
+    path: "/student-report-file",
+    route: studentReportFileRoute
+  },
+  {
+    path: "/lesson-plan",
+    route: lessonPlanRoute
   }
 ];
 

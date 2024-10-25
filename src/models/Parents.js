@@ -31,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
       field_of_work: DataTypes.STRING,
       user_id: DataTypes.INTEGER,
       latitude: DataTypes.DOUBLE,
-      longitude: DataTypes.DOUBLE
+      longitude: DataTypes.DOUBLE,
+      nik: DataTypes.STRING
     },
     {
       sequelize,

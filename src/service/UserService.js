@@ -37,7 +37,7 @@ class UserService {
       userBody.status = userConstant.STATUS_ACTIVE;
       userBody.role_id = userBody.role_id;
       userBody.full_name = userBody.full_name;
-      userBody.email_verified = userConstant.EMAIL_VERIFIED_FALSE;
+      userBody.email_verified = userConstant.EMAIL_VERIFIED_FALSE
 
       let userData = await this.userDao.create(userBody);
 
@@ -49,7 +49,16 @@ class UserService {
       userData = userData.toJSON();
       delete userData.password;
 
-      const url = config.webUrl + `/verifikasi/${uuid}`; //Link web to verify
+      let url 
+      switch(userBody.role_id){
+        case 11:
+          url = config.hrdWebUrl + `/verifikasi/${uuid}`
+          break;
+          default:
+          url = config.webUrl + `/verifikasi/${uuid}`; //Link web to verify
+          break;
+      }
+
       const mailBody = "./src/register.html";
 
       // Add Nodemailer
@@ -91,9 +100,8 @@ class UserService {
     }
     return responseHandler.returnSuccess(httpStatus.OK, message);
   };
-
   getUserByUuid = async (uuid) => {
-    return this.userDao.findOneByWhere({ uuid });
+    return this.userDao.findUserByUUID(uuid);
   };
 
   getAccountByUuid = async (uuid) => {
@@ -141,7 +149,9 @@ class UserService {
       user.password
     );
     user = user.toJSON();
+    
     delete user.password;
+
     if (!isPasswordValid) {
       statusCode = httpStatus.BAD_REQUEST;
       message = "Wrong old Password!";
@@ -166,30 +176,47 @@ class UserService {
     );
   };
 
-  updateUser = async (id, req) => {
+  updateUser = async (id, body) => {
     const message = "User data successfully updated!";
 
-    let userData = await this.userDao.findById(id);
+    let user = await this.userDao.findById(id);
 
-    if (!userData) {
-      return responseHandler.returnError(
-        httpStatus.NOT_FOUND,
-        "User not found!"
+    if (!user) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "User not found!",
+        {}
       );
     }
 
     const updateData = await this.userDao.updateWhere(
       {
-        full_name: req.body.full_name,
-        address: req.body.address,
-        phone_number: req.body.phone_number,
-        avatar: req.file == undefined ? null : req.file.path,
+        full_name: body.full_name,
+        email: body.email,
+        role_id: body.role_id,
+        status: body.status,
+        email_verified: body.email_verified,
+        avatar: body.file?.path || null,
       },
       { id }
     );
 
+    const userData = user.dataValues;
+
+    if (userData.avatar && body.avatar) {
+      fs.unlink(userData.avatar, (err) => {
+        if (err) {
+          return responseHandler.returnError(
+            httpStatus.NOT_FOUND,
+            "Cannot delete avatar!"
+          );
+        }
+        console.log("Avatar file deleted successfully.");
+      });
+    }
+
     if (updateData) {
-      return responseHandler.returnSuccess(httpStatus.OK, message, {});
+      return responseHandler.returnSuccess(httpStatus.OK, message, body);
     }
   };
 
@@ -257,10 +284,10 @@ class UserService {
     return responseHandler.returnSuccess(httpStatus.OK, message, {});
   };
 
-  showUsersByRoles = async (roleIds) => {
+  showUsersByRoles = async (roleIds, search) => {
     const message = "Subject successfully retrieved!";
 
-    let rel = await this.userDao.findUsersByRoles(roleIds);
+    let rel = await this.userDao.findUsersByRoles(roleIds, search);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -271,6 +298,52 @@ class UserService {
     }
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  async showPage(page, limit, search, offset) {
+    const totalRows = await this.userDao.getCount(search);
+    const totalPage = Math.ceil(totalRows / limit);
+
+    const result = await this.userDao.getUserPage(search, offset, limit);
+
+    return responseHandler.returnSuccess(
+      httpStatus.OK,
+      "User successfully retrieved.",
+      {
+        result: result,
+        page: page,
+        limit: limit,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      }
+    );
+  }
+
+  deleteUser = async (id) => {
+    const message = "User successfully deleted!";
+
+    let rel = await this.userDao.deleteByWhere({ id });
+
+    if (!rel) {
+      return responseHandler.returnSuccess(httpStatus.OK, "User not found!");
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+  showUser = async (id) => {
+    const message = "User successfully retrieved!";
+
+    let dt = await this.userDao.findById(id);
+
+    if (!dt) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "User not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
 }
 

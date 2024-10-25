@@ -5,6 +5,9 @@ const rootSocket = (io) => {
             console.log('join room for', room);
             socket.join(room);
         });
+        socket.on('cc', () => {
+            io.emit('cc_refresh')
+        })
         socket.on('disconnect', () => {
             console.log('disconnected');
             console.log(socket.rooms.size);

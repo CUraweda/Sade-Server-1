@@ -17,6 +17,16 @@ class ForCountryController {
     }
   };
 
+  createBulk = async (req, res) => {
+    try {
+      const resData = await this.forCountryService.createBulkForCountry(req.body);
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+
   update = async (req, res) => {
     try {
       var id = req.params.id;
@@ -68,12 +78,16 @@ class ForCountryController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { academic } = req.query
 
       const resData = await this.forCountryService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          academic
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

@@ -4,6 +4,7 @@ const responseHandler = require("../helper/responseHandler")
 const logger = require("../config/logger")
 const { formatDateForSQL } = require("../helper/utils")
 const { Op } = require("sequelize")
+const moment = require("moment")
 
 class StudentBillsService {
     constructor() {
@@ -171,8 +172,38 @@ class StudentBillsService {
       const result = await this.studentBillsDao.getIncome(filters)
       return Array.isArray(result) && result.length ? result[0] : result
     }
-    getRecentPaidOffBills = async (start_date, limit = 5) => {
-      return this.studentBillsDao.getRecentPaidOffBills(start_date, limit)
+    getIncomeGroupDate = async (filters) => {
+      const result = await this.studentBillsDao.getIncomeGroupByDate(filters)
+
+      let result2 = []
+      if (filters.start_date && filters.end_date) {
+        const dates = result.map(r => r.dataValues.paidoff_date)
+        const values = result.map(r => r.dataValues.sum)
+
+        const startDate = new Date(filters.start_date);
+        const endDate = new Date(filters.end_date);
+  
+        for (
+          let date = new Date(startDate);
+          date <= endDate;
+          date.setDate(date.getDate() + 1)
+        ) {
+          let formatted = moment(date).format("YYYY-MM-DD")
+          let sum = 0
+          if (dates.includes(formatted))
+            sum = values[dates.indexOf(formatted)]
+
+          result2.push({
+            paidoff_date: formatted,
+            sum
+          })
+        }
+      }
+
+      return result2.length ? result2 : result
+    }
+    getRecentPaidOffBills = async (start_date, limit = 5, filters) => {
+      return this.studentBillsDao.getRecentPaidOffBills(start_date, limit, filters)
     }
 }
 

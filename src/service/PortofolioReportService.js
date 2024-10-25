@@ -7,6 +7,8 @@ const { userConstant } = require("../config/constant");
 const fs = require("fs").promises;
 const { PDFDocument } = require("pdf-lib");
 const path = require("path");
+const pdfLib = require('pdf-lib');
+const sharp = require('sharp');
 
 const dir = "./files/portofolio_reports/";
 
@@ -126,28 +128,107 @@ class PortofolioReportService {
   mergePortofolioReport = async (id) => {
     try {
       let message = "Portofolio report successfully merged!";
-
       const datas = await this.portofolioReportDao.findByWhere({
         student_report_id: id,
       });
-
+  
       let pdf1 = "";
       let pdf2 = "";
-
+      let mergedPDF = "";
+  
       for (const data of datas) {
-        if (data.type === "Orang Tua") {
+        if (data.type === "Guru") {
           pdf1 = data.file_path;
         }
-        if (data.type === "Guru") {
+        if (data.type === "Orang Tua") {
           pdf2 = data.file_path;
         }
       }
+      const convertImageToPDF = async (imagePath) => {
+        try {
+          const outputPDFPath = imagePath.replace(/\.(jpg|jpeg|png)$/i, '.pdf');
+          const imageBuffer = await sharp(imagePath).toBuffer();
+          const pdfDoc = await pdfLib.PDFDocument.create();
+      
+          let image;
+          
+          if (/\.(jpg|jpeg)$/i.test(imagePath)) {
+            image = await pdfDoc.embedJpg(imageBuffer);
+          } else if (/\.png$/i.test(imagePath)) {
+            image = await pdfDoc.embedPng(imageBuffer);
+          } else {
+            throw new Error("Unsupported image format. Please use JPG, JPEG, or PNG.");
+          }
+      
+          const A4_WIDTH = 595.28; 
+          const A4_HEIGHT = 841.89;
+      
+          const { width: imgWidth, height: imgHeight } = image;
+      
+          const imgAspectRatio = imgWidth / imgHeight;
+          const A4AspectRatio = A4_WIDTH / A4_HEIGHT;
+      
+          let width, height;
+      
+          if (imgAspectRatio > A4AspectRatio) {
+            width = A4_WIDTH;
+            height = A4_WIDTH / imgAspectRatio;
+          } else {
+            height = A4_HEIGHT;
+            width = A4_HEIGHT * imgAspectRatio;
+          }
+      
+          const page = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
+      
+          const x = (A4_WIDTH - width) / 2;
+          const y = (A4_HEIGHT - height) / 2;
+      
+          page.drawImage(image, {
+            x, 
+            y, 
+            width,
+            height
+          });
+      
+          const pdfBytes = await pdfDoc.save();
+          await fs.writeFile(outputPDFPath, pdfBytes);
+          return outputPDFPath;
+        } catch (error) {
+          console.error("Error converting image to PDF:", error);
+          throw new Error("Failed to convert image to PDF. Please check the image format and try again.");
+        }
+      };        
+      const validateImageFile = async (imagePath) => {
+        try {
+          await sharp(imagePath).metadata();
+          return true; 
+        } catch (error) {
+          console.error("Invalid image file:", error);
+          return false;
+        }
+      };
+  
+      if (pdf1 && (/\.(jpg|jpeg|png)$/i).test(pdf1)) {
+        if (await validateImageFile(pdf1)) {
+          pdf1 = await convertImageToPDF(pdf1);
+        } else {
+          return responseHandler.returnError(httpStatus.BAD_REQUEST, "Invalid image file.");
+        }
+      }
+      if (pdf2 && (/\.(jpg|jpeg|png)$/i).test(pdf2)) {
+        if (await validateImageFile(pdf2)) {
+          pdf2 = await convertImageToPDF(pdf2);
+        } else {
+          return responseHandler.returnError(httpStatus.BAD_REQUEST, "Invalid image file.");
+        }
+      }
+  
       if (pdf1 && pdf2) {
-        var mergedPDF = await this.mergePDFs(pdf1, pdf2);
+        mergedPDF = await this.mergePDFs(pdf1, pdf2);
         const commentData = await this.studentReportDao.findById(id);
-
+        
         if (commentData.por_comments_path == null) {
-          const message = "Portofolio comments is empty. Please make comment first"
+          const message = "Portofolio comments are empty. Please make a comment first.";
           return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
         }
         if (commentData) {
@@ -155,8 +236,12 @@ class PortofolioReportService {
         }
 
         let check = await this.portofolioReportDao.getByStudentReportId(id, "Merged");
-        if (check) { await fs.promises.unlink(check.file_path,  (err) => { console.log(err) }) }
-
+        if (check) {
+          await fs.promises.unlink(check.file_path, (err) => {
+            if (err) console.log(err);
+          });
+        }
+        
         if (!check) {
           check = await this.portofolioReportDao.create({
             student_report_id: id,
@@ -169,16 +254,15 @@ class PortofolioReportService {
             check.id
           );
         }
-
+        
         await this.studentReportDao.updateWhere(
           { portofolio_path: mergedPDF },
           { id }
         );
       } else {
-        message = "Failed to merge Portofolio report. One or more PDF file is missing!";
+        message = "Failed to merge Portofolio report. One or more PDF files are missing!";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
-
       return responseHandler.returnSuccess(httpStatus.OK, message, mergedPDF);
     } catch (error) {
       logger.error("Error merging portfolio report:", error);
@@ -213,7 +297,7 @@ class PortofolioReportService {
       return outputPath;
     } catch (error) {
       console.error("Error merging PDFs:", error);
-      throw error; // Re-throw the error for the caller to handle
+      throw error;
     }
   };
 

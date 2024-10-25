@@ -51,12 +51,27 @@ class EduCalendarDetailController {
     }
   };
 
+  showByTeacherId = async (req, res) => {
+    try {
+      var id = req.params.id;
+      const academic = req.query.academic
+
+      const resData = await this.eduCalendarDetailService.showEduCalendarDetailByTeacherId(id, academic);
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+
   showByEduId = async (req, res) => {
     try {
       var id = req.params.id;
+      const academic = req.query.academic
+      const teacher_id = req.query.teacher_id
 
-      const resData =
-        await this.eduCalendarDetailService.showEduCalendarDetailByEduId(id);
+      const resData = await this.eduCalendarDetailService.showEduCalendarDetailByEduId(id, teacher_id, academic);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -71,12 +86,16 @@ class EduCalendarDetailController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      const { academic } = req.query
 
       const resData = await this.eduCalendarDetailService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        {
+          academic
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

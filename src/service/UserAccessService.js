@@ -2,7 +2,6 @@ const httpStatus = require("http-status");
 const UserAccessDao = require("../dao/UserAccessDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
-const { userConstant } = require("../config/constant");
 
 class UserAccessService {
   constructor() {
@@ -12,6 +11,13 @@ class UserAccessService {
   createUserAccess = async (reqBody) => {
     try {
       let message = "User Access successfully added.";
+
+      let check = await this.userAccessDao.getCountByWhere({ 
+        user_id: reqBody.user_id, 
+        student_id: reqBody.student_id 
+      })
+
+      if (check) return responseHandler.returnError(httpStatus.BAD_REQUEST, "User access already linked")
 
       let data = await this.userAccessDao.create(reqBody);
 
@@ -72,14 +78,15 @@ class UserAccessService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.userAccessDao.getCount(search);
+  async showPage(page, limit, search, offset, filter) {
+    const totalRows = await this.userAccessDao.getCount(search, filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.userAccessDao.getUserAccessPage(
       search,
       offset,
-      limit
+      limit,
+      filter
     );
 
     return responseHandler.returnSuccess(

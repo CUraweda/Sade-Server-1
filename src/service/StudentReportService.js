@@ -88,7 +88,7 @@ class StudentReportService {
 
       const data = await this.studentReportDao.findById(id);
       if (body.nar_teacher_comments || body.nar_parent_comments) {
-        const pdfFileNar = await this.generatePdf(data, temp_dir);
+        const pdfFileNar = await this.generateNarrativePdf(data, temp_dir);
         await this.studentReportDao.updateById(
           { nar_comments_path: pdfFileNar },
           id
@@ -96,7 +96,7 @@ class StudentReportService {
       }
 
       if (body.por_teacher_comments || body.por_parent_comments) {
-        const pdfFilePor = await this.generatePdf(data, temp_dir);
+        const pdfFilePor = await this.generatePortofolioPdf(data, temp_dir);
         await this.studentReportDao.updateById(
           { por_comments_path: pdfFilePor },
           id
@@ -122,10 +122,10 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentReportByClassId = async (id, student_access, semester) => {
+  showStudentReportByClassId = async (id, student_access, semester, academic) => {
     const message = "Student report successfully retrieved!";
 
-    let rel = await this.studentReportDao.getByClassId(id, student_access, semester);
+    let rel = await this.studentReportDao.getByClassId(id, student_access, semester, academic);
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
@@ -137,26 +137,10 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentReportByStudentId = async (id, semester) => {
+  showStudentReportByStudentId = async (id, semester, academic) => {
     const message = "Student report successfully retrieved!";
 
-    let rel = await this.studentReportDao.getByStudentId(id, semester);
-
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Student report not found!",
-        {}
-      );
-    }
-
-    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
-  };
-
-  showStudentReportByStudentIdDetails = async (id, semester) => {
-    const message = "Student report successfully retrieved!";
-
-    let rel = await this.studentReportDao.getByStudentIdDetails(id, semester);
+    let rel = await this.studentReportDao.getByStudentId(id, semester, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -169,15 +153,31 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset, semester) {
-    const totalRows = await this.studentReportDao.getCount(search);
+  showStudentReportByStudentIdDetails = async (id, semester, academic) => {
+    const message = "Student report successfully retrieved!";
+
+    let rel = await this.studentReportDao.getByStudentIdDetails(id, semester, academic);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Student report not found!",
+        {}
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.studentReportDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentReportDao.getStudentReportPage(
       search,
-      semester,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(
@@ -212,7 +212,7 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  generatePdf = async (data, path) => {
+  generateNarrativePdf = async (data, path) => {
     const rnd = Date.now();
     const outputFilename = rnd + ".pdf";
     const outputFileName = path + outputFilename;
@@ -223,8 +223,8 @@ class StudentReportService {
     const outputStream = fsExp.createWriteStream(outputFileName);
     doc.pipe(outputStream);
 
-    this.generateTeacherComments(doc, data);
-    this.generateParentComments(doc, data);
+    this.generateNarTeacherComments(doc, data);
+    this.generateNarParentComments(doc, data);
 
     // Handle errors in writing to the file
     outputStream.on("error", (err) => {
@@ -235,7 +235,30 @@ class StudentReportService {
     return outputFileName;
   };
 
-  generateTeacherComments = async (doc, data) => {
+  generatePortofolioPdf = async (data, path) => {
+    const rnd = Date.now();
+    const outputFilename = rnd + ".pdf";
+    const outputFileName = path + outputFilename;
+
+    let doc = new PDFDocumentExp({ size: "A4", margin: 50 });
+
+    // Pipe the PDF output to a file
+    const outputStream = fsExp.createWriteStream(outputFileName);
+    doc.pipe(outputStream);
+
+    this.generatePorTeacherComments(doc, data);
+    this.generatePorParentComments(doc, data);
+
+    // Handle errors in writing to the file
+    outputStream.on("error", (err) => {
+      console.error(`Error writing to ${outputFileName}: ${err}`);
+    });
+
+    doc.end();
+    return outputFileName;
+  };
+
+  generateNarTeacherComments = async (doc, data) => {
     // doc.rect(50, 50, 500, 34).lineWidth(0.5).stroke(); // Title border
     // doc.rect(50, 80, 500, 500).lineWidth(0.5).stroke(); // Contents border
 
@@ -250,8 +273,24 @@ class StudentReportService {
       width: 482,
     });
   };
+  
+  generatePorTeacherComments = async (doc, data) => {
+    // doc.rect(50, 50, 500, 34).lineWidth(0.5).stroke(); // Title border
+    // doc.rect(50, 80, 500, 500).lineWidth(0.5).stroke(); // Contents border
 
-  generateParentComments = async (doc, data) => {
+    doc.rect(50, 50, 500, 750).lineWidth(0.5).stroke(); //  Page Border
+
+    doc.font("Helvetica-Bold").fontSize(10);
+    doc.text("Komentar Guru :", 58, 65);
+
+    doc.font("Helvetica").fontSize(9);
+    doc.text(data.por_teacher_comments, 58, 85, {
+      align: "justify",
+      width: 482,
+    });
+  };
+
+  generateNarParentComments = async (doc, data) => {
     // doc.rect(50, 50, 500, 34).lineWidth(0.5).stroke(); // Title border
     // doc.rect(50, 80, 500, 500).lineWidth(0.5).stroke(); // Contents border
 
@@ -264,6 +303,24 @@ class StudentReportService {
 
     doc.font("Helvetica").fontSize(9);
     doc.text(data.nar_parent_comments, 58, 85, {
+      align: "justify",
+      width: 482,
+    });
+  };
+  
+  generatePorParentComments = async (doc, data) => {
+    // doc.rect(50, 50, 500, 34).lineWidth(0.5).stroke(); // Title border
+    // doc.rect(50, 80, 500, 500).lineWidth(0.5).stroke(); // Contents border
+
+    doc.addPage();
+
+    doc.rect(50, 50, 500, 750).lineWidth(0.5).stroke(); //  Page Border
+
+    doc.font("Helvetica-Bold").fontSize(10);
+    doc.text("Komentar Orang Tua :", 58, 65);
+
+    doc.font("Helvetica").fontSize(9);
+    doc.text(data.por_parent_comments, 58, 85, {
       align: "justify",
       width: 482,
     });

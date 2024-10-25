@@ -49,4 +49,10 @@ router.delete(
   achievementController.delete
 );
 
+router.get(
+  "/download",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  achievementController.downloadCertificate
+);
+
 module.exports = router;

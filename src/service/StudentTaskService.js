@@ -148,10 +148,10 @@ class StudentTaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentTaskByStudentId = async (id, category) => {
+  showStudentTaskByStudentId = async (id, category, academic) => {
     const message = "Student Task successfully retrieved!";
 
-    let rel = await this.studentTaskDao.getByStudentId(id, category);
+    let rel = await this.studentTaskDao.getByStudentId(id, category, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -164,14 +164,15 @@ class StudentTaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.studentTaskDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.studentTaskDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.studentTaskDao.getStudentTaskPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(

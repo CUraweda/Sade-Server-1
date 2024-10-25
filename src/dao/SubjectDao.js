@@ -3,7 +3,7 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const Subject = models.subjects;
-
+const FormSubject = models.formsubject
 class SubjectDao extends SuperDao {
   constructor() {
     super(Subject);
@@ -24,49 +24,70 @@ class SubjectDao extends SuperDao {
     })
   }
 
-  async getCount(search) {
+  async getCount(filter) {
+    const { search, subjectIds } = filter
+
     return Subject.count({
     where: {
-        [Op.or]: [
-          {
-            level: {
-              [Op.like]: "%" + search + "%",
+      [Op.and]: [
+        (subjectIds?.length && {
+          [Op.or]: [
+            ((subjectIds && subjectIds.length > 0) && { id: { [Op.in]: subjectIds} }),
+          ]
+        }),
+        {
+          [Op.or]: [
+            {
+              level: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-          {
-            code: {
-              [Op.like]: "%" + search + "%",
+            {
+              code: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-          {
-            name: {
-              [Op.like]: "%" + search + "%",
+            {
+              name: {
+                [Op.like]: "%" + search + "%",
+              },
             },
-          },
-        ],
+          ],
+        }
+      ],
       },
     });
   }
 
-  async getSubjectPage(search, offset, limit) {
+  async getSubjectPage(filter, offset, limit) {
+    const { search, subjectIds } = filter
     return Subject.findAll({
       where: {
-        [Op.or]: [
+        [Op.and]: [
+          (subjectIds?.length && {
+            [Op.or]: [
+              ((subjectIds && subjectIds.length > 0) && { id: { [Op.in]: subjectIds} }),
+            ]
+          }),
           {
-            level: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            code: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            name: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+            [Op.or]: [
+              {
+                level: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                code: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                name: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+            ],
+          }
         ],
       },
       offset: offset,

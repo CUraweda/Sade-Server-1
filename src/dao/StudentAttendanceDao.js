@@ -28,10 +28,11 @@ class StudentAttendanceDao extends SuperDao {
     });
   }
 
-  async getByClassNDate(class_id, att_date) {
+  async getByClassNDate(class_id, att_date, academic) {
     return StudentAttendance.findAll({
       where: {
         "$studentclass.class_id$": class_id,
+        ...(academic && { "$studentclass.academic_year$": academic }),
         att_date: sequelize.literal(`DATE(att_date) = '${att_date}'`), // Ekstrak tanggal dari att_date
       },
       include: [
@@ -47,9 +48,12 @@ class StudentAttendanceDao extends SuperDao {
     });
   }
 
-  async getByStudentId(student_id) {
+  async getByStudentId(student_id, academic) {
     return StudentAttendance.findAll({
-      where: { "$studentclass.student_id$": student_id },
+      where: { 
+        "$studentclass.student_id$": student_id,
+        ...(academic && { "$studentclass.academic_year$": academic })
+      },
       include: [
         {
           model: StudentClass,
@@ -93,9 +97,7 @@ class StudentAttendanceDao extends SuperDao {
       "$studentclass.is_active$": "Ya",
     };
 
-    if (academic !== undefined) {
-      whereClause["$studentclass.academic_year$"] = academic;
-    }
+    if (academic !== undefined) whereClause["$studentclass.academic_year$"] = academic;
 
     const attendance = await StudentAttendance.findAll({
       attributes: [
@@ -121,7 +123,7 @@ class StudentAttendanceDao extends SuperDao {
   async getRecapByStudentId(id, semester, academic) {
     const studentId = id;
 
-    const statuses = ["Hadir", "Sakit", "Izin", "Tanpa Keterangan"];
+    const statuses = ["Hadir", "Sakit", "Izin", "Alfa"];
 
     const attendancePromises = statuses.map((status) => {
       return this.getAttendanceByStatus(studentId, semester, academic, status);
@@ -133,48 +135,55 @@ class StudentAttendanceDao extends SuperDao {
       hadir: hadir.length > 0 ? hadir[0].count : "0",
       sakit: sakit.length > 0 ? sakit[0].count : "0",
       izin: izin.length > 0 ? izin[0].count : "0",
-      tanpa_keterangan: alfa.length > 0 ? alpa[0].count : "0",
+      tanpa_keterangan: alfa.length > 0 ? alfa[0].count : "0",
     };
 
     return result;
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const where = {
+      [Op.or]: [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_time: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
+    if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
+    if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
+    if (filters.academic) where["$studentclass.academic_year$"] = filters.academic
+
     return StudentAttendance.count({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_time: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         // Additional models can be included if needed
         {
@@ -190,42 +199,49 @@ class StudentAttendanceDao extends SuperDao {
     });
   }
 
-  async getStudentAttendancePage(search, offset, limit) {
+  async getStudentAttendancePage(search, offset, limit, filters) {
+    const where = {
+      [Op.or]: [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          att_time: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          status: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          remark: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
+    }
+
+    if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
+    if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
+    if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
+    if (filters.academic) where["$studentclass.academic_year$"] = filters.academic
+
     return StudentAttendance.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$studentclass.student.nis$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$studentclass.student.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            att_time: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            remark: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       include: [
         // Additional models can be included if needed
         {
@@ -237,6 +253,11 @@ class StudentAttendanceDao extends SuperDao {
           ],
           // Other options related to the association can be specified here
         },
+      ],
+      offset: offset,
+      limit: limit,
+      order: [
+        [{ model: StudentClass, as: 'studentclass' }, { model: Students, as: 'student' }, 'full_name', 'ASC'],
       ],
     });
   }

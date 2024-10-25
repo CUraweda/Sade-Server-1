@@ -54,9 +54,6 @@ class NarrativeCommentService {
     const message = "Narrative comment successfully retrieved!";
 
     let cl = await this.narrativeCommentDao.findById(id);
-
-    console.log("id : " + id);
-
     if (!cl) {
       return responseHandler.returnSuccess(
         httpStatus.OK,

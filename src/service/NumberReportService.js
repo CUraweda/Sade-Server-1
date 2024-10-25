@@ -107,14 +107,15 @@ class NumberReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.numberReportDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.numberReportDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.numberReportDao.getNumberReportPage(
       search,
       offset,
-      limit
+      limit,
+      filters
     );
 
     return responseHandler.returnSuccess(
@@ -145,14 +146,31 @@ class NumberReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showNumberReportByStudentId = async (id, semester) => {
-    const message = "Number Report successfully retrieved!";
+  deleteAllNumberReports = async () => {
+    const message = "All Number Reports successfully deleted!";
 
-    let rel = await this.numberReportDao.getByStudentId(id, semester);
+    let rel = await this.numberReportDao.deleteAll();
 
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,
+        "No Number Reports found to delete!"
+      );
+    }
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, rel);
+  };
+
+
+  showNumberReportByStudentId = async (id, semester) => {
+    const message = "Number Report successfully retrieved!";
+
+    let rel = await this.numberReportDao.getByStudentId(id, semester);
+    console.log(rel)
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.NOT_FOUND,
         "Number Report not found!",
         {}
       );
@@ -200,13 +218,11 @@ class NumberReportService {
   exportReportByStudentId = async (id, semester) => {
     const message = "Number Report successfully exported!";
 
-    let rel = await this.numberReportDao.getByStudentId(id, semester);
+    let rel = await this.numberReportDao.getByStudentId(id, semester, true);
 
-    if (!rel) {
-      return responseHandler.returnSuccess(
-        httpStatus.OK,
-        "Number Report not found!",
-        {}
+    if (rel?.note) {
+      return responseHandler.returnError(
+        httpStatus.UNPROCESSABLE_ENTITY, rel.note
       );
     }
 
@@ -218,7 +234,6 @@ class NumberReportService {
       id,
       semester
     );
-
 
 
     const pdfFile = await this.generatePdf(rel, dir);
@@ -642,16 +657,16 @@ class NumberReportService {
       maximumFractionDigits: 2,
     });
     let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
-    let subjects = await this.subjectDao.getAll(data.level)
-    if (subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
+    let subjects = await this.subjectDao.getAll(data)
+    if (!subjects || subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
     subjects.forEach((subject, i) => {
-      if(!rowsData[subject.code][1]){
+      if (!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
+      if (!rowsData[subject.code][1]) {
         rowsData[subject.code].push(subject.name)
-        rowsData[subject.code].push(formatter.format(parseFloat(subject.threshold.toFixed(2))),)
+        rowsData[subject.code].push(formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0),)
         rowsData[subject.code].push("0,00")
         rowsData[subject.code].push("nol")
       }
-
     })
     for (let item of data.number_reports) {
       if (rowsData[item.subject_code]) {
@@ -661,17 +676,9 @@ class NumberReportService {
       }
     }
 
-    switch(data.level){
-      case "SD":
-        rowsData["MTK"][2] = "6,00"
-        rowsData["IPA"][2] = "6,00"
-        rowsData["ING"][2] = "6,00"
-        break;
-      default:
-        break;
-    }
     return { rowsData }
   }
+
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";
 

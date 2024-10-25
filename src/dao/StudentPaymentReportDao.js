@@ -77,7 +77,6 @@ class StudentPaymentReportDao extends SuperDao{
         })
     }   
     async getByFilter(classes, student, start_date, end_date, payment_category, status) {
-        console.log(classes, student, start_date, end_date, payment_category,status)
         const whereClause = {};
     
         if (classes) whereClause["$studentpaymentbill.class_id$"] = classes;
@@ -121,6 +120,8 @@ class StudentPaymentReportDao extends SuperDao{
         if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
         if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
         if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.nis_prefix) where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` }
+        if (filters.post_payment_id) where['$studentpaymentbill.payment_post_id$'] = filters.post_payment_id
         if (filters.class_id) {
             const students = await StudentClass.findAll({
                 where: {
@@ -170,6 +171,8 @@ class StudentPaymentReportDao extends SuperDao{
         if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
         if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
         if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.nis_prefix) where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` }
+        if (filters.post_payment_id) where['$studentpaymentbill.payment_post_id$'] = filters.post_payment_id
         if (filters.class_id) {
             const students = await StudentClass.findAll({
                 where: {

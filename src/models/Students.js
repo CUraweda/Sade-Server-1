@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       Students.hasMany(models.taskdetail, { foreignKey: "student_id" });
       Students.hasMany(models.studentdata, { foreignKey: "student_id" });
       Students.hasMany(models.wasteofficer, { foreignKey: "student_id" });
+      Students.hasMany(models.studentreportfiles, { foreignKey: "student_id" });
     }
   }
   Students.init(

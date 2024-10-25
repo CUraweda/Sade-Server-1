@@ -1,10 +1,12 @@
 const httpStatus = require("http-status");
 const StudentReportService = require("../service/StudentReportService");
 const logger = require("../config/logger");
+const ClassesService = require("../service/ClassesService");
 
 class StudentReportController {
   constructor() {
     this.studentReportService = new StudentReportService();
+    this.classService = new ClassesService()
   }
 
   create = async (req, res) => {
@@ -67,7 +69,8 @@ class StudentReportController {
       const id = req.params.id;
       const semester = req.query.semester ? +req.query.semester || 1 : 1
       const student_access = req.query.student_access || undefined
-      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester);
+      const academic = req.query.academic
+      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester, academic);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -80,11 +83,12 @@ class StudentReportController {
     try {
       const id = req.query.id || 0;
       const semester = req.query.semester || 0;
+      const academic = req.query.academic
 
       const resData =
         await this.studentReportService.showStudentReportByStudentId(
           id,
-          semester
+          semester, academic
         );
 
       res.status(resData.statusCode).send(resData.response);
@@ -98,11 +102,12 @@ class StudentReportController {
     try {
       const id = req.query.id || 0;
       const semester = req.query.semester || 0;
+      const academic = req.query.academic
 
       const resData =
         await this.studentReportService.showStudentReportByStudentIdDetails(
           id,
-          semester
+          semester, academic
         );
 
       res.status(resData.statusCode).send(resData.response);
@@ -114,18 +119,30 @@ class StudentReportController {
 
   showAll = async (req, res) => {
     try {
+      const { employee } = req.user
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
-      const semester = +req.query.semester || 1;
       const offset = limit * page;
+      const { class_id, semester, with_assign, academic} = req.query
+
+      let class_ids = []
+      if (employee && with_assign == "Y") {
+        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id, with_subject: "N" }, 0)
+        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+      }
 
       const resData = await this.studentReportService.showPage(
         page,
         limit,
         search,
         offset,
-        semester,
+        {
+          class_id,
+          class_ids,
+          semester,
+          academic 
+        }
       );
 
       res.status(resData.statusCode).send(resData.response);

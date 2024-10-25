@@ -85,10 +85,10 @@ class TaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showTaskByClassId = async (id, cat_id) => {
+  showTaskByClassId = async (id, cat_id, studentId) => {
     const message = "Task successfully retrieved!";
 
-    let rel = await this.taskDao.getTaskByClassId(id, cat_id);
+    let rel = await this.taskDao.getTaskByClassId(id, cat_id, studentId);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -101,11 +101,11 @@ class TaskService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.taskDao.getCount(search);
+  async showPage(page, limit, search, offset, filters) {
+    const totalRows = await this.taskDao.getCount(search, filters);
     const totalPage = Math.ceil(totalRows / limit);
 
-    const result = await this.taskDao.getTaskPage(search, offset, limit);
+    const result = await this.taskDao.getTaskPage(search, offset, limit, filters);
 
     return responseHandler.returnSuccess(
       httpStatus.OK,

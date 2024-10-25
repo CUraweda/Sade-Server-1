@@ -25,7 +25,6 @@ class AuthService {
       let message = "Login Successful";
       let statusCode = httpStatus.OK;
       let user = await this.userDao.findByEmail(email);
-      console.log(password, user.password);
       if (user == null) {
         return responseHandler.returnError(
           httpStatus.BAD_REQUEST,
@@ -44,7 +43,7 @@ class AuthService {
       }
 
       if (!isEmailVerified) {
-        statusCode = httpStatus.OK;
+        statusCode = httpStatus.UNPROCESSABLE_ENTITY;
         message = "Email not verified!";
         return responseHandler.returnError(statusCode, message, user);
       }

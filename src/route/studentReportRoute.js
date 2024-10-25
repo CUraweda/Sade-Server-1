@@ -23,9 +23,9 @@ router.put(
 );
 
 router.put(
-	'/update-access/:id',
-	auth([1, 2, 3, 4]),
-	studentReportController.updateAccess
+  "/update-access/:id",
+  auth([1, 2, 3, 4]),
+  studentReportController.updateAccess
 );
 
 router.get(

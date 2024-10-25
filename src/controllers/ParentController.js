@@ -46,6 +46,22 @@ class ParentController {
     }
   };
 
+  updateMe = async (req, res) => {
+    try {
+      const { id } = req.user
+
+      const parent = await this.parentService.showByUserId(id)
+      if (parent.statusCode !== 200) return res.status(parent.statusCode).send(parent.response);
+
+      const resData = await this.parentService.updateParent(parent.response.data.id, req.body)
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (error) {
+      logger.error(e)
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e)
+    }
+  }
+
   show = async (req, res) => {
     try {
       var id = req.params.id;
@@ -77,6 +93,19 @@ class ParentController {
       var id = req.params.id;
 
       const resData = await this.parentService.showByUserId(id);
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+
+  showByName = async (req, res) => {
+    try {
+      var name = req.params.name;
+
+      const resData = await this.parentService.showByName(name);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

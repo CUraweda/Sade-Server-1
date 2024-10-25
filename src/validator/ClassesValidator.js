@@ -10,6 +10,7 @@ class ClassesValidator {
       class_name: Joi.string().required(),
       book_target: Joi.number().required(),
       waste_target: Joi.number().required(),
+      is_active: Joi.boolean().default(false),
     });
 
     // schema options

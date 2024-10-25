@@ -17,63 +17,110 @@ class StudentReportDao extends SuperDao {
     this.narrativeReportDao = new NarrativeReportDao();
   }
 
-  async getCount(search) {
+  async getCount(search, filters) {
+    const { semester, academic, student_access, class_id, class_ids } = filters
+    const where = {
+      // [Op.or]: [
+        // {
+        //   nar_parent_comments: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
+        // {
+        //   student_access: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
+      // ],
+    }
+
+    if (academic) where["$studentclass.academic_year$"] = academic
+    if (semester) where["semester"] = semester
+
+    if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
+
+    if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
+
+    if (class_id) where["$studentclass.class_id$"] = class_id
+
     return StudentReport.count({
-      where: {
-        [Op.or]: [
-          {
-            semester: {
-              [Op.like]: "%" + search + "%",
+      where,
+      include: [
+        {
+          model: StudentClass,
+          attributes: ["id", "academic_year", "student_id", "class_id"],
+          include: [
+            {
+              model: models.students,
+              attributes: ["id", "nis", "nisn", "full_name", "gender"],
             },
-          },
-          {
-            nar_parent_comments: {
-              [Op.like]: "%" + search + "%",
+            {
+              model: models.classes,
+              attributes: ["id", "class_name"],
             },
-          },
-          {
-            student_access: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+          ],
+        },
+      ],
     });
   }
 
-  async getStudentReportPage(search, semester, offset, limit) {
+  async getStudentReportPage(search, offset, limit, filters) {
+    const { semester, academic, student_access, class_id, class_ids } = filters
+    const where = {
+      // [Op.or]: [
+        // {
+        //   nar_parent_comments: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
+        // {
+        //   student_access: {
+        //     [Op.like]: "%" + search + "%",
+        //   },
+        // },
+      // ],
+    }
+    if (academic) where["$studentclass.academic_year$"] = academic
+
+    if (semester) where["semester"] = semester
+
+    if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
+
+    if (class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: class_ids }
+
+    if (class_id) where["$studentclass.class_id$"] = class_id
+
     return StudentReport.findAll({
-      where: {
-        [Op.or]: [
-          {
-            semester: {
-              [Op.eq]: semester,
-            },
-          },
-          {
-            nar_parent_comments: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            student_access: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where,
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
+      include: [
+        {
+          model: StudentClass,
+          attributes: ["id", "academic_year", "student_id", "class_id"],
+          include: [
+            {
+              model: models.students,
+              attributes: ["id", "nis", "nisn", "full_name", "gender"],
+            },
+            {
+              model: models.classes,
+              attributes: ["id", "class_name"],
+            },
+          ],
+        },
+      ],
     });
   }
 
-  async getByClassId(id, student_access, semester) {
+  async getByClassId(id, student_access, semester, academic) {
     const where = {
       "$studentclass.class_id$": id,
     }
 
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
+    if (academic) where["$studentclass.academic_year$"] = academic
     where['semester'] = semester
     return StudentReport.findAll({
       where,
@@ -96,11 +143,12 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getByStudentId(id, semester) {
+  async getByStudentId(id, semester, academic) {
     return StudentReport.findAll({
       where: {
         "$studentclass.student_id$": id,
         "$studentclass.is_active$": "Ya",
+        ...(academic && { "$studentclass.academic_year$": academic }), 
         semester: semester,
       },
       include: [
@@ -112,10 +160,11 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getByStudentIdDetails(id, semester) {
+  async getByStudentIdDetails(id, semester, academic) {
     const sReport = await StudentReport.findAll({
       where: {
         "$studentclass.student_id$": id,
+        ...(academic && { "$studentclass.academic_year$": academic }),
         semester: semester,
       },
       include: [

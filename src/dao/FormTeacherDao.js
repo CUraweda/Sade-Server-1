@@ -25,87 +25,100 @@ class FormTeacherDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(filter) {
+    const { academic_year, search, is_active } = filter
+    const conditions = {
+      [Op.or]: [
+        {
+          "$class.class_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$employee.employee_no$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$employee.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        }
+      ]
+    }
+    
+    if (academic_year) {
+      conditions.academic_year = {
+          [Op.like]: academic_year,
+      };
+    }
+
+    if (is_active !== undefined) {
+        conditions.is_active = {
+            [Op.eq]: is_active,
+        };
+    }
+    
     return FormTeacher.count({
-      where: {
-        [Op.or]: [
-          {
-            "$class.class_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$employee.employee_no$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$employee.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where: conditions,
       include: [
-        {
-          model: Employees,
-        },
-        {
-          model: Classes,
-        },
+          {
+              model: Employees,
+          },
+          {
+              model: Classes,
+          },
       ],
     });
   }
 
-  async getFormTeacherPage(search, offset, limit) {
+  async getFormTeacherPage(filter, offset, limit) {
+    const { academic_year, search, is_active } = filter
+    const conditions = {
+      [Op.or]: [
+        {
+          "$class.class_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$employee.employee_no$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$employee.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        }
+      ]
+    }
+    
+    if (academic_year) {
+      conditions.academic_year = {
+          [Op.like]: academic_year,
+      };
+    }
+
+    if (is_active !== undefined) {
+        conditions.is_active = {
+            [Op.eq]: is_active,
+        };
+    }
+    
     return FormTeacher.findAll({
-      where: {
-        [Op.or]: [
-          {
-            "$class.class_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$employee.employee_no$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            "$employee.full_name$": {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            status: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-        ],
-      },
+      where: conditions,
       include: [
-        {
-          model: Employees,
-        },
-        {
-          model: Classes,
-        },
+          {
+              model: Employees,
+          },
+          {
+              model: Classes,
+          },
       ],
+      offset: offset,
+      limit: limit,
+      order: [["id", "DESC"]],
     });
   }
 }

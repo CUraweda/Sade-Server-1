@@ -12,7 +12,7 @@ class EduCalendarDao extends SuperDao {
   }
 
   //menampilkan kegiatan dua minggu ke depan
-  async getByOngoingWeek(level, semester) {
+  async getByOngoingWeek(level, semester, academic) {
     // Get the start and end dates of the current week
     const currentDate = new Date();
     const startDateOfWeek = startOfWeek(currentDate);
@@ -26,6 +26,7 @@ class EduCalendarDao extends SuperDao {
         start_date: {
           [Op.between]: [startDateOfWeek, endDateOfNextWeek],
         },
+        ...(academic && { "$educalendar.academic_year$": academic }),
         "$educalendar.level$": level,
         "$educalendar.semester$": semester,
       },
@@ -39,31 +40,32 @@ class EduCalendarDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
-    return EduCalendar.count({
-      where: {
-        [Op.or]: [
-          {
-            academic_year: {
-              [Op.like]: "%" + search + "%",
-            },
+  async getCount(search, filter) {
+    const where = {
+      [Op.or]: [
+        {
+          academic_year: {
+            [Op.like]: "%" + search + "%",
           },
-          {
-            level: {
-              [Op.like]: "%" + search + "%",
-            },
+        },
+        {
+          level: {
+            [Op.like]: "%" + search + "%",
           },
-          {
-            semester: {
-              [Op.like]: "%" + search + "%",
-            },
+        },
+        {
+          semester: {
+            [Op.like]: "%" + search + "%",
           },
-        ],
-      },
-    });
+        },
+      ],
+    }
+
+    if (filter.academic) where['academic_year'] = filter.academic
+    return EduCalendar.count({ where });
   }
 
-  async getEduCalendarPage(search, offset, limit) {
+  async getEduCalendarPage(search, offset, limit, filter) {
     return EduCalendar.findAll({
       where: {
         [Op.or]: [
@@ -83,6 +85,7 @@ class EduCalendarDao extends SuperDao {
             },
           },
         ],
+        ...(filter.academic && { academic_year: filter.academic })
       },
       offset: offset,
       limit: limit,

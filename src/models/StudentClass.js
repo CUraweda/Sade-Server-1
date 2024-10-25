@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       StudentClass.hasMany(models.nonmonthly, {
         foreignKey: "student_class_id",
       });
+      
       StudentClass.hasMany(models.studentreports, {
 				foreignKey: 'student_class_id',
 			});
@@ -41,10 +42,10 @@ module.exports = (sequelize, DataTypes) => {
       academic_year: DataTypes.STRING,
       student_id: DataTypes.INTEGER,
       class_id: DataTypes.INTEGER,
-      is_active: DataTypes.BOOLEAN,
+      is_active: DataTypes.STRING,
     },
     {
-      sequelize,
+    sequelize,
       modelName: "studentclass",
       tableName: "tbl_students_in_class",
       underscored: true,

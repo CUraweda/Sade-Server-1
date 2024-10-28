@@ -30,8 +30,8 @@ passport.use("jwt", jwtStrategy);
 app.get("/", async (req, res) => {
   res.status(200).send(`Congratulations! API is working in port ${process.env.PORT}`);
 });
-app.use("/stg-server1/api", routes);
-app.use("/stg-server1/public", express.static(path.join(__dirname, '../public')));
+app.use("/api", routes);
+app.use("/public", express.static(path.join(__dirname, '../public')));
 
 
 // send back a 404 error for any unknown api request

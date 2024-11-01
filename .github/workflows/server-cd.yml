@@ -7,9 +7,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: SECRET
 
     steps:
-
+      - name: Checkout code
+        uses: actions/checkout@v2
+          
       - name: Deploy using ssh
         uses: appleboy/ssh-action@v1.1.0
         with:

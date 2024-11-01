@@ -27,4 +27,4 @@ server.listen(config.port, () => {
   console.log("SERVER");
   console.log(`Listening to port ${config.port}`);
 });
-//TEST CD
+//TEST CDs

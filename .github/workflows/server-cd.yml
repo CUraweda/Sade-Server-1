@@ -1,0 +1,26 @@
+name: CD
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ SECRET.HOST }}         
+          username: root
+          key: ${{ SECRET.PRIVATE_KEY }}    
+          port: 22
+          script: |
+            cd production/Sade-Server-1
+            git pull origin main
+            npm i
+            pm2 restart 0

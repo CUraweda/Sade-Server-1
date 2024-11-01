@@ -12,16 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify secrets are loaded
+      - name: Verify secrets
         run: |
           if [ -z "$HOST" ]; then echo "HOST is not set"; else echo "HOST is set"; fi
           if [ -z "$PRIVATE_KEY" ]; then echo "PRIVATE_KEY is not set"; else echo "PRIVATE_KEY is set"; fi
-          # Output only part of the secrets to confirm values without exposing them
-          echo "Host: ${HOST::5}*****"
-          echo "Private Key (first 10 chars): ${PRIVATE_KEY::10}*****"
         env:
           HOST: ${{ secrets.HOST }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }
 
       - name: Deploy using ssh
         uses: appleboy/ssh-action@v1.1.0

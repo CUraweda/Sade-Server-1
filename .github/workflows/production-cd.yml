@@ -27,4 +27,5 @@ jobs:
             cd production/Sade-Server-1
             git pull origin main
             npm i
+            npx sequelize db:migrate 
             pm2 restart 0

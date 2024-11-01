@@ -12,19 +12,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify secrets
-        run: |
-          if [ -z "$HOST" ]; then echo "HOST is not set"; else echo "HOST is set"; fi
-          if [ -z "$PRIVATE_KEY" ]; then echo "PRIVATE_KEY is not set"; else echo "PRIVATE_KEY is set"; fi
-        env:
-          HOST: ${{ secrets.HOST }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }
-
       - name: Deploy using ssh
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.HOST }}
-          username: root
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           debug: true

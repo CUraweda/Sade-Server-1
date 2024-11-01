@@ -4,7 +4,7 @@ on:
   push:
     branches: [ development ]
   pull_request:
-    branches: [ "development" ]
+    branches: [ development ]
 
 jobs:
   build:
@@ -27,4 +27,5 @@ jobs:
             cd staging/Sade-Server-1
             git pull origin development
             npm i
+            npx sequelize db:migrate
             pm2 restart 0

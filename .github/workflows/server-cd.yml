@@ -15,9 +15,9 @@ jobs:
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ SECRET.HOST }}         
+          host: ${{ secrets.HOST }}         
           username: root
-          key: ${{ SECRET.PRIVATE_KEY }}    
+          key: ${{ secrets.PRIVATE_KEY }}    
           port: 22
           script: |
             cd production/Sade-Server-1

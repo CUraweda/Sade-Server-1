@@ -14,6 +14,8 @@
 # testing
 /coverage
 
+.env
+package-lock.json
 
 # misc
 /src/index.js

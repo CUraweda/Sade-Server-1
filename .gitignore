@@ -3,6 +3,7 @@
 /node_modules
 /images
 /files
+/testfile
 
 #logs
 /logs

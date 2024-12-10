@@ -173,6 +173,36 @@ class StudentService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, dt);
   };
+  
+  async exportPage(search) {
+    const result = await this.studentDao.getStudentPage(search, undefined, undefined)
+
+    const sheet = result.map((dat, i) => ({
+      No: i + 1,
+      "Nama lengkap": dat.full_name ?? '',
+      "Nama panggilan": dat.nickname ?? '',
+      "NIS": dat.nis ?? '',
+      "NISN": dat.nisn ?? '',
+      "Jenis kelamin": dat.gender ?? '',
+      "Tempat lahir": dat.pob ?? '',
+      "Tanggal lahir": dat.dob ?? '',
+      "Kewarganegaraan": dat.nationality ?? '',
+      "Agama": dat.religion ?? '',
+      "Alamat": dat.address ?? '',
+      "Siswa pindahan": dat.is_transfer ?? '',
+      "Kategori": dat.category ?? '',
+      "Tingkat": dat.level ?? '',
+      "Kelas": dat.class ?? '',
+      "Status": dat.is_active ?? '',
+    }))
+
+    
+    const worksheet = xlsx.utils.json_to_sheet(sheet);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Data Siswa');
+
+    return xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });  
+  }
 }
 
 module.exports = StudentService;

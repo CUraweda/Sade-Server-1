@@ -43,4 +43,10 @@ router.get(
   studentController.showNis
 );
 
+router.get(
+  "/export",
+   auth([1, 3]),
+  studentController.export
+)
+
 module.exports = router;

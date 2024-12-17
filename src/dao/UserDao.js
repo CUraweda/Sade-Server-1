@@ -14,6 +14,7 @@ const SubjectXtra = models.subjectextra
 const Headmaster = models.headmaster
 const Students = models.students
 const UserAccess = models.useraccess
+const EmployeeSignature = models.employeesignature
 
 class UserDao extends SuperDao {
   constructor() {
@@ -89,6 +90,10 @@ class UserDao extends SuperDao {
                 }
               ]
             },
+            {
+              model: EmployeeSignature,
+              required: false
+            }
           ]
         }
       ]

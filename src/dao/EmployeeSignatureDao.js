@@ -3,6 +3,8 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const EmployeeSignature = models.employeesignature;
+const Employees = models.employees
+const Classes = models.classes
 
 class EmployeeSignatureDao extends SuperDao {
     constructor() {
@@ -50,6 +52,16 @@ class EmployeeSignatureDao extends SuperDao {
                     },
                 ],
             },
+            include: [
+                {
+                    model: Employees,
+                    required: false
+                },
+                {
+                    model: Classes,
+                    required: false
+                },
+            ],
             offset: offset,
             limit: limit,
             order: [["id", "DESC"]],

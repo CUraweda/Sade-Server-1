@@ -73,6 +73,7 @@ const dashboardRoute = require("./DashboardRoute")
 const headmasterRoute = require("./HeadmasterRoute")
 const studentReportFileRoute = require("./studentReportFileRoute")
 const lessonPlanRoute = require("./lessonPlanRoute")
+const employeeSignatureRoute = require('./employeeSignatureRoute')
 
 const router = express.Router();
 
@@ -372,6 +373,10 @@ const defaultRoutes = [
   {
     path: "/lesson-plan",
     route: lessonPlanRoute
+  },
+  {
+    path: "/employee-signature",
+    route: employeeSignatureRoute
   }
 ];
 

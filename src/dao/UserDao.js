@@ -1,7 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
-const { required } = require("joi");
 
 const User = models.user;
 const Employee = models.employees

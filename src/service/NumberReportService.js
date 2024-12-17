@@ -657,7 +657,7 @@ class NumberReportService {
       maximumFractionDigits: 2,
     });
     let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
-    let subjects = await this.subjectDao.getAll(data)
+    let subjects = await this.subjectDao.getAll(data.level)
     if (!subjects || subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
     subjects.forEach((subject, i) => {
       if (!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]

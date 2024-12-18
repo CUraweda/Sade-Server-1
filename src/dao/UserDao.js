@@ -205,6 +205,10 @@ class UserDao extends SuperDao {
                 }
               ]
             },
+            {
+              model: EmployeeSignature,
+              required: false
+            }
           ]
         }
       ]

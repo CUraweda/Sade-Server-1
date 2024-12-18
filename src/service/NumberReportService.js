@@ -215,7 +215,7 @@ class NumberReportService {
     }
   };
 
-  exportReportByStudentId = async (id, semester) => {
+  exportReportByStudentId = async (id, semester, signedDate) => {
     const message = "Number Report successfully exported!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester, true);
@@ -235,7 +235,7 @@ class NumberReportService {
       semester
     );
 
-
+    rel['signed_at'] = signedDate
     const pdfFile = await this.generatePdf(rel, dir);
 
     if (pdfFile) {
@@ -629,7 +629,7 @@ class NumberReportService {
 
     posY += 20;
     moment.locale("id"); // Set locale to Indonesian
-    const formattedDate = moment(data.sign_at).format("DD MMMM YYYY");
+    const formattedDate = moment(data['signed_at']).format("DD MMMM YYYY");
     doc
       .font("Helvetica")
       .fontSize(9)
@@ -647,8 +647,8 @@ class NumberReportService {
     posY += 70;
     doc
       .font("Helvetica")
-      .text(data.head, 50, 670, { align: "center", width: 180 })
-      .text(data.form_teacher, 350, 670, { align: "center", width: 180 });
+      .text(data.head?.signature_name, 50, 670, { align: "center", width: 180 })
+      .text(data.form_teacher?.signature_name, 350, 670, { align: "center", width: 180 });
   };
 
   generateNumberReportTabel = async (data) => {

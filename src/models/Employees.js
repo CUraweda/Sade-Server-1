@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       Employees.hasMany(models.formextra, {
         foreignKey: "employee_id",
       });
+      Employees.hasMany(models.employeesignature, {
+        foreignKey: "employee_id",
+      });
       Employees.belongsTo(models.user, {
         foreignKey: "user_id",
       });

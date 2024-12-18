@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
     "start": "cross-env NODE_ENV=production node src/index.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "generate-migration": "npx sequelize-cli migration:generate --name",
     "test": "mocha './specs/**/*.spec.js' --watch"
   },
   "author": "Kazi Naimul Hoque (Aoyan)",

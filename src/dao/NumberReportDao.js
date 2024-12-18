@@ -127,7 +127,7 @@ class NumberReportDao extends SuperDao {
       ],
     });
   }
-
+  
   async getNumberReportPage(search, offset, limit, filters) {
     const { academic, semester, class_id, class_ids, subject_id } = filters
 

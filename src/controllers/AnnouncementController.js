@@ -45,7 +45,6 @@ class AnnouncementController {
         .join(", ");
         return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
       }
-      console.log("MASUK",req.body)
 
       const resData = await this.announcementService.createAnnouncement(
         formData

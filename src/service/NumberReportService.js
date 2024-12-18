@@ -166,7 +166,6 @@ class NumberReportService {
     const message = "Number Report successfully retrieved!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester);
-    console.log(rel)
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -334,7 +333,7 @@ class NumberReportService {
     doc.page.margins = { top: 20, bottom: 20, left: 40, right: 40 };
 
     // Load the image
-    const imagePath = "src/images/header.jpg"; // Replace 'image.jpg' with the path to your image file
+    const imagePath = "src/images/header.png"; // Replace 'image.jpg' with the path to your image file
     const image = doc.openImage(imagePath);
 
     // Calculate the width of A4 paper with margins
@@ -647,8 +646,8 @@ class NumberReportService {
     posY += 70;
     doc
       .font("Helvetica")
-      .text(data.head?.signature_name, 50, 670, { align: "center", width: 180 })
-      .text(data.form_teacher?.signature_name, 350, 670, { align: "center", width: 180 });
+      .text(data.head?.signature_name || '', 50, 670, { align: "center", width: 180 })
+      .text(data.form_teacher?.signature_name || '', 350, 670, { align: "center", width: 180 });
   };
 
   generateNumberReportTabel = async (data) => {

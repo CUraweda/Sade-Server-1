@@ -152,10 +152,12 @@ class StudentReportDao extends SuperDao {
         }
       ],
       ...(subject_id && {
+        group: ["id"],
         having: literal(`
           COUNT(numberreports.id) = 0
         `)
-      })
+      }),
+      order: [[{ model: StudentClass }, { model: Students }, "full_name", "ASC"]],
     });
   }
 

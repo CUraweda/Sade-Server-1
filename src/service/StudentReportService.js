@@ -122,10 +122,10 @@ class StudentReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showStudentReportByClassId = async (id, student_access, semester, academic) => {
+  showStudentReportByClassId = async (id, student_access, semester, academic, filter) => {
     const message = "Student report successfully retrieved!";
 
-    let rel = await this.studentReportDao.getByClassId(id, student_access, semester, academic);
+    let rel = await this.studentReportDao.getByClassId(id, student_access, semester, academic, filter);
     if (!rel) {
       return responseHandler.returnSuccess(
         httpStatus.OK,

@@ -48,8 +48,8 @@ class EmployeeSignatureController {
     
     addMine = async (req, res) => {
         try{
-            if (!req.file) res.status(httpStatus.UNPROCESSABLE_ENTITY).send("Please provide an image");
-            req.body['signature_path'] = req.file.path
+            // if (!req.file) res.status(httpStatus.UNPROCESSABLE_ENTITY).send("Please provide an image");
+            // req.body['signature_path'] = req.file.path
             const resData = await this.employeeSignatureService.createMine(req.user?.employee, req.body)
             
             res.status(resData.statusCode).send(resData.response);

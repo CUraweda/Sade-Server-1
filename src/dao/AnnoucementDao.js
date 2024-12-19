@@ -68,7 +68,6 @@ class AnnouncementDao extends SuperDao {
   }
 
   async getAnnouncementPage(search, offset, limit, filters) {
-    console.log("AMAN 4")         
     const where = {
       [Op.or]: [
         {

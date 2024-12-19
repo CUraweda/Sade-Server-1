@@ -21,7 +21,6 @@ class MessageService {
         reqBody.with_id
       );
 
-      console.log("1." + checkData);
       const uuid = uuidv4();
 
       if (checkData.length === 0) {
@@ -39,10 +38,8 @@ class MessageService {
 
         reqBody.unique_id = uuid;
 
-        console.log("Data Kosong");
       } else {
         reqBody.unique_id = checkData[0].unique_id;
-        console.log("Data Exist");
       }
 
       const body = {

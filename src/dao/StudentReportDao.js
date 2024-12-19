@@ -1,12 +1,13 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op } = require("sequelize");
+const { Op, literal } = require("sequelize");
 
 const StudentReport = models.studentreports;
 const StudentClass = models.studentclass;
 const Students = models.students;
 const Classes = models.classes;
 const Subjects = models.subjects;
+const NumberReport = models.numberreport
 const NumberReportDao = require("./NumberReportDao");
 const NarrativeReportDao = require("./NarrativeReportDao");
 
@@ -21,16 +22,16 @@ class StudentReportDao extends SuperDao {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       // [Op.or]: [
-        // {
-        //   nar_parent_comments: {
-        //     [Op.like]: "%" + search + "%",
-        //   },
-        // },
-        // {
-        //   student_access: {
-        //     [Op.like]: "%" + search + "%",
-        //   },
-        // },
+      // {
+      //   nar_parent_comments: {
+      //     [Op.like]: "%" + search + "%",
+      //   },
+      // },
+      // {
+      //   student_access: {
+      //     [Op.like]: "%" + search + "%",
+      //   },
+      // },
       // ],
     }
 
@@ -68,16 +69,16 @@ class StudentReportDao extends SuperDao {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
       // [Op.or]: [
-        // {
-        //   nar_parent_comments: {
-        //     [Op.like]: "%" + search + "%",
-        //   },
-        // },
-        // {
-        //   student_access: {
-        //     [Op.like]: "%" + search + "%",
-        //   },
-        // },
+      // {
+      //   nar_parent_comments: {
+      //     [Op.like]: "%" + search + "%",
+      //   },
+      // },
+      // {
+      //   student_access: {
+      //     [Op.like]: "%" + search + "%",
+      //   },
+      // },
       // ],
     }
     if (academic) where["$studentclass.academic_year$"] = academic
@@ -114,7 +115,7 @@ class StudentReportDao extends SuperDao {
     });
   }
 
-  async getByClassId(id, student_access, semester, academic) {
+  async getByClassId(id, student_access, semester, academic, filter) {
     const where = {
       "$studentclass.class_id$": id,
     }
@@ -122,6 +123,8 @@ class StudentReportDao extends SuperDao {
     if (student_access != undefined) where['student_access'] = student_access == 'null' ? null : student_access
     if (academic) where["$studentclass.academic_year$"] = academic
     where['semester'] = semester
+
+    const { subject_id } = filter
     return StudentReport.findAll({
       where,
       include: [
@@ -139,7 +142,22 @@ class StudentReportDao extends SuperDao {
             },
           ],
         },
+        {
+          model: NumberReport,
+          attributes: ["id", "subject_id"],
+          where: {
+            ...(subject_id && { subject_id })
+          },
+          required: false
+        }
       ],
+      ...(subject_id && {
+        group: ["id"],
+        having: literal(`
+          COUNT(numberreports.id) = 0
+        `)
+      }),
+      order: [[{ model: StudentClass }, { model: Students }, "full_name", "ASC"]],
     });
   }
 
@@ -148,7 +166,7 @@ class StudentReportDao extends SuperDao {
       where: {
         "$studentclass.student_id$": id,
         "$studentclass.is_active$": "Ya",
-        ...(academic && { "$studentclass.academic_year$": academic }), 
+        ...(academic && { "$studentclass.academic_year$": academic }),
         semester: semester,
       },
       include: [

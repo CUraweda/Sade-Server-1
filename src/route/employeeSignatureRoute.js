@@ -30,7 +30,6 @@ router.post(
 
 router.post(
     "/add-mine",
-    uploadFile,
     employeeSignatureValidator.addMineValidator,
     auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
     employeeSignatureController.addMine

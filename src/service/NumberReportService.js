@@ -21,12 +21,17 @@ class NumberReportService {
     this.subjectDao = new SubjectDao()
   }
 
+  formatUID = (data) => {
+    return `${data['student_report_id']}|${data['subject_id']}`
+  }
+
   createNumberReport = async (reqBody) => {
     try {
       let message = "Number Report successfully added.";
 
+      reqBody['uid'] = this.formatUID(reqBody)
       let data = await this.numberReportDao.create(reqBody);
-
+      
       if (!data) {
         message = "Failed to create Number Report.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
@@ -46,9 +51,14 @@ class NumberReportService {
     try {
       let message = "Number Report successfully added.";
 
-      let data = await this.numberReportDao.bulkCreate(reqBody);
-
-      if (!data) {
+      const create = reqBody.map(data => {
+        data['uid'] = this.formatUID(data);
+        return this.numberReportDao.updateOrCreate(data, { uid: data['uid'] });
+      });
+    
+      const results = await Promise.all(create);
+    
+      if (!results || results.some(result => !result)) {
         message = "Failed to create Number Report.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }

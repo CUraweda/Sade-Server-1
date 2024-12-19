@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       subject_id: DataTypes.INTEGER,
       grade: DataTypes.DOUBLE,
       grade_text: DataTypes.STRING,
+      uid: DataTypes.STRING
     },
     {
       sequelize,

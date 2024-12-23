@@ -11,6 +11,10 @@ class StudentAttendanceService {
     this.studentAttendanceDao = new StudentAttendanceDao();
   }
 
+  formatUID = (student_class_id, date) => {
+    return `${new Date(date).toISOString().split("T")[0]}|${student_class_id}`
+  }
+
   createStudentAttendance = async (reqBody) => {
     try {
       let message = "Student Attendance successfully added.";
@@ -32,6 +36,7 @@ class StudentAttendanceService {
         semester: reqBody.semester,
         att_date: reqBody.att_date,
         att_time: reqBody.att_time,
+        uid: this.formatUID(reqBody.student_class_id, reqBody.att_date),
         status: statusDesc,
         remark: reqBody.remark,
       };

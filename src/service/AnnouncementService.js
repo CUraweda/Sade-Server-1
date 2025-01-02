@@ -94,9 +94,7 @@ class AnnouncementService {
         const totalRows = await this.announcementDao.getCount(search, filters);
         const totalPage = Math.ceil(totalRows / limit);
 
-        console.log("AMAN 3", totalRows)    
         const result = await this.announcementDao.getAnnouncementPage(search, offset, limit, filters);
-        console.log("AMAN 5", result)    
 
         return responseHandler.returnSuccess(
             httpStatus.OK,

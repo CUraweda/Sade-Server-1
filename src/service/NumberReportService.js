@@ -21,12 +21,17 @@ class NumberReportService {
     this.subjectDao = new SubjectDao()
   }
 
+  formatUID = (data) => {
+    return `${data['student_report_id']}|${data['subject_id']}`
+  }
+
   createNumberReport = async (reqBody) => {
     try {
       let message = "Number Report successfully added.";
 
+      reqBody['uid'] = this.formatUID(reqBody)
       let data = await this.numberReportDao.create(reqBody);
-
+      
       if (!data) {
         message = "Failed to create Number Report.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
@@ -46,9 +51,14 @@ class NumberReportService {
     try {
       let message = "Number Report successfully added.";
 
-      let data = await this.numberReportDao.bulkCreate(reqBody);
-
-      if (!data) {
+      const create = reqBody.map(data => {
+        data['uid'] = this.formatUID(data);
+        return this.numberReportDao.updateOrCreate(data, { uid: data['uid'] });
+      });
+    
+      const results = await Promise.all(create);
+    
+      if (!results || results.some(result => !result)) {
         message = "Failed to create Number Report.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
@@ -166,7 +176,6 @@ class NumberReportService {
     const message = "Number Report successfully retrieved!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester);
-    console.log(rel)
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -215,7 +224,7 @@ class NumberReportService {
     }
   };
 
-  exportReportByStudentId = async (id, semester) => {
+  exportReportByStudentId = async (id, semester, signedDate) => {
     const message = "Number Report successfully exported!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester, true);
@@ -235,7 +244,7 @@ class NumberReportService {
       semester
     );
 
-
+    rel['signed_at'] = signedDate
     const pdfFile = await this.generatePdf(rel, dir);
 
     if (pdfFile) {
@@ -334,7 +343,7 @@ class NumberReportService {
     doc.page.margins = { top: 20, bottom: 20, left: 40, right: 40 };
 
     // Load the image
-    const imagePath = "src/images/header.jpg"; // Replace 'image.jpg' with the path to your image file
+    const imagePath = "src/images/header.png"; // Replace 'image.jpg' with the path to your image file
     const image = doc.openImage(imagePath);
 
     // Calculate the width of A4 paper with margins
@@ -629,7 +638,7 @@ class NumberReportService {
 
     posY += 20;
     moment.locale("id"); // Set locale to Indonesian
-    const formattedDate = moment(data.sign_at).format("DD MMMM YYYY");
+    const formattedDate = moment(data['signed_at']).format("DD MMMM YYYY");
     doc
       .font("Helvetica")
       .fontSize(9)
@@ -647,8 +656,8 @@ class NumberReportService {
     posY += 70;
     doc
       .font("Helvetica")
-      .text(data.head, 50, 670, { align: "center", width: 180 })
-      .text(data.form_teacher, 350, 670, { align: "center", width: 180 });
+      .text(data.head?.signature_name || '', 50, 670, { align: "center", width: 180 })
+      .text(data.form_teacher?.signature_name || '', 350, 670, { align: "center", width: 180 });
   };
 
   generateNumberReportTabel = async (data) => {

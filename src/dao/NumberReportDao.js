@@ -11,6 +11,7 @@ const Subjects = models.subjects;
 const StudentPersonality = models.studentpersonality;
 const Personality = models.personality;
 const ReportSigners = models.reportsigners;
+const EmployeeSignature = models.employeesignature
 const StudentAttendanceDao = require("./StudentAttendanceDao");
 
 class NumberReportDao extends SuperDao {
@@ -292,14 +293,18 @@ class NumberReportDao extends SuperDao {
       } = {},
     } = reports[0] || {};
 
-    const signers = await ReportSigners.findAll({
-      where: { class_id: class_id },
-    });
+    // const signers = await ReportSigners.findAll({
+    //   where: { class_id: class_id },
+    // });
+
+    const signatureKepalaSekolah = await EmployeeSignature.findOne({
+      where: { is_headmaster: true, headmaster_of: level }
+    })
+    const signatureWaliKelas = await EmployeeSignature.findOne({
+      where: { is_form_teacher: true, form_teacher_class_id: class_id }
+    })
 
     // if(strict && signers.length < 1) return { status: false, note: "Signers Tidak Ditemukan" }
-
-    const { head, form_teacher, sign_at } = signers[0] || {};
-
     // Formatting the result
     const result = {
       full_name,
@@ -326,9 +331,8 @@ class NumberReportDao extends SuperDao {
         grade: p.grade,
       })),
       attendances: attendance,
-      head,
-      form_teacher,
-      sign_at,
+      head: signatureKepalaSekolah,
+      form_teacher: signatureWaliKelas,
     };
 
     return result;

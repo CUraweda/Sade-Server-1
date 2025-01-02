@@ -66,10 +66,11 @@ class StudentClassController {
     try {
       const id = req.params.id;
       const academic = req.query.academic || "";
+      const date = req.query.date
 
       const resData = await this.studentClassService.showStudentByClass(
         id,
-        
+        { date }
       );
 
       res.status(resData.statusCode).send(resData.response);

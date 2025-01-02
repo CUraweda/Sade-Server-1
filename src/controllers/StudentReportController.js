@@ -70,7 +70,8 @@ class StudentReportController {
       const semester = req.query.semester ? +req.query.semester || 1 : 1
       const student_access = req.query.student_access || undefined
       const academic = req.query.academic
-      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester, academic);
+      const subject_id = req.query.subject_id
+      const resData = await this.studentReportService.showStudentReportByClassId(id, student_access, semester, academic, { subject_id });
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

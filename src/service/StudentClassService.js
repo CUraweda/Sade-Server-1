@@ -132,10 +132,10 @@ class StudentClassService {
     return responseHandler.returnSuccess(httpStatus.OK, message, data);
   };
 
-  showStudentByClass = async (id, academic_year) => {
+  showStudentByClass = async (id, filter) => {
     const message = "Student Class successfully retrieved!";
 
-    let rel = await this.studentClassDao.getByClasses(id, academic_year);
+    let rel = await this.studentClassDao.getByClasses(id, filter);
 
     if (!rel) {
       return responseHandler.returnSuccess(

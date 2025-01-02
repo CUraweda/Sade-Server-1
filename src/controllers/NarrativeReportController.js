@@ -131,8 +131,6 @@ class NarrativeReportController {
         report_id
       );
 
-      console.log(resData)
-
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);

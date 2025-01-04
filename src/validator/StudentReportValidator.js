@@ -12,12 +12,12 @@ class StudentReportValidator {
       narrative_path: Joi.string().allow("", null),
       portofolio_path: Joi.string().allow("", null),
       merged_path: Joi.string().allow("", null),
-      nar_teacher_comments: Joi.string().max(3000).allow("", null),
-      nar_parent_comments: Joi.string().max(3000).allow("", null),
-      por_teacher_comments: Joi.string().max(3000).allow("", null),
-      por_parent_comments: Joi.string().max(3000).allow("", null),
-      nar_comments_path: Joi.string().max(3000).allow("", null),
-      por_comments_path: Joi.string().max(3000).allow("", null),
+      nar_teacher_comments: Joi.string().allow("", null),
+      nar_parent_comments: Joi.string().allow("", null),
+      por_teacher_comments: Joi.string().allow("", null),
+      por_parent_comments: Joi.string().allow("", null),
+      nar_comments_path: Joi.string().allow("", null),
+      por_comments_path: Joi.string().allow("", null),
       student_access: Joi.boolean().default(true)
     });
 
@@ -55,12 +55,12 @@ class StudentReportValidator {
       narrative_path: Joi.string().allow("", null),
       portofolio_path: Joi.string().allow("", null),
       merged_path: Joi.string().allow("", null),
-      nar_teacher_comments: Joi.string().max(3000).allow("", null),
-      nar_parent_comments: Joi.string().max(3000).allow("", null),
-      por_teacher_comments: Joi.string().max(3000).allow("", null),
-      por_parent_comments: Joi.string().max(3000).allow("", null),
-      nar_comments_path: Joi.string().max(3000).allow("", null),
-      por_comments_path: Joi.string().max(3000).allow("", null),
+      nar_teacher_comments: Joi.string().allow("", null),
+      nar_parent_comments: Joi.string().allow("", null),
+      por_teacher_comments: Joi.string().allow("", null),
+      por_parent_comments: Joi.string().allow("", null),
+      nar_comments_path: Joi.string().allow("", null),
+      por_comments_path: Joi.string().allow("", null),
       student_access: Joi.boolean().default(false)
     });
 

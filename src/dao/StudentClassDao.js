@@ -46,23 +46,22 @@ class StudentClassDao extends SuperDao {
       class_id,
       is_active: "Ya",
     };
-    return StudentClass.findAll({
-      where,
-      include: [
-        ...(date && [{
-          model: StudentAttendance,
-          where: {
-            [Op.and]: [
-              { att_date: { [Op.gte]: `${date}T00:00:00.000Z` } },
-              { att_date: { [Op.lte]: `${date}T23:59:59.999Z` } },
-            ]
-          },
-          required: false,
-        }]),
-        {
-          model: Students,
+    const include = [{ model: Students }]
+    if(date) {
+      include.push({
+        model: StudentAttendance,
+        where: {
+          [Op.and]: [
+            { att_date: { [Op.gte]: `${date}T00:00:00.000Z` } },
+            { att_date: { [Op.lte]: `${date}T23:59:59.999Z` } },
+          ]
         },
-      ],
+        required: false,
+      })
+    }
+
+    return StudentClass.findAll({
+      where, include,
       ...(date && {
         group: ['id'],
         having: literal('COUNT(studentattendances.id) = 0')

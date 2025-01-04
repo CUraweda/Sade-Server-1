@@ -68,12 +68,13 @@ class WasteOfficerController {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
+      const { date, iteration } = req.query
       const offset = limit * page;
 
       const resData = await this.wasteOfficerService.showPage(
         page,
         limit,
-        search,
+        { search, date, iteration },
         offset
       );
 

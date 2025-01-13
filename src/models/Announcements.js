@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      Announcements.belongsTo(models.classes, {
+        foreignKey: "class_id",
+      });
     }
   }
   Announcements.init(
@@ -17,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       date_start: DataTypes.DATE,
       date_end: DataTypes.DATE,
       announcement_desc: DataTypes.TEXT,
-      class_ids: DataTypes.JSON
+      class_id: DataTypes.INTEGER
     },
     {
       sequelize,

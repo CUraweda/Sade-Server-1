@@ -40,7 +40,11 @@ router.get(
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   achievementController.showTopOneByStudentId
 );
-
+router.get(
+  "/show-total-student",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  achievementController.showTotalStudent
+);
 router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), achievementController.showAll);
 
 router.delete(

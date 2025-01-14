@@ -3,6 +3,8 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const Achievement = models.achievements;
+const Student = models.students
+const StudentClass = models.studentclass
 
 class AchievementDao extends SuperDao {
   constructor() {
@@ -64,6 +66,28 @@ class AchievementDao extends SuperDao {
         }
       ],
     });
+  }
+
+  async getTotalStudent(filter) {
+    const { class_id } = filter
+    return Achievement.findAll({
+      ...(class_id && {
+        include: [
+          {
+            model: Student,
+            required: true,
+            include: [
+              {
+                model: StudentClass,
+                where: { class_id, is_active: "Y" },
+                required: true
+              }
+            ]
+          }
+        ],
+      }),
+      group: ['student_id']
+    })
   }
 
   async getAchievementPage(search, offset, limit, filters) {

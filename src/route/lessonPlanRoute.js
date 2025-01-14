@@ -11,6 +11,11 @@ router.get(
     auth([1, 3, 4, 6]),
     lessonPlanController.showAll
 );
+router.get(
+    "/show-rekap-teacher",
+    auth([1, 3, 4, 6]),
+    lessonPlanController.showRekapTeacher
+);
 
 router.get(
     "/download",

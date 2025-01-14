@@ -48,7 +48,6 @@ class AnnouncementDao extends SuperDao {
 
   async getAnnouncementPage(search, offset, limit, filters) {
     const { class_ids, start_date, end_date, class_id } = filters
-    console.log(class_ids, class_id)
     const dates = [formatDateForSQL(new Date(start_date)), formatDateForSQL(new Date(end_date))];
     const where = {
       [Op.or]: [

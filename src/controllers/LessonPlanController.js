@@ -53,6 +53,16 @@ class LessonPlanController {
             res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+    
+    showRekapTeacher = async (req, res) => {
+        try{
+            const resData = await this.lessonPlanService.showTeacherRecap()
+            res.status(resData.statusCode).send(resData.response);
+        }catch(e){
+            logger.error(e);
+            res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    }
 
     create = async (req, res) => {
         try {

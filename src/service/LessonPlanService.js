@@ -44,7 +44,20 @@ class LessonPlanService {
 
         return responseHandler.returnSuccess(httpStatus.OK, message, rel);
     };
-
+    
+    showTeacherRecap = async () => {
+        const data = await this.lessonPlanDao.getByEmployee()
+        if (!data) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Failed to retrived lesson plan");
+        
+        const counterData = await this.lessonPlanDao.getCounterLessonPlan()
+        if (!counterData) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Failed to retrived lesson plan");
+        
+        return responseHandler.returnSuccess(httpStatus.OK, "Lesson plan successfully retrived", {
+            total: counterData,
+            data
+        });
+    }
+    
     createLessonPlan = async (reqBody) => {
         let message = 'Lesson Plan successfully added.';
 

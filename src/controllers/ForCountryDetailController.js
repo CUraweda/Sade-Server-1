@@ -93,9 +93,16 @@ class ForCountryDetailController {
       res.status(httpStatus.BAD_GATEWAY).send(e)
     }
   }
-
-
-
+  
+  showTotalStatus = async (req, res) => {
+    try{
+      const resData = await this.forCountryDetailService.showTotalStatus()
+      res.status(resData.statusCode).send(resData.response)
+    }catch(e){
+      logger.error(e)
+      res.status(httpStatus.BAD_GATEWAY).send(e)
+    }
+  }
   showAll = async (req, res) => {
     try {
       const { employee } = req.user
@@ -103,7 +110,7 @@ class ForCountryDetailController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { class_id, with_assign, academic } = req.query
+      const { class_id, with_assign, academic, date } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -119,7 +126,8 @@ class ForCountryDetailController {
         {
           class_id,
           class_ids,
-          academic
+          academic,
+          date
         }
       );
 

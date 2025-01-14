@@ -26,6 +26,8 @@ router.get("/show/:id", auth([1, 2]), paymentPostController.show);
 
 router.get("/", auth([1, 2]), paymentPostController.showAll);
 
+router.get('/show-total', auth([1, 2, 6]), paymentPostController.showTotal)
+
 router.delete("/delete/:id", auth([1, 2]), paymentPostController.delete);
 
 module.exports = router;

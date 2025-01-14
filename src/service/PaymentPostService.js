@@ -96,6 +96,13 @@ class PaymentPostService {
     );
   }
 
+  showPaymentTotalPOS = async () =>  {
+    const result = await this.paymentPostDao.getPaymentTotalByPOS()
+    if (!result) return responseHandler.returnSuccess(httpStatus.OK,"Payment post not found!");
+
+    return responseHandler.returnSuccess(httpStatus.OK, "Payment Pos total successfully retrived", result);
+  }
+
   deletePaymentPost = async (id) => {
     const message = "Payment post successfully deleted!";
 

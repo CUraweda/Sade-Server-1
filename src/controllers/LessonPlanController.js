@@ -10,7 +10,8 @@ const uploadLessonPlan = require('../middlewares/uploadLessonPlan');
 const schema = Joi.object({
     assignments_name: Joi.string().required(),
     subjects_name: Joi.string().required(),
-    class_id: Joi.number().required(),
+    class_id: Joi.number().integer().required(),
+    subject_id: Joi.number().integer().required(),
     description: Joi.string().allow('', null),
 });
 
@@ -86,6 +87,8 @@ class LessonPlanController {
                     .join(', ');
                 return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
             }
+
+            if(req.user) formData['employee_id'] = req.user?.employee?.id
 
             const resData = await this.lessonPlanService.createLessonPlan(formData);
 

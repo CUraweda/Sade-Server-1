@@ -7,7 +7,7 @@ class StudentValidator {
     // create schema object
     const schema = Joi.object({
       nis: Joi.string().required(),
-      nisn: Joi.string().required(),
+      nisn: Joi.string().allow(null).required(),
       full_name: Joi.string().required(),
       nickname: Joi.string().required(),
       gender: Joi.string().required(),

@@ -117,7 +117,7 @@ class WasteCollectionDao extends SuperDao {
     if (filterOptions.waste_type_id) {
       whereClause['waste_type_id'] = filterOptions.waste_type_id;
     }
-    
+
     if (filterOptions.class_id) {
       whereClause['$studentclass.class_id$'] = filterOptions.class_id;
     }
@@ -325,6 +325,36 @@ class WasteCollectionDao extends SuperDao {
       };
     }
 
+    if (filterOptions.search) {
+      whereClause[Op.or] = [
+        {
+          "$studentclass.student.nis$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          "$studentclass.student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          collection_date: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          waste_type_id: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+        {
+          weight: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ] 
+    }
+
     return WasteCollection.findAll({
       where: whereClause,
       include: [
@@ -333,6 +363,11 @@ class WasteCollectionDao extends SuperDao {
           as: 'studentclass',
           attributes: ["id", "class_id"],
           include: [
+            {
+              model: Classes,
+              attributes: ["class_name"],
+              required: false
+            },
             {
               model: Students,
               as: 'student',
@@ -383,11 +418,11 @@ class WasteCollectionDao extends SuperDao {
       }
 
       const collections = await this.getByDate(startOfWeek, endOfWeek, { student_class_id: id })
-      for (let collection of collections){
+      for (let collection of collections) {
         const { waste_type_id, weekday, weight } = collection
-        if(!formatData[waste_type_id]) continue
+        if (!formatData[waste_type_id]) continue
         formatData[waste_type_id].weekday[weekday.name] += weight
-      } 
+      }
 
       // const result = [];
 
@@ -548,7 +583,7 @@ class WasteCollectionDao extends SuperDao {
     for (let weekday of weekdays) { weekDatas[weekday.id] = { name: weekday.name, weight: 0 } }
     for (let collection of collections) {
       const dayNumber = collection.collection_date.getDay()
-      if(weekDatas[dayNumber]) weekDatas[dayNumber].weight += collection.weight
+      if (weekDatas[dayNumber]) weekDatas[dayNumber].weight += collection.weight
     }
 
     return Object.values(weekDatas)
@@ -674,6 +709,27 @@ class WasteCollectionDao extends SuperDao {
           model: WeekDay
         }
       ]
+    })
+  }
+
+  async getRecapType(filter) {
+    const { start_date, end_date, waste_type_id } = filter
+    return WasteTypes.findAll({
+      attributes: ["name"],
+      include: [
+        {
+          model: WasteCollection,
+          where: {
+            ...(waste_type_id && { waste_type_id }),
+            ...((start_date && end_date) && {
+              collection_date: { [Op.between]: [start_date, end_date] }
+            })
+          },
+          attributes: [[sequelize.fn("SUM", sequelize.col("weight")), "total_weight"]], 
+          required: false
+        }
+      ],
+      group: ["id"]
     })
   }
 }

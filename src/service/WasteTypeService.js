@@ -43,13 +43,7 @@ class ReligionService {
       );
     }
 
-    const updateData = await this.wasteTypesDao.updateWhere(
-      {
-        code: body.code,
-        name: body.name,
-      },
-      { id }
-    );
+    const updateData = await this.wasteTypesDao.updateById(body, id)
 
     if (updateData) {
       return responseHandler.returnSuccess(httpStatus.OK, message, {});

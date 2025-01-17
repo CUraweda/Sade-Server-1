@@ -2,6 +2,7 @@ const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
+const { transport } = require("winston");
 
 const StudentAttendance = models.studentattendance;
 const StudentClass = models.studentclass;
@@ -50,7 +51,7 @@ class StudentAttendanceDao extends SuperDao {
 
   async getByStudentId(student_id, academic) {
     return StudentAttendance.findAll({
-      where: { 
+      where: {
         "$studentclass.student_id$": student_id,
         ...(academic && { "$studentclass.academic_year$": academic })
       },
@@ -87,6 +88,69 @@ class StudentAttendanceDao extends SuperDao {
         },
       ],
     });
+  }
+
+  async getAttendanceTransport(filter) {
+    const { start_date, end_date, transport, search } = filter
+    return StudentAttendance.findAll({
+      attributes: ["remark", [sequelize.fn("COUNT", sequelize.col("remark")), "total_data"]],
+      group: ["remark"],
+      where: {
+        ...((start_date && end_date) && {
+          att_date: { [Op.between]: [start_date, end_date] }
+        }),
+        ...(transport && { remark: { [Op.like]: `%${transport}%` } }),
+        ...(search && {
+          [Op.or]: [
+            {
+              "$studentclass.student.nis$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              "$studentclass.student.full_name$": {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              att_date: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              att_time: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              status: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+            {
+              remark: {
+                [Op.like]: "%" + search + "%",
+              },
+            },
+          ],
+        })
+      },
+      include: [
+        {
+          model: StudentClass,
+          attributes: [],
+          include: {
+            model: Students,
+            attributes: [],
+            required: false
+          },
+          required: false
+        }
+      ],
+      order: [
+        [{ model: StudentClass, as: 'studentclass' }, { model: Students, as: 'student' }, 'full_name', 'ASC'],
+      ],
+    })
   }
 
   async getAttendanceByStatus(studentId, semester, academic, status) {
@@ -142,6 +206,7 @@ class StudentAttendanceDao extends SuperDao {
   }
 
   async getCount(search, filters) {
+    const { start_date, end_date } = filters
     const where = {
       [Op.or]: [
         {
@@ -178,6 +243,8 @@ class StudentAttendanceDao extends SuperDao {
     }
 
     if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
+    if ((start_date && end_date)) where['att_date'] = { [Op.between]: [start_date, end_date] }
+    if (filters.transport) where['remark'] = { [Op.like]: `%${filters.transport}%` }
     if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
     if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
     if (filters.academic) where["$studentclass.academic_year$"] = filters.academic
@@ -200,6 +267,7 @@ class StudentAttendanceDao extends SuperDao {
   }
 
   async getStudentAttendancePage(search, offset, limit, filters) {
+    const { start_date, end_date } = filters
     const where = {
       [Op.or]: [
         {
@@ -236,6 +304,8 @@ class StudentAttendanceDao extends SuperDao {
     }
 
     if (filters.att_date) where["att_date"] = sequelize.literal(`DATE(att_date) = '${filters.att_date}'`)
+    if ((start_date && end_date)) where['att_date'] = { [Op.between]: [start_date, end_date] }
+    if (filters.transport) where['remark'] = { [Op.like]: `%${filters.transport}%` }
     if (filters.class_ids?.length) where["$studentclass.class_id$"] = { [Op.in]: filters.class_ids }
     if (filters.class_id) where["$studentclass.class_id$"] = filters.class_id
     if (filters.academic) where["$studentclass.academic_year$"] = filters.academic

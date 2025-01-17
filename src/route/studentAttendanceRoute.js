@@ -36,6 +36,11 @@ router.get(
 );
 
 router.get(
+  "/show-by-transport",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]),
+  studentAttendanceController.showByTransport
+)
+router.get(
   "/show-by-student/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   studentAttendanceController.showByStudentId
@@ -53,7 +58,7 @@ router.get(
   studentAttendanceController.showByStudentIdMonth
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6]), studentAttendanceController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 13]), studentAttendanceController.showAll);
 
 router.delete(
   "/delete/:id",

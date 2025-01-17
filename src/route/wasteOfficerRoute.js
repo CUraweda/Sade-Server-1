@@ -25,7 +25,7 @@ router.put(
 router.get("/show/:id", auth([1, 9, 10]), wasteOfficerController.show);
 
 router.get("/get-by-date/:date", auth([1, 9, 10]), wasteOfficerController.showByDate);
-router.get("/", auth([1, 9, 10]), wasteOfficerController.showAll);
+router.get("/", auth([1, 9, 6, 10]), wasteOfficerController.showAll);
 
 router.delete("/delete/:id", auth([1, 9, 10]), wasteOfficerController.delete);
 

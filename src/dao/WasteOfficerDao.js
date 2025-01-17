@@ -130,7 +130,7 @@ class WasteOfficerDao extends SuperDao {
             },
           },
         ],
-        ...(date && { created_at: { [Op.between]: [date.start_date, date.end_date] } }),
+        ...(date && { assignment_date: { [Op.between]: [date.start_date, date.end_date] } }),
       },
       include: [
         {

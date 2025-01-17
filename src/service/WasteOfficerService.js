@@ -132,7 +132,7 @@ class ReligionService {
       }
       filter.date = { start_date, end_date }
     }
-    console.log(filter.date)
+
     const totalRows = await this.wasteOfficerDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 

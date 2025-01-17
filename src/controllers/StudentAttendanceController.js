@@ -153,7 +153,7 @@ class StudentAttendanceController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { class_id, att_date, start_date, end_date, with_assign, academic } = req.query
+      const { class_id, att_date, start_date, transport,end_date, with_assign, academic } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -172,7 +172,8 @@ class StudentAttendanceController {
           att_date,
           academic,
           start_date,
-          end_date
+          end_date,
+          transport
         }
       );
 

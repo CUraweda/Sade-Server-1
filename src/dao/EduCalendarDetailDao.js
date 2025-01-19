@@ -81,24 +81,37 @@ class EduCalendarDetailDao extends SuperDao {
   }
 
   async getEduCalendarDetailPage(search, offset, limit, filter) {
+    let { allow_all, teacher_id } = filter
+    allow_all = allow_all != "Y" ? false : true
+
     return EduCalendarDetail.findAll({
       where: {
-        [Op.or]: [
+        [Op.and]: [
           {
-            start_date: {
-              [Op.like]: "%" + search + "%",
-            },
+            [Op.or]: [
+              {
+                start_date: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                end_date: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                agenda: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+            ],
           },
-          {
-            end_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            agenda: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          ...(allow_all ? [
+                { [Op.or]: [{ teacher_id: null }, ...(teacher_id ? [{ teacher_id }] : [])] },
+            ] : [
+                { teacher_id: { [Op.not]: null } },
+                ...(teacher_id ? [{ teacher_id }] : []),
+            ]),
         ],
         ...(filter.academic && { "$educalendar.academic_year$": filter.academic })
       },

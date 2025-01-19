@@ -86,7 +86,7 @@ class EduCalendarDetailController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { academic } = req.query
+      const { academic,  allow_all, teacher_id } = req.query
 
       const resData = await this.eduCalendarDetailService.showPage(
         page,
@@ -94,7 +94,7 @@ class EduCalendarDetailController {
         search,
         offset,
         {
-          academic
+          academic, allow_all, teacher_id
         }
       );
 

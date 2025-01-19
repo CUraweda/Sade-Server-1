@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      EduCalendarDetail.belongsTo(models.employees, {
+        foreignKey: "teacher_id",
+      });
       EduCalendarDetail.belongsTo(models.educalendar, {
         foreignKey: "edu_id",
       });

@@ -20,7 +20,7 @@ jobs:
         with:
           host: ${{ secrets.STAGING_HOST }}
           username: ${{ secrets.STAGING_USERNAME }}
-          key: ${{ secrets.STAGING_PRIVATE_KEY }}
+          password: ${{secrets.STAGING_PASSWORD}}
           port: 22
           debug: true
           script: |

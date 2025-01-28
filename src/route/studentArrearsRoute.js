@@ -8,8 +8,13 @@ const studentArrearsController = new StudentArrearsController()
 
 router.get(
     "/",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentArrearsController.showAll
+)
+router.get(
+    "/show-report",
+    auth([1, 2, 3, 6, 13]),
+    studentArrearsController.showReport
 )
 router.get(
     "/get-by-id/:id",

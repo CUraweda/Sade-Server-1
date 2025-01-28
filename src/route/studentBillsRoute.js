@@ -48,6 +48,11 @@ router.get(
     studentBillsController.showAll
 )
 router.get(
+    "/get-for-report",
+    auth([13]),
+    studentBillsController.showForReport
+)
+router.get(
     "/get-by-id/:id",
     auth([1, 2, 3, 6]),
     studentBillsController.showById

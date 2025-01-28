@@ -100,6 +100,19 @@ class StudentBillsService {
   
       return responseHandler.returnSuccess(httpStatus.OK, message, rel);
     };
+    showDataReport = async (filter) => {  
+      let rel = await this.studentBillsDao.getDataReport(filter);
+  
+      if (!rel) {
+        return responseHandler.returnSuccess(
+          httpStatus.OK,
+          "Student Bill not found!",
+          {}
+        );
+      }
+  
+      return responseHandler.returnSuccess(httpStatus.OK, "Student Bill Successfully Retrived", rel);
+    };
     updateStudentBills = async (id ,body) => {
         const message = "Student Bills successfully updated";
 

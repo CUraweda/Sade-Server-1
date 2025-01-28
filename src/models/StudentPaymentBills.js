@@ -7,12 +7,16 @@ module.exports = (sequelize, DataTypes) => {
 			StudentPaymentBills.belongsTo(models.paymentpost, {
 				foreignKey: 'payment_post_id',
 			});
+			StudentPaymentBills.hasMany(models.studentbills, {
+				foreignKey: "payment_bill_id"
+			})
 		}
 	}
 	StudentPaymentBills.init(
 		{
 			name: DataTypes.STRING,
 			academic_year: DataTypes.STRING,
+			payment_post_id: DataTypes.INTEGER,
 			total: DataTypes.DOUBLE,
 			due_date: DataTypes.DATE,
 		},

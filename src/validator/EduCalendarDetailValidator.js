@@ -7,7 +7,7 @@ class EduCalendarDetailValidator {
     // create schema object
     const schema = Joi.object({
       teacher_id: Joi.number().required(),
-      edu_id: Joi.number().required(),
+      edu_id: Joi.number().optional(),
       start_date: Joi.date().required(),
       end_date: Joi.date().required(),
       agenda: Joi.string().required(),

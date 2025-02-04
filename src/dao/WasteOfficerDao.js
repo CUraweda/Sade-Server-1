@@ -52,7 +52,7 @@ class WasteOfficerDao extends SuperDao {
   }
 
   async getCount(filter) {
-    const { search, date } = filter
+    const { search, date, class_id } = filter
     return WasteOfficer.count({
       where: {
         [Op.or]: [
@@ -82,6 +82,7 @@ class WasteOfficerDao extends SuperDao {
             },
           },
         ],
+        ...(class_id && { class_id }),
         ...(date && { created_at: { [Op.between]: [date.start_date, date.end_date] } }),
       },
       include: [
@@ -100,7 +101,7 @@ class WasteOfficerDao extends SuperDao {
   }
 
   async getWasteOfficerPage(filter, offset, limit) {
-    const { search, date } = filter
+    const { search, date, class_id } = filter
     return WasteOfficer.findAll({
       where: {
         [Op.or]: [
@@ -130,6 +131,7 @@ class WasteOfficerDao extends SuperDao {
             },
           },
         ],
+        ...(class_id && { class_id }),
         ...(date && { assignment_date: { [Op.between]: [date.start_date, date.end_date] } }),
       },
       include: [

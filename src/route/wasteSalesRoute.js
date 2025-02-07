@@ -8,7 +8,7 @@ const wasteSalesController = new WasteSalesController();
 
 router.get(
   "/",
-  auth([1, 9, 10]),
+  auth([1, 9, 10, 13]),
   wasteSalesController.showWasteSummary
 );
 

@@ -22,9 +22,9 @@ router.put(
   wasteTypeController.update
 );
 
-router.get("/show/:id", auth([1, 9, 10]), wasteTypeController.show);
+router.get("/show/:id", auth([1, 9, 10, 13]), wasteTypeController.show);
 
-router.get("/", auth([1, 9, 10]), wasteTypeController.showAll);
+router.get("/", auth([1, 9, 10, 13]), wasteTypeController.showAll);
 
 router.delete("/delete/:id", auth([1, 9, 10]), wasteTypeController.delete);
 

@@ -31,24 +31,24 @@ router.put(
 
 router.get(
     "/",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentPaymentBillsController.showAll
 )
 router.get(
     "/get-by-id/:id",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentPaymentBillsController.showById
 )
 
 router.get(
     "/get-by-student-id/:id",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentPaymentBillsController.showByStudentId
 )
 
 router.get(
     "/get-by-class/:class_id",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentPaymentBillsController.showByClass
 )
 

@@ -12,6 +12,11 @@ router.get(
     studentArrearsController.showAll
 )
 router.get(
+    "/show-report",
+    auth([1, 2, 3, 6, 13]),
+    studentArrearsController.showReport
+)
+router.get(
     "/get-by-id/:id",
     auth([1, 2, 3, 6, 13]),
     studentArrearsController.showById

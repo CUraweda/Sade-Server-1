@@ -71,9 +71,23 @@ class ForCountryDetailService {
         {}
       );
     }
-
+    
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  
+  showTotalStatus = async () => {
+    const results = await this.forCountryDetailDao.getStatusTotal()
+    if (!results) return responseHandler.returnSuccess(httpStatus.OK,"For your country details not found!",{});
+    
+    let statusData = {}
+    for (let resultData of results) {
+      const { status } = resultData
+      if (!statusData[status]) statusData[status] = 0
+      statusData[status]++
+    }
+    
+    return responseHandler.returnSuccess(httpStatus.OK, "For Country detail successfully retrived", statusData);
+  }
 
   async showByDate(date, month, year) {
     const result = await this.forCountryDetailDao.getDetailsByDate(date, month, year)

@@ -1,6 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 
 const ForCountryDetail = models.forcountrydetails;
 const ForCountry = models.forcountry;
@@ -60,7 +60,7 @@ class ForCountryDetailDao extends SuperDao {
   }
 
   async getCount(search, filters) {
-    const { class_id, class_ids, academic } = filters
+    const { class_id, class_ids, academic, date } = filters
     const where = {
       [Op.or]: [
         {
@@ -88,6 +88,12 @@ class ForCountryDetailDao extends SuperDao {
     if (class_id) classIds = [class_id]
 
     if (academic) where["$forcountry.academic_year$"] = academic
+
+    if (date) where['plan_date'] = Sequelize.where(
+      Sequelize.fn('JSON_CONTAINS', Sequelize.col('plan_date'), JSON.stringify([{ date }])),
+      true
+    );
+
 
     return ForCountryDetail.count({
       where,
@@ -125,7 +131,7 @@ class ForCountryDetailDao extends SuperDao {
   }
 
   async getForCountryDetailPage(search, offset, limit, filters) {
-    const { class_id, class_ids, academic } = filters
+    const { class_id, class_ids, academic, date } = filters
     const where = {
       [Op.or]: [
         {
@@ -154,6 +160,11 @@ class ForCountryDetailDao extends SuperDao {
 
     if (class_id) classIds = [class_id]
 
+    if (date) where['plan_date'] = Sequelize.where(
+      Sequelize.fn('JSON_CONTAINS', Sequelize.col('plan_date'), JSON.stringify([{ date }])),
+      true
+    );
+
 
     return ForCountryDetail.findAll({
       where,
@@ -163,6 +174,7 @@ class ForCountryDetailDao extends SuperDao {
           required: true,
           include: [
             {
+
               model: User,
               attributes: ["full_name"],
             },
@@ -191,6 +203,14 @@ class ForCountryDetailDao extends SuperDao {
       limit: limit,
       order: [["id", "DESC"]],
     });
+  }
+
+
+  async getStatusTotal() {
+    return ForCountryDetail.findAll({
+      where: { status: { [Op.not]: null } },
+      inlcude: ["status"]
+    })
   }
 }
 module.exports = ForCountryDetailDao;

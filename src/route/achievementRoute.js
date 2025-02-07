@@ -43,6 +43,12 @@ router.get(
 
 router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]), achievementController.showAll);
 
+router.get(
+  "/show-total-student",
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  achievementController.showTotalStudent
+);
+
 router.delete(
   "/delete/:id",
   auth([1, 3, 6, 7, 8]),

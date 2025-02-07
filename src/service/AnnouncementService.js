@@ -3,11 +3,13 @@ const AnnouncementDao = require('../dao/AnnoucementDao');
 const responseHandler = require('../helper/responseHandler');
 const logger = require('../config/logger');
 const { userConstant } = require('../config/constant');
+const FormTeacherDao = require('../dao/FormTeacherDao');
 
 class AnnouncementService {
     constructor() {
         this.announcementDao = new AnnouncementDao();
-    }  
+        this.formTeacherDao = new FormTeacherDao()
+    }
 
     createAnnouncement = async (reqBody) => {
         try {
@@ -36,18 +38,7 @@ class AnnouncementService {
             return responseHandler.returnSuccess(httpStatus.OK, 'Announcement not found!', {});
         }
 
-    const updateData = await this.announcementDao.updateWhere(
-      {
-        date_start: body.date_start,
-        date_end: body.date_end,
-        announcement_desc: body.announcement_desc,
-        class_id: body.class_id,
-        file_path: body.file_path ?? null,
-        file_type: body.file_type ?? null,
-        class_ids: body.class_ids
-      },
-      { id }
-    );
+        const updateData = await this.announcementDao.updateWhere(body, { id });
 
         if (updateData) {
             return responseHandler.returnSuccess(httpStatus.OK, message, {});
@@ -91,8 +82,16 @@ class AnnouncementService {
     };
 
     async showPage(page, limit, search, offset, filters) {
+        const { class_id, with_assign, employee } = filters
+        filters.class_ids = []
+        if (class_id)
+            filters.class_ids = class_id != "0" ? [+class_id] : [null]
+        if (with_assign === "Y" && !class_id && employee.formteachers.length > 0) {
+            filters.class_ids = employee.formteachers.map((formteacher) => formteacher.class_id)
+        }
         const totalRows = await this.announcementDao.getCount(search, filters);
         const totalPage = Math.ceil(totalRows / limit);
+
 
         const result = await this.announcementDao.getAnnouncementPage(search, offset, limit, filters);
 

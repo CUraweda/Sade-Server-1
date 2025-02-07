@@ -1,8 +1,9 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 
 const PaymentPost = models.paymentpost;
+const StudentPaymentBill = models.studentpaymentbills
 
 class PaymentPostDao extends SuperDao {
   constructor() {
@@ -48,6 +49,19 @@ class PaymentPostDao extends SuperDao {
       limit: limit,
       order: [["id", "DESC"]],
     });
+  }
+
+  async getPaymentTotalByPOS() {
+    return PaymentPost.findAll({
+      include: [
+        {
+          model: StudentPaymentBill,
+          attributes: [[Sequelize.fn('SUM', Sequelize.col('studentpaymentbills.total')), 'total'],],
+          required: false
+        }
+      ],
+      group: ["id"]
+    })
   }
 }
 module.exports = PaymentPostDao;

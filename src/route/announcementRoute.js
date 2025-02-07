@@ -4,6 +4,7 @@ const AnnouncementValidator = require("../validator/AnnouncementValidator");
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const upploadAnnouncementFile = require("../middlewares/uploadAnnouncementFile");
 
 const announcementController = new AnnouncementController();
 const announcementValidator = new AnnouncementValidator();
@@ -11,14 +12,16 @@ const announcementValidator = new AnnouncementValidator();
 router.post(
   "/create",
   auth([1, 2, 3, 4, 5, 6]),
-  // announcementValidator.announcementCreateUpdateValidator,
+  upploadAnnouncementFile,
+  announcementValidator.announcementCreateUpdateValidator,
   announcementController.create
 );
 
 router.put(
   "/update/:id",
   auth([1, 2, 3, 4, 5, 6]),
-  // announcementValidator.announcementCreateUpdateValidator,
+  upploadAnnouncementFile,
+  announcementValidator.announcementCreateUpdateValidator,
   announcementController.update
 );
 

@@ -96,11 +96,20 @@ class StudentBillsController {
         );
 
         res.status(resData.statusCode).send(resData.response);
-        } catch (e) {
+      } catch (e) {
         logger.error(e);
         res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
+      }
     };
+    showForReport = async (req, res) => {
+      try{
+        const resData = await this.studentBillsService.showDataReport(req.query)
+        res.status(resData.statusCode).send(resData.response);
+      }catch(e){
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+      }
+    }
     showById = async (req, res) => {
         try {
           var id = req.params.id;

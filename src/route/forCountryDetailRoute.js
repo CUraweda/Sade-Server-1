@@ -47,6 +47,11 @@ router.get(
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
   forCountryDetailController.showByDate
 )
+router.get(
+  '/show-total',
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  forCountryDetailController.showTotalStatus
+)
 
 router.get(
   "/",

@@ -55,8 +55,7 @@ class NarrativeCategoryController {
     try {
       var id = req.params.id;
 
-      const resData =
-        await this.narrativeCategoryService.showNarrativeCategoryByClassId(id);
+      const resData = await this.narrativeCategoryService.showNarrativeCategoryByClassId(id);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {

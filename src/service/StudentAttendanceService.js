@@ -137,6 +137,13 @@ class StudentAttendanceService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
+  showRecapStudentTrasnport = async (filter) => {
+    const rel = await this.studentAttendanceDao.getAttendanceTransport(filter)
+    if (!rel) return responseHandler.returnSuccess(httpStatus.OK, "Student Attendance not found!", {})
+
+    return responseHandler.returnSuccess(httpStatus.OK, "Recap Student Attendance Transport Successfully Retrived", rel);
+  }
+
   showStudentAttendanceByStudentId = async (id, academic) => {
     const message = "Student Attendance successfully retrieved!";
 

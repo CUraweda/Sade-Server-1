@@ -102,6 +102,15 @@ class AchievementService {
     return responseHandler.returnSuccess(httpStatus.OK, message, cl);
   };
 
+  showTotalData = async (filter) => {
+    const data = await this.achievementDao.getTotalStudent(filter)
+    if (!data) return responseHandler.returnSuccess(httpStatus.OK, "Achievement not found!",{});
+  
+    return responseHandler.returnSuccess(httpStatus.OK, "Achivement sucessuflly retrived", {
+      "total-student": data.length
+    });
+  }
+
   showAchievementTopOneByStudentId = async (id, academic) => {
     const message = "Achievement successfully retrieved!";
 

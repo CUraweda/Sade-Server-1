@@ -67,6 +67,16 @@ class PaymentPostController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+  
+  showTotal = async (req, res) => {
+    try{
+      const resData = await this.paymentPostService.showPaymentTotalPOS()
+      res.status(resData.statusCode).send(resData.response);
+    }catch(e){
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  }
 
   delete = async (req, res) => {
     try {

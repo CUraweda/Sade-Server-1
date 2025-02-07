@@ -25,12 +25,12 @@ router.put(
 
 router.get(
     "/",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentPaymentCategoryController.showAll
 )
 router.get(
     "/get-by-id/:id",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6, 13]),
     studentPaymentCategoryController.showById
 )
 

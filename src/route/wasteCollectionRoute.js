@@ -24,11 +24,12 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
   wasteCollectionController.show
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 9, 10]), wasteCollectionController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 9, 10, 13]), wasteCollectionController.showAll);
+
 router.get("/get-by-filter", auth([1, 2, 3, 4, 5, 6, 9, 10, 11, 13]), wasteCollectionController.showByFilter);
 
 router.delete("/delete/:id", auth([1, 3, 6, 9, 10]), wasteCollectionController.delete);
@@ -40,33 +41,33 @@ router.get(
 )
 router.get(
   "/show-recap-history/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
   wasteCollectionController.showRecapHistory
 );
 
 router.get(
   "/show-recap-dashboard/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
   wasteCollectionController.showRecapStudentInClass
 );
 
 router.get(
   "/collection-week-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
   wasteCollectionController.showCollectionPerWeekbyStudentId
 );
 
 router.get(
   "/recap-week-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
   wasteCollectionController.showRecapPerWeekbyStudentId
 );
 
-router.post("/import", auth([1, 3, 6, 9, 10]), wasteCollectionController.importExcel);
+router.post("/import", auth([1, 3, 6, 9, 10, 13]), wasteCollectionController.importExcel);
 
 router.get(
   "/target-achievement-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 9, 10]),
   wasteCollectionController.showTargetAchievementByStudentId
 );
 

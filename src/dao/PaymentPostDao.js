@@ -41,39 +41,38 @@ class PaymentPostDao extends SuperDao {
       include: [
         {
           model: StudentPaymentBill,
-          attributes: ["id", "total"], 
+          attributes: [
+            "id",
+            "total",
+            [
+              Sequelize.fn(
+                "SUM",
+                Sequelize.literal(
+                  `CASE WHEN studentbills.status = 'Lunas' THEN studentpaymentbills.total ELSE 0 END`
+                )
+              ),
+              "paid_total",
+            ],
+            [
+              Sequelize.fn(
+                "SUM",
+                Sequelize.literal(
+                  `CASE WHEN studentbills.status = 'Belum Lunas' THEN studentpaymentbills.total ELSE 0 END`
+                )
+              ),
+              "unpaid_total",
+            ],
+          ],
           include: [
             {
               model: StudentBill,
-              attributes: ["status"],
+              attributes: [],
             },
           ],
+          required: false,
         },
       ],
-      attributes: {
-        include: [
-          [
-            Sequelize.literal(`
-              (SELECT COALESCE(SUM(pb.total * (
-                SELECT COUNT(*) FROM studentbills b WHERE b.payment_bill_id = pb.id AND b.status = 'Lunas'
-              )), 0)
-              FROM studentpaymentbills pb
-              WHERE pb.payment_post_id = paymentpost.id)
-            `),
-            "paid_total",
-          ],
-          [
-            Sequelize.literal(`
-              (SELECT COALESCE(SUM(pb.total * (
-                SELECT COUNT(*) FROM studentbills b WHERE b.payment_bill_id = pb.id AND b.status = 'Belum Lunas'
-              )), 0)
-              FROM studentpaymentbills pb
-              WHERE pb.payment_post_id = paymentpost.id)
-            `),
-            "unpaid_total",
-          ],
-        ],
-      },
+      group: ["paymentpost.id"],
       offset,
       limit,
       order: [["id", "DESC"]],

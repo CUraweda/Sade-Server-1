@@ -40,7 +40,7 @@ class PaymentPostDao extends SuperDao {
       },
       include: [
         {
-          model: PaymentBill,
+          model: StudentPaymentBill,
           attributes: ["id", "total"], 
           include: [
             {

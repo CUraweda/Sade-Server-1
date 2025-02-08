@@ -55,20 +55,20 @@ class PaymentPostDao extends SuperDao {
           [
             Sequelize.literal(`
               (SELECT COALESCE(SUM(pb.total * (
-                SELECT COUNT(*) FROM tbl_student_bills b WHERE b.payment_bill_id = pb.id AND b.status = 'Lunas'
+                SELECT COUNT(*) FROM studentbills b WHERE b.payment_bill_id = pb.id AND b.status = 'Lunas'
               )), 0)
-              FROM tbl_payment_bills pb
-              WHERE pb.payment_post_id = ref_payment_post.id)
+              FROM studentpaymentbills pb
+              WHERE pb.payment_post_id = paymentpost.id)
             `),
             "paid_total",
           ],
           [
             Sequelize.literal(`
               (SELECT COALESCE(SUM(pb.total * (
-                SELECT COUNT(*) FROM tbl_student_bills b WHERE b.payment_bill_id = pb.id AND b.status = 'Belum Lunas'
+                SELECT COUNT(*) FROM studentbills b WHERE b.payment_bill_id = pb.id AND b.status = 'Belum Lunas'
               )), 0)
-              FROM tbl_payment_bills pb
-              WHERE pb.payment_post_id = ref_payment_post.id)
+              FROM studentpaymentbills pb
+              WHERE pb.payment_post_id = paymentpost.id)
             `),
             "unpaid_total",
           ],

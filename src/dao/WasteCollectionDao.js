@@ -715,7 +715,7 @@ class WasteCollectionDao extends SuperDao {
   async getRecapType(filter) {
     const { start_date, end_date, waste_type_id } = filter
     return WasteTypes.findAll({
-      attributes: ["name"],
+      attributes: ["name", "price"],
       include: [
         {
           model: WasteCollection,

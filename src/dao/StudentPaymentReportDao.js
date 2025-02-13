@@ -1,6 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 
 const Students = models.students
 const StudentBills = models.studentbills
@@ -216,6 +216,62 @@ class StudentPaymentReportDao extends SuperDao{
             return result;
         } catch (error) {
             console.error('Error in getStudentPaymentBillsPage:', error);
+            throw error;
+        }
+    }
+    async groupByStatus(search, filters) {
+        const where = {
+            [Op.or]: [
+                {"$student.full_name$": { [Op.like]: "%" + search + "%"}},
+                {"$student.nis$": { [Op.like]: "%" + search + "%"}},
+                {"$studentpaymentbill.name$": { [Op.like]: "%" + search + "%"}},
+                { status : { [Op.like]: "%" + search + "%"}},
+            ]    
+        }
+
+        if (filters.payment_category_id) where["payment_bill_id"] = filters.payment_category_id
+        if (filters.start_paid) where["paidoff_at"] = { [Op.gte]: filters.start_paid }
+        if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid }
+        if (filters.status) where["status"] = { [Op.like]: filters.status }
+        if (filters.nis_prefix) where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` }
+        if (filters.post_payment_id) where['$studentpaymentbill.payment_post_id$'] = filters.post_payment_id
+        if (filters.class_id) {
+            const students = await StudentClass.findAll({
+                where: {
+                    class_id: filters.class_id
+                }
+            })
+            where['student_id'] = {
+                [Op.in]: students.map(st => st.student_id)
+            }
+        }
+        if (filters.student_id) where["student_id"] = filters.student_id
+        
+        try {
+            const result = await StudentBills.findAll({
+                where,
+                attributes: [
+                    "status", 
+                    [Sequelize.fn('SUM', Sequelize.col('studentpaymentbill.total')), 'total']
+                ],
+                include: [
+                    {
+                        model: Students,
+                        as: 'student',
+                        attributes: []
+                    },
+                    {
+                        model: PaymentBills,
+                        as: 'studentpaymentbill',
+                        attributes: [],
+                    }
+                ],
+                group: ['status'],
+            })
+
+            return result;
+        } catch (error) {
+            console.error('Error in groupByStatus:', error);
             throw error;
         }
     }

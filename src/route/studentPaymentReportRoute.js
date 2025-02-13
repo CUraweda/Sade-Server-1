@@ -11,6 +11,13 @@ router.get(
     auth([1, 2, 3, 6, 13]),
     studentPaymentReportController.showAll
 )
+
+router.get(
+    "/group-by-status",
+    auth([1, 2, 3, 6, 13]),
+    studentPaymentReportController.groupByStatus
+)
+
 router.get(
     "/get-by-id/:id",
     auth([1, 2, 3, 6, 13]),

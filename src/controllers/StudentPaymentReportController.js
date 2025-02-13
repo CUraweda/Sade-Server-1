@@ -96,6 +96,33 @@ class StudentPaymentReportController {
         res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+
+    groupByStatus = async (req, res) => {
+      try {
+        const search = req.query.search_query || "";
+        const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix } = req.query;
+
+        const resData = await this.studentPaymentReportService.groupByStatus(
+            search,
+            {
+              payment_category_id,
+              class_id,
+              student_id,
+              start_paid,
+              end_paid,
+              status,
+              nis_prefix
+            }
+        );
+
+        res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+    
     exportAll = async (req, res) => {
       try {
           const search = req.query.search_query || "";

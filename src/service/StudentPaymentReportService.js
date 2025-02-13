@@ -93,6 +93,20 @@ class StudentPaymentReportService {
           }
         );
     }
+
+    async groupByStatus(search, filters) {
+        const result = await this.studentPaymentReportDao.groupByStatus(
+          search,
+          filters
+        );
+    
+        return responseHandler.returnSuccess(
+          httpStatus.OK,
+          "Student Payment Report successfully retrieved.",
+          result
+        );
+    }
+    
     async exportPage(search, filters) {
       const result = await this.studentPaymentReportDao.getStudentBillsPage(search, undefined, undefined, filters)
 

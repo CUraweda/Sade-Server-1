@@ -198,7 +198,7 @@ class StudentPaymentReportDao extends SuperDao{
                     {
                         model: PaymentBills,
                         as: 'studentpaymentbill',
-                        attributes: ["name","due_date"],
+                        attributes: ["name","due_date", "total"],
                         include: [
                             {
                                 model: PaymentPosts,

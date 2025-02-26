@@ -11,6 +11,7 @@ class EduCalendarDetailValidator {
       start_date: Joi.date().required(),
       end_date: Joi.date().required(),
       agenda: Joi.string().required(),
+      only_teacher: Joi.boolean().default(false),
       color: Joi.string().allow("", null),
     });
 
@@ -46,6 +47,7 @@ class EduCalendarDetailValidator {
       start_date: Joi.date().allow("", null),
       end_date: Joi.date().allow("", null),
       agenda: Joi.string().allow("", null),
+      only_teacher: Joi.boolean().default(false),
       color: Joi.string().allow("", null),
     });
 

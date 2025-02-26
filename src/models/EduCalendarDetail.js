@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       end_date: DataTypes.DATE,
       agenda: DataTypes.STRING,
       color: DataTypes.STRING,
+      only_teacher: DataTypes.BOOLEAN 
     },
     {
       sequelize,
@@ -35,3 +36,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return EduCalendarDetail;
 };
+ 

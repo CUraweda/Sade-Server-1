@@ -109,6 +109,9 @@ class AchievementDao extends SuperDao {
             achievement_desc: {
               [Op.like]: "%" + search + "%",
             },
+            "$student.full_name$": {
+              [Op.like]: "%" + search + "%"
+            }
           },
           // {
           //   "$student.full_name$": {

@@ -53,6 +53,9 @@ class AchievementDao extends SuperDao {
           include: [
             {
               model: models.studentclass,
+              include: [
+                { model: models.classes }
+              ],
               required: classIds.length > 0,
               ...(classIds.length && {
                 where: {
@@ -106,6 +109,9 @@ class AchievementDao extends SuperDao {
             achievement_desc: {
               [Op.like]: "%" + search + "%",
             },
+            "$student.full_name$": {
+              [Op.like]: "%" + search + "%"
+            }
           },
           // {
           //   "$student.full_name$": {
@@ -123,6 +129,9 @@ class AchievementDao extends SuperDao {
           include: [
             {
               model: models.studentclass,
+              inlcude: {
+                model: models.classes
+              },
               attributes: ["academic_year"],
               required: classIds.length > 0,
               ...(classIds.length && {

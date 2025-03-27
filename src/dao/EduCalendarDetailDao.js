@@ -49,26 +49,41 @@ class EduCalendarDetailDao extends SuperDao {
       ],
     });
   }
-
+  
   async getCount(search, filter) {
+    let { allow_all, teacher_id, only_teacher } = filter
+    allow_all = allow_all != "Y" ? false : true
+    only_teacher = (only_teacher == "Y")
+
     return EduCalendarDetail.count({
       where: {
-        [Op.or]: [
+        [Op.and]: [
           {
-            start_date: {
-              [Op.like]: "%" + search + "%",
-            },
+            [Op.or]: [
+              {
+                start_date: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                end_date: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+              {
+                agenda: {
+                  [Op.like]: "%" + search + "%",
+                },
+              },
+            ],
           },
-          {
-            end_date: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
-          {
-            agenda: {
-              [Op.like]: "%" + search + "%",
-            },
-          },
+          ...(only_teacher && { only_teacher: true }),
+          ...(allow_all ? [
+                { [Op.or]: [{ teacher_id: null }, ...(teacher_id ? [{ teacher_id }] : [])] },
+            ] : [
+                { teacher_id: { [Op.not]: null } },
+                ...(teacher_id ? [{ teacher_id }] : []),
+            ]),
         ],
         ...(filter.academic && { "$educalendar.academic_year$": filter.academic })
       },
@@ -81,8 +96,9 @@ class EduCalendarDetailDao extends SuperDao {
   }
 
   async getEduCalendarDetailPage(search, offset, limit, filter) {
-    let { allow_all, teacher_id } = filter
+    let { allow_all, teacher_id, only_teacher } = filter
     allow_all = allow_all != "Y" ? false : true
+    only_teacher = (only_teacher == "Y")
 
     return EduCalendarDetail.findAll({
       where: {
@@ -106,6 +122,7 @@ class EduCalendarDetailDao extends SuperDao {
               },
             ],
           },
+          ...(only_teacher && { only_teacher: true }),
           ...(allow_all ? [
                 { [Op.or]: [{ teacher_id: null }, ...(teacher_id ? [{ teacher_id }] : [])] },
             ] : [

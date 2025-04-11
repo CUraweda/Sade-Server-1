@@ -90,25 +90,30 @@ class AnnouncementDao extends SuperDao {
     const endDate = new Date(end + " 23:59:59");
 
     const where = {
-      [Op.and]: {
-        date_start: {
-          [Op.lte]: endDate,
+      [Op.and]: [
+        {
+          date_start: {
+            [Op.lte]: endDate,
+          },
         },
-        date_end: {
-          [Op.gte]: startDate,
-        },
-      }
+        {
+          date_end: {
+            [Op.gte]: startDate,
+          },
+        }
+      ]
     }
+    
 
     if (classId) {
-      where[Op.and] = [
+      where[Op.and].push(
         {
           [Op.or]: [
             { class_id: null },
             { class_id: classId }
           ]
         }
-      ];
+      )
     }
 
     return Announcement.findAll({

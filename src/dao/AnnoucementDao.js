@@ -118,7 +118,7 @@ class AnnouncementDao extends SuperDao {
 
     return Announcement.findAll({
       where,
-      order: [["start_date", "DESC"]]
+      order: [["date_start", "DESC"]]
     });
   }
 }

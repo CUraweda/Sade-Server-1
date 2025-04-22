@@ -24,28 +24,28 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]),
   achievementController.show
 );
 
 router.get(
   "/show-all-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]),
   achievementController.showByStudentId
 );
 
 //get top one by student id
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,13]),
   achievementController.showTopOneByStudentId
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]), achievementController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]), achievementController.showAll);
 
 router.get(
   "/show-total-student",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 10]),
   achievementController.showTotalStudent
 );
 
@@ -57,7 +57,7 @@ router.delete(
 
 router.get(
   "/download",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13]),
   achievementController.downloadCertificate
 );
 

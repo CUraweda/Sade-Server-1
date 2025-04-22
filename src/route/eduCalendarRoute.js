@@ -24,17 +24,17 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   eduCalendarController.show
 );
 
 router.get(
   "/show-ongoing",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   eduCalendarController.showByOngoingWeek
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), eduCalendarController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), eduCalendarController.showAll);
 
 router.delete(
   "/delete/:id",

@@ -149,7 +149,7 @@ class ClassesDao extends SuperDao {
       },
       offset: offset,
       limit: limit,
-      order: [["id", "DESC"]],
+      order: [["level", "DESC"]],
     });
   }
 }

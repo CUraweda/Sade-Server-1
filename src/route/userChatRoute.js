@@ -10,27 +10,27 @@ const userChatValidator = new UserChatValidator();
 
 router.post(
   "/create",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userChatValidator.userChatCreateUpdateValidator,
   userChatController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userChatValidator.userChatCreateUpdateValidator,
   userChatController.update
 );
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userChatController.show
 );
 
 router.get(
   "/show-conversation",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userChatController.showUserBetweenId
 );
 
@@ -38,18 +38,18 @@ router.get('/show-by-guru', auth([6]), userChatController.showByGuruEmployee)
 
 router.get(
   "/show-by-user/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userChatController.showByUserId
 );
 
 router.get(
   "/show-by-user-details/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userChatController.showByUserIdDetails
 );
 
 // router.get("/", auth([1, 2, 3, 4, 5, 6]), userChatController.showAll);
 
-router.delete("/delete/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), userChatController.delete);
+router.delete("/delete/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), userChatController.delete);
 
 module.exports = router;

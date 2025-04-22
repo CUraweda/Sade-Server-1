@@ -31,7 +31,7 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentAttendanceController.show
 );
 
@@ -42,23 +42,23 @@ router.get(
 )
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentAttendanceController.showByStudentId
 );
 
 router.get(
   "/show-by-class/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentAttendanceController.showByClassNDate
 );
 
 router.get(
   "/show-by-student-month/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentAttendanceController.showByStudentIdMonth
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 13]), studentAttendanceController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6,11, 13]), studentAttendanceController.showAll);
 
 router.delete(
   "/delete/:id",
@@ -68,7 +68,7 @@ router.delete(
 
 router.get(
   "/recap-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentAttendanceController.showRecapByStudent
 );
 

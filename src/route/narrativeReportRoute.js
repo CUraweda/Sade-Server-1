@@ -24,7 +24,7 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   narrativeReportController.show
 );
 
@@ -34,7 +34,7 @@ router.delete("/delete/:id", auth([1, 6]), narrativeReportController.delete);
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   narrativeReportController.showByStudentId
 );
 
@@ -48,13 +48,13 @@ router.get(
 
 router.get(
   "/filter-by-params",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   narrativeReportController.filtered
 );
 
 router.get(
   "/download",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   narrativeReportController.downloadNarrativeReport
 );
 

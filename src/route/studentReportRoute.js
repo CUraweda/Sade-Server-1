@@ -10,14 +10,14 @@ const studentReportValidator = new StudentReportValidator();
 
 router.post(
   "/create",
-  auth([1, 3, 4, 6, 8]),
+  auth([1, 3, 4, 6, 8,11]),
   studentReportValidator.studentReportCreateValidator,
   studentReportController.create
 );
 
 router.put(
   "/update/:id",
-  auth([1, 3, 4, 6, 8]),
+  auth([1, 3, 4, 6, 8,11]),
   studentReportValidator.studentReportUpdateValidator,
   studentReportController.update
 );
@@ -30,31 +30,31 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.show
 );
 
 router.get(
   "/show-by-class/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.showByClassId
 );
 
 router.get(
   "/show-by-student",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.showByStudentId
 );
 
 router.get(
   "/show-by-student-details",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.showByStudentIdDetails
 );
 
 router.get(
   "/",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.showAll
 );
 
@@ -66,19 +66,19 @@ router.delete(
 
 router.put(
   "/merge/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.merge
 );
 
 router.get(
   "/export-data/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.exportData
 );
 
 router.get(
   "/filter-by-params",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentReportController.filtered
 );
 

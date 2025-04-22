@@ -22,7 +22,7 @@ router.put(
   subjectController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), subjectController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), subjectController.show);
 
 router.get("/", auth([1, 2, 3, 4, 5, 6]), subjectController.showAll);
 

@@ -122,7 +122,7 @@ class EduCalendarDetailDao extends SuperDao {
               },
             ],
           },
-          ...(only_teacher && { only_teacher: true }),
+          ...(only_teacher ? { only_teacher: true } : {}),
           ...(allow_all ? [
                 { [Op.or]: [{ teacher_id: null }, ...(teacher_id ? [{ teacher_id }] : [])] },
             ] : [

@@ -13,7 +13,7 @@ router.get(
 );
 router.get(
     "/show-rekap-teacher",
-    auth([1, 3, 4, 6, 13]),
+    auth([1, 3, 4, 6, 11, 13]),
     lessonPlanController.showRekapTeacher
 );
 

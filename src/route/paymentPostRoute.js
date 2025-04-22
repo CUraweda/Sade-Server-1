@@ -22,11 +22,11 @@ router.put(
   paymentPostController.update
 );
 
-router.get("/show/:id", auth([1, 2, 13]), paymentPostController.show);
+router.get("/show/:id", auth([1, 2, 11, 13]), paymentPostController.show);
 
-router.get("/", auth([1, 2, 13]), paymentPostController.showAll);
+router.get("/", auth([1, 2, 11, 13]), paymentPostController.showAll);
 
-router.get('/show-total', auth([1, 2, 6, 13]), paymentPostController.showTotal)
+router.get('/show-total', auth([1, 2, 6, 11, 13]), paymentPostController.showTotal)
 
 router.delete("/delete/:id", auth([1, 2]), paymentPostController.delete);
 

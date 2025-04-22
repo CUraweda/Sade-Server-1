@@ -44,5 +44,5 @@ router.delete(
   userController.delete
 )
 
-router.get('/me', auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), authController.me);
+router.get('/me', auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]), authController.me);
 module.exports = router;

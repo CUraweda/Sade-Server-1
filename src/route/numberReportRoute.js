@@ -31,7 +31,7 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   numberReportController.show
 );
 
@@ -41,7 +41,7 @@ router.delete("/delete-all", auth([1, 6]), numberReportController.deleteAll);
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   numberReportController.showByStudentId
 );
 
@@ -55,13 +55,13 @@ router.get(
 
 router.get(
   "/download",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   numberReportController.downloadNumberReport
 );
 
 router.get(
   "/filter-by-params",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   numberReportController.filtered
 );
 

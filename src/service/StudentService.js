@@ -20,7 +20,7 @@ class StudentService {
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
       const nisn = reqBody.nisn
-      if(nis){
+      if(nisn){
         let nisn_validator = await this.studentDao.findOneByWhere({nisn})
         if (nisn_validator) {
           message = "NISN already exists";

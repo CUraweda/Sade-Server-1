@@ -250,7 +250,7 @@ class NumberReportDao extends SuperDao {
       where: {
         "$studentreport.studentclass.student.id$": id,
         "$studentreport.semester$": semester,
-      },
+    },
       include: [
         {
           model: StudentReports,

@@ -327,6 +327,7 @@ class StudentAttendanceDao extends SuperDao {
       offset: offset,
       limit: limit,
       order: [
+        ["att_date", "DESC"],
         [{ model: StudentClass, as: 'studentclass' }, { model: Students, as: 'student' }, 'full_name', 'ASC'],
       ],
     });

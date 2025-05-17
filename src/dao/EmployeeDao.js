@@ -19,7 +19,7 @@ class EmployeesDao extends SuperDao {
   }
 
   async getCount(filter) {
-     const { isGuru, search, isAssign } = filter
+    const { isGuru, search, isAssign } = filter
     return Employees.count({
       where: {
         ...(isGuru && { is_teacher: isGuru }),
@@ -32,6 +32,7 @@ class EmployeesDao extends SuperDao {
             })
           }
         }),
+        division_id: { [Op.not]: null },
         [Op.or]: [
           {
             employee_no: {

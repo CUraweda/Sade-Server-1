@@ -89,7 +89,7 @@ class EmployeeService {
   };
 
   async showPage(page, limit, filter , offset) {
-    const totalRows = await this.employeeDao.getCount(filter.search);
+    const totalRows = await this.employeeDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.employeeDao.getEmployeesPage(

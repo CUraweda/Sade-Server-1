@@ -77,7 +77,7 @@ class EduCalendarDetailDao extends SuperDao {
               },
             ],
           },
-          ...(only_teacher && { only_teacher: true }),
+          ...(only_teacher ?[ { only_teacher: true }] : [{}]),
           ...(allow_all ? [
                 { [Op.or]: [{ teacher_id: null }, ...(teacher_id ? [{ teacher_id }] : [])] },
             ] : [
@@ -98,7 +98,7 @@ class EduCalendarDetailDao extends SuperDao {
   async getEduCalendarDetailPage(search, offset, limit, filter) {
     let { allow_all, teacher_id, only_teacher } = filter
     allow_all = allow_all != "Y" ? false : true
-    only_teacher = (only_teacher == "Y")
+    only_teacher = only_teacher == "Y" ? true : false;
 
     return EduCalendarDetail.findAll({
       where: {
@@ -122,7 +122,7 @@ class EduCalendarDetailDao extends SuperDao {
               },
             ],
           },
-          ...(only_teacher ? { only_teacher: true } : {}),
+          ...(only_teacher ?[ { only_teacher: true }] : [{}]),
           ...(allow_all ? [
                 { [Op.or]: [{ teacher_id: null }, ...(teacher_id ? [{ teacher_id }] : [])] },
             ] : [

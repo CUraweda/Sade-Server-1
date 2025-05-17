@@ -18,9 +18,21 @@ class EmployeesDao extends SuperDao {
     });
   }
 
-  async getCount(search) {
+  async getCount(filter) {
+    const { isGuru, search, isAssign } = filter
     return Employees.count({
       where: {
+        ...(isGuru && { is_teacher: isGuru }),
+        ...(isAssign && {
+          user_id: {
+            ...(isAssign != "N" ? {
+              [Op.not]: null
+            } : {
+              [Op.is]: null
+            })
+          }
+        }),
+        division_id: { [Op.not]: null },
         [Op.or]: [
           {
             employee_no: {
@@ -86,7 +98,7 @@ class EmployeesDao extends SuperDao {
             work_start_date: {
               [Op.like]: "%" + search + "%",
             },
-        },
+          },
           {
             occupation: {
               [Op.like]: "%" + search + "%",

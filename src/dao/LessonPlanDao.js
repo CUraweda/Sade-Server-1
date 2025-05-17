@@ -69,7 +69,7 @@ class LessonPlanDao extends SuperDao {
 
     getByEmployee = async () => {
         return Employees.findAll({
-            where: { is_teacher: "G" },
+            where: { is_teacher:  { in: ["G", "Guru", "Yes"] }},
             attributes: ["full_name"],
             include: [
                 {
@@ -83,7 +83,7 @@ class LessonPlanDao extends SuperDao {
 
     getCounterLessonPlan = async () => {
         const subject_count = await Subject.count()
-        const class_count = await Classes.count()
+        const class_count = await Classes.count({ where: { is_active: true } })
         return { subject_count, class_count }
     }
 }

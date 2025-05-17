@@ -69,7 +69,7 @@ class LessonPlanDao extends SuperDao {
 
     getByEmployee = async () => {
         return Employees.findAll({
-            where: { is_teacher:  { in: ["G", "Guru", "Yes"] }},
+            where: { is_teacher:  { [Op.in]: ["G", "Guru", "Yes"] }},
             attributes: ["full_name"],
             include: [
                 {

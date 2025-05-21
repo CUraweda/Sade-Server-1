@@ -45,4 +45,10 @@ router.post(
   userValidator.resetPasswordValidator,
   authController.resetPassword
 );
+router.post(
+  "/admin-reset-pass",
+  auth([1]),
+  userValidator.resetPasswordAdminValidator,
+  authController.resetPasswordAdmin
+)
 module.exports = router;

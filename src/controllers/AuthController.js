@@ -182,6 +182,16 @@ class AuthController {
     }
   };
 
+  resetPasswordAdmin = async (req, res) => {
+    try {
+      const responseData = await this.userService.resetPasswordAdmin(req.body);
+      res.status(responseData.statusCode).send(responseData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+
   showByRoles = async (req, res) => {
     try {
       const ids = req.query.ids.split(",").map((id) => parseInt(id));

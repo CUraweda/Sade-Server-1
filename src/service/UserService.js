@@ -260,7 +260,6 @@ class UserService {
 
   resetPassword = async (body) => {
     const message = "Password reset successfully!";
-
     const token = body.token;
 
     const resetToken = crypto.createHash("sha256").update(token).digest("hex"); // hash the token
@@ -279,6 +278,26 @@ class UserService {
     await this.userDao.updateWhere(
       { password: pass },
       { reset_token: resetToken }
+    );
+
+    return responseHandler.returnSuccess(httpStatus.OK, message, {});
+  };
+
+  resetPasswordAdmin = async (body) => {
+    const message = "Password reset successfully!";
+    const user = await this.userDao.findById(body.user_id)
+    if (!user) {
+      return responseHandler.returnError(
+        httpStatus.NOT_FOUND,
+        "User not found!"
+      );
+    }
+
+    const pass = bcrypt.hashSync(body.password, 8);
+
+    await this.userDao.updateWhere(
+      { password: pass },
+      { id: body.user_id }
     );
 
     return responseHandler.returnSuccess(httpStatus.OK, message, {});

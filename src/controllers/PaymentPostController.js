@@ -48,17 +48,27 @@ class PaymentPostController {
   };
 
   showAll = async (req, res) => {
+   
     try {
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
+      let startDate = req.query.startDate || null;
+      let endDate = req.query.endDate || null;
+
+      // if (startDate && endDate) {
+      //   startDate = new Date(startDate);
+      //   endDate = new Date(endDate);
+      // }
 
       const resData = await this.paymentPostService.showPage(
         page,
         limit,
         search,
-        offset
+        offset,
+        startDate,
+        endDate
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -67,16 +77,16 @@ class PaymentPostController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
-  
+
   showTotal = async (req, res) => {
-    try{
-      const resData = await this.paymentPostService.showPaymentTotalPOS()
+    try {
+      const resData = await this.paymentPostService.showPaymentTotalPOS();
       res.status(resData.statusCode).send(resData.response);
-    }catch(e){
+    } catch (e) {
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
-  }
+  };
 
   delete = async (req, res) => {
     try {

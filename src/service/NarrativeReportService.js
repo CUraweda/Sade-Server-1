@@ -21,6 +21,8 @@ class NarrativeReportService {
     try {
       let message = "Narrative Report successfully added.";
 
+      console.log("reqBody", reqBody);
+
       let data = await this.narrativeReportDao.create(reqBody);
 
       if (!data) {
@@ -40,7 +42,6 @@ class NarrativeReportService {
 
   updateNarrativeReport = async (id, body) => {
     const message = "Narrative Report successfully updated!";
-
 
     let rel = await this.narrativeReportDao.findById(id);
 
@@ -180,8 +181,16 @@ class NarrativeReportService {
 
   exportReportByStudentId = async (id, semester, reportId) => {
     let message = "Narrative Report successfully exported!";
-    if (!semester) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Please specify Semester Query");
-    if (!reportId) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Please specify Report ID Query");
+    if (!semester)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Please specify Semester Query"
+      );
+    if (!reportId)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Please specify Report ID Query"
+      );
 
     let rel = await this.narrativeReportDao.getByStudentId(id, semester);
 
@@ -200,7 +209,8 @@ class NarrativeReportService {
     const pdfFile = await this.generatePdf(rel, dir);
 
     await this.studentReportDao.updateWhere(
-      { narrative_path: pdfFile }, { id: reportId }
+      { narrative_path: pdfFile },
+      { id: reportId }
     );
 
     return responseHandler.returnSuccess(httpStatus.OK, message, {
@@ -392,22 +402,45 @@ class NarrativeReportService {
     const gradeHeader2Path = "src/images/grade-header-2.png";
     const gradeHeader3Path = "src/images/grade-header-3.png";
 
+    // Helper function to ensure a new page and set header
+    const ensureNewPage = (doc, data, currentY, headerType = "default") => {
+      if (currentY > 700) {
+        doc.addPage();
+        this.generateHeader(doc, data, headerType);
+        return 220; // Reset currentY for the new page
+      }
+      return currentY; // No new page needed, return currentY as is
+    };
+
     data.narrative_categories.forEach((item, index) => {
+      // Check for specific headers based on category
       if (item.category.toLowerCase().trim().includes("tahsin")) {
-        // doc.rect(459, 160, 85, 85).fill("white");
         doc.image(gradeHeader2Path, 459, 150, { width: 85 });
       } else if (item.category.toLowerCase().trim().includes("english")) {
         doc.image(gradeHeader3Path, 459, 157, { width: 85 });
       }
 
-      if (currentY > 700 || index !== 0) {
-        doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-        if (item.category.toLowerCase().trim().includes("tahsin")) {
-          this.generateHeader(doc, data, "tahsin");
-        } else {
-          this.generateHeader(doc, data, "default");
-        }
-        currentY = 220; // Set posisi awal untuk halaman baru
+      // Ensure new page for categories (except the first one if it fits)
+      if (index !== 0) {
+        // Always add page for subsequent categories
+        currentY = ensureNewPage(
+          doc,
+          data,
+          701, // Force new page for subsequent categories
+          item.category.toLowerCase().trim().includes("tahsin")
+            ? "tahsin"
+            : "default"
+        );
+      } else {
+        // For the first category, only add page if it doesn't fit the initial space
+        currentY = ensureNewPage(
+          doc,
+          data,
+          currentY,
+          item.category.toLowerCase().trim().includes("tahsin")
+            ? "tahsin"
+            : "default"
+        );
       }
 
       doc.font("Helvetica-Bold").fontSize(12).text(item.category, 50, currentY);
@@ -427,12 +460,8 @@ class NarrativeReportService {
       // Tingkatkan posisi Y untuk persiapan menambahkan subkategori
       currentY += 25;
 
-      item.narrative_sub_categories.forEach((sub_cat, index) => {
-        if (currentY > 700) {
-          doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-          this.generateHeader(doc, data, "default");
-          currentY = 220; // Set posisi awal untuk halaman baru
-        }
+      item.narrative_sub_categories.forEach((sub_cat) => {
+        currentY = ensureNewPage(doc, data, currentY); // Check for new page before sub-category title
 
         doc
           .font("Helvetica-Bold")
@@ -446,18 +475,17 @@ class NarrativeReportService {
           .strokeColor("black")
           .stroke();
 
-        sub_cat.narrative_reports.forEach((report, index) => {
-          if (currentY > 700) {
-            doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-            this.generateHeader(doc, data, "default");
-            currentY = 220; // Set posisi awal untuk halaman baru
-          }
+        sub_cat.narrative_reports.forEach((report) => {
+          currentY = ensureNewPage(doc, data, currentY); // Check for new page before report description
 
           const textOptions = { width: 400, align: "justify" };
+          const textStartX = 50;
+          const textStartY = currentY + 20;
+
           doc
             .font("Helvetica")
             .fontSize(10)
-            .text(report.desc, 50, currentY + 20, textOptions);
+            .text(report.desc, textStartX, textStartY, textOptions);
 
           let grade = "                ";
           switch (report.grade) {
@@ -474,41 +502,31 @@ class NarrativeReportService {
           doc
             .font("./src/fonts/fontawesome-webfont.ttf")
             .fontSize(10)
-            .text(grade, 450, currentY + 20, {
+            .text(grade, 450, textStartY, {
               align: "center",
             });
 
-          const remainingLines =
-            Math.ceil(doc.heightOfString(report.desc, textOptions)) / 10; // Hitung jumlah baris yang tersisa
-          // console.log(remainingLines);
-          // console.log(report.desc.length);
-          if (remainingLines > 1) {
-            currentY += remainingLines * 12.5; // Tingkatkan posisi Y dengan jumlah baris yang tersisa
-          } else if (report.desc.length > 84) {
-            currentY += 25; // Handling jika tidak terdeteksi sebagai 2 baris, maka di cek kembali jumlah karakternya jika memenuhi kriteria maka dikali 2
-          } else {
-            currentY += 15; // Tingkatkan posisi Y ke baris berikutnya
-          }
+          // Calculate height of the description text
+          const descHeight = doc.heightOfString(report.desc, textOptions);
+          currentY += descHeight + 10; // Add some padding after the text
 
           doc
-            .moveTo(550, currentY + 17)
-            .lineTo(50, currentY + 17)
+            .moveTo(550, currentY) // Adjust line position to be directly after the text + padding
+            .lineTo(50, currentY)
             .lineWidth(0.5)
             .strokeColor("black")
             .stroke();
+          currentY += 5; // Add a small gap after the line
         });
 
-        // Tingkatkan posisi Y untuk subkategori berikutnya
-        currentY += 25;
+        currentY += 15; // Tingkatkan posisi Y untuk subkategori berikutnya
       });
 
       // Tingkatkan posisi Y setelah menambahkan semua subkategori untuk kategori saat ini
       currentY += 10; // Anda bisa menyesuaikan jarak antara kategori dengan subkategori
-      if (item.narrative_category_comments.comments) {
-        doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-        this.generateHeader(doc, data, "comment");
-        currentY = 220; // Set posisi awal untuk halaman baru
 
+      if (item.narrative_category_comments.comments) {
+        currentY = ensureNewPage(doc, data, currentY + 50, "comment"); // Ensure new page, adding extra space for the comment section title
         doc
           .font("Helvetica-BoldOblique")
           .fontSize(10)
@@ -516,87 +534,118 @@ class NarrativeReportService {
 
         currentY += 20;
 
+        const commentTextOptions = { align: "justify", width: 500 }; // Define options for comments
         doc
           .font("Helvetica")
           .fontSize(10)
-          .text(item.narrative_category_comments.comments, 50, currentY, {
-            align: "justify",
-          });
+          .text(
+            item.narrative_category_comments.comments,
+            50,
+            currentY,
+            commentTextOptions
+          );
+
+        currentY +=
+          doc.heightOfString(
+            item.narrative_category_comments.comments,
+            commentTextOptions
+          ) + 20; // Update currentY
       }
     });
 
-    if (data.nar_teacher_comments) {
-      doc.addPage();
-      this.generateHeader(doc, data, "comment");
-      currentY = 220; // Set posisi awal untuk halaman baru
+    // --- Bagian Komentar Umum ---
+    let hasGeneralComments = false;
+    const generalCommentTextOptions = { width: 500, align: "justify" }; // Define text options for general comments
 
+    if (data.nar_teacher_comments || data.nar_parent_comments) {
+      currentY = ensureNewPage(doc, data, currentY + 30, "comment"); // Ensure new page for general comments section, add some padding
       doc
         .font("Helvetica-Bold")
         .fontSize(14)
         .text("KOMENTAR UMUM", 50, currentY);
+      currentY += 20; // Space after title
+      hasGeneralComments = true;
+    }
 
-      currentY += 20;
+    if (data.nar_teacher_comments) {
+      if (hasGeneralComments) {
+        // If "KOMENTAR UMUM" was just printed, add less space
+        currentY += 10; // Just a small gap
+      } else {
+        // If this is the first general comment section on a new page
+        currentY = ensureNewPage(doc, data, currentY + 30, "comment"); // Ensure new page if it's the only comment block and currentY is too high
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(14)
+          .text("KOMENTAR UMUM", 50, currentY);
+        currentY += 20;
+      }
 
       doc
         .font("Helvetica-BoldOblique")
         .fontSize(10)
         .text("Komentar Guru :", 50, currentY);
-
       currentY += 20;
 
       doc
         .font("Helvetica")
         .fontSize(10)
-        .text(data.nar_teacher_comments, 50, currentY, {
-          align: "justify",
-        });
+        .text(
+          data.nar_teacher_comments,
+          50,
+          currentY,
+          generalCommentTextOptions
+        );
+
+      currentY +=
+        doc.heightOfString(
+          data.nar_teacher_comments,
+          generalCommentTextOptions
+        ) + 20;
     }
 
     if (data.nar_parent_comments) {
-      doc.addPage();
-      this.generateHeader(doc, data, "comment");
-      currentY = 220; // Set posisi awal untuk halaman baru
-
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(14)
-        .text("KOMENTAR UMUM", 50, currentY);
-
-      currentY += 20;
+      if (data.nar_teacher_comments) {
+        // If teacher comments were just printed, add less space
+        currentY += 10;
+      } else if (hasGeneralComments) {
+        // If "KOMENTAR UMUM" was just printed, add less space
+        currentY += 10;
+      } else {
+        // If this is the first general comment section on a new page and teacher comments don't exist
+        currentY = ensureNewPage(doc, data, currentY + 30, "comment");
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(14)
+          .text("KOMENTAR UMUM", 50, currentY);
+        currentY += 20;
+      }
 
       doc
         .font("Helvetica-BoldOblique")
         .fontSize(10)
         .text("Komentar Orang Tua :", 50, currentY);
-
       currentY += 20;
 
       doc
         .font("Helvetica")
         .fontSize(10)
-        .text(data.nar_parent_comments, 50, currentY, {
-          align: "justify",
-        });
-    }
-    // doc.addPage();
-    // this.generateHeader(doc, data, "comment");
-    // currentY = 220; // Set posisi awal untuk halaman baru
-    const remainingLines1 =
-      Math.ceil(doc.heightOfString(data.nar_parent_comments)) / 10; // Hitung jumlah baris yang tersisa
+        .text(
+          data.nar_parent_comments,
+          50,
+          currentY,
+          generalCommentTextOptions
+        );
 
-    if (remainingLines1 > 1) {
-      currentY += remainingLines1 * 12.5; // Tingkatkan posisi Y dengan jumlah baris yang tersisa
-    } else if (data.nar_parent_comments.length > 84) {
-      currentY += 25; // Handling jika tidak terdeteksi sebagai 2 baris, maka di cek kembali jumlah karakternya jika memenuhi kriteria maka dikali 2
-    } else {
-      currentY += 15; // Tingkatkan posisi Y ke baris berikutnya
+      currentY +=
+        doc.heightOfString(
+          data.nar_parent_comments,
+          generalCommentTextOptions
+        ) + 20;
     }
 
-    if (currentY > 650) {
-      doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-      this.generateHeader(doc, data, "comment");
-      currentY = 220; // Set posisi awal untuk halaman baru
-    }
+    // --- Bagian Tanda Tangan ---
+    currentY = ensureNewPage(doc, data, currentY + 50, "comment"); // Ensure new page if needed for signatures, add extra padding
 
     doc
       .font("Helvetica")
@@ -608,17 +657,17 @@ class NarrativeReportService {
       .fontSize(10)
       .text("Fasilitator", 320, currentY, { width: 250, align: "justify" });
 
-    currentY += 70;
+    currentY += 70; // Space for signature line
 
     doc
       .font("Helvetica-Bold")
       .fontSize(10)
-      .text(data.head, 70, currentY, { width: 250, align: "justity" });
+      .text(data.head, 70, currentY, { width: 250, align: "justify" });
 
     doc
       .font("Helvetica-Bold")
       .fontSize(10)
-      .text(data.facilitator, 320, currentY, { width: 250, align: "justity" });
+      .text(data.facilitator, 320, currentY, { width: 250, align: "justify" });
   };
 }
 

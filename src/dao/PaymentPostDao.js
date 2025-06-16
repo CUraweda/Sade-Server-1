@@ -3,8 +3,8 @@ const models = require("../models");
 const { Op, Sequelize } = require("sequelize");
 
 const PaymentPost = models.paymentpost;
-const StudentPaymentBill = models.studentpaymentbills
-const StudentBill = models.studentbills
+const StudentPaymentBill = models.studentpaymentbills;
+const StudentBill = models.studentbills;
 
 class PaymentPostDao extends SuperDao {
   constructor() {
@@ -30,7 +30,19 @@ class PaymentPostDao extends SuperDao {
     });
   }
 
-  async getPaymentPostPage(search, offset, limit) {
+  async getPaymentPostPage(search, offset, limit, startDate, endDate) {
+    const sequelize = models.sequelize; // ⬅️ Wajib agar bisa pakai sequelize.escape
+
+    let start = startDate;
+    let end = endDate;
+
+    if (startDate && endDate) {
+      start = sequelize.escape(`${startDate} 00:00:00`);
+      end = sequelize.escape(`${endDate} 23:59:59`);
+    }
+    console.log(start, end);
+    
+
     return PaymentPost.findAll({
       where: {
         [Op.or]: [
@@ -42,41 +54,41 @@ class PaymentPostDao extends SuperDao {
         include: [
           [
             Sequelize.literal(`(
-              SELECT COALESCE(SUM(b.total * ub.paid_count), 0)
-              FROM tbl_payment_bills b
-              LEFT JOIN (
-                SELECT payment_bill_id, COUNT(*) AS paid_count
-                FROM tbl_student_bills ub
-                WHERE status = 'Lunas'
-                GROUP BY payment_bill_id
-              ) ub ON b.id = ub.payment_bill_id
-              WHERE b.payment_post_id = paymentpost.id
-            )`),
-            'paid'
+                SELECT COALESCE(SUM(b.total), 0)
+                FROM tbl_payment_bills b
+                WHERE b.payment_post_id = paymentpost.id
+                AND EXISTS (
+                  SELECT 1 FROM tbl_student_bills ub
+                  WHERE ub.payment_bill_id = b.id
+                  AND ub.status = 'Lunas'
+                  AND ub.updated_at BETWEEN ${start} AND ${end}
+                )
+              )`),
+            "paid",
           ],
           [
             Sequelize.literal(`(
-              SELECT COALESCE(SUM(b.total * ub.not_paid_count), 0)
+              SELECT COALESCE(SUM(b.total), 0)
               FROM tbl_payment_bills b
-              LEFT JOIN (
-                SELECT payment_bill_id, COUNT(*) AS not_paid_count
-                FROM tbl_student_bills ub
-                WHERE status = 'Belum Lunas'
-                GROUP BY payment_bill_id
-              ) ub ON b.id = ub.payment_bill_id
               WHERE b.payment_post_id = paymentpost.id
+              AND EXISTS (
+                SELECT 1 FROM tbl_student_bills ub
+                WHERE ub.payment_bill_id = b.id
+                AND ub.status = 'Belum Lunas'
+                AND ub.updated_at BETWEEN ${start} AND ${end}
+              )
             )`),
-            'pending'
-          ]
-        ]
+            "pending"
+          ],
+        ],
       },
       include: [
         {
           model: StudentPaymentBill,
-          attributes: []
-        }
+          attributes: [],
+        },
       ],
-      group: ['id'],
+      group: ["id"],
       offset,
       limit,
       order: [["id", "DESC"]],
@@ -88,12 +100,17 @@ class PaymentPostDao extends SuperDao {
       include: [
         {
           model: StudentPaymentBill,
-          attributes: [[Sequelize.fn('SUM', Sequelize.col('studentpaymentbills.total')), 'total'],],
-          required: false
-        }
+          attributes: [
+            [
+              Sequelize.fn("SUM", Sequelize.col("studentpaymentbills.total")),
+              "total",
+            ],
+          ],
+          required: false,
+        },
       ],
-      group: ["id"]
-    })
+      group: ["id"],
+    });
   }
 }
 module.exports = PaymentPostDao;

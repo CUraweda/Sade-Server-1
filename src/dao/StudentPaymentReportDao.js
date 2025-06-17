@@ -127,9 +127,17 @@ class StudentPaymentReportDao extends SuperDao {
 
     if (filters.payment_category_id)
       where["payment_bill_id"] = filters.payment_category_id;
-    if (filters.start_paid)
+
+    if (filters.start_paid && filters.end_paid) {
+      where["paidoff_at"] = {
+        [Op.gte]: filters.start_paid,
+        [Op.lte]: filters.end_paid,
+      };
+    } else if (filters.start_paid) {
       where["paidoff_at"] = { [Op.gte]: filters.start_paid };
-    if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid };
+    } else if (filters.end_paid) {
+      where["paidoff_at"] = { [Op.lte]: filters.end_paid };
+    }
     if (filters.status) where["status"] = { [Op.like]: filters.status };
     if (filters.nis_prefix)
       where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` };
@@ -182,9 +190,17 @@ class StudentPaymentReportDao extends SuperDao {
 
     if (filters.payment_category_id)
       where["payment_bill_id"] = filters.payment_category_id;
-    if (filters.start_paid)
+
+    if (filters.start_paid && filters.end_paid) {
+      where["paidoff_at"] = {
+        [Op.gte]: filters.start_paid,
+        [Op.lte]: filters.end_paid,
+      };
+    } else if (filters.start_paid) {
       where["paidoff_at"] = { [Op.gte]: filters.start_paid };
-    if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid };
+    } else if (filters.end_paid) {
+      where["paidoff_at"] = { [Op.lte]: filters.end_paid };
+    }
     if (filters.status) where["status"] = { [Op.like]: filters.status };
     if (filters.nis_prefix)
       where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` };
@@ -201,8 +217,7 @@ class StudentPaymentReportDao extends SuperDao {
       };
     }
     if (filters.student_id) where["student_id"] = filters.student_id;
-    if (filters.pos)
-      where["$studentpaymentbill.paymentpost.id$"] = filters.pos;
+    if (filters.pos) where["$studentpaymentbill.paymentpost.id$"] = filters.pos;
     try {
       const result = await StudentBills.findAll({
         where,
@@ -244,7 +259,7 @@ class StudentPaymentReportDao extends SuperDao {
     }
   }
 
-async groupByStatus(search, filters) {
+  async groupByStatus(search, filters) {
     const where = {
       [Op.or]: [
         { "$student.full_name$": { [Op.like]: "%" + search + "%" } },
@@ -256,16 +271,23 @@ async groupByStatus(search, filters) {
 
     if (filters.payment_category_id)
       where["payment_bill_id"] = filters.payment_category_id;
-    if (filters.start_paid)
+
+    if (filters.start_paid && filters.end_paid) {
+      where["paidoff_at"] = {
+        [Op.gte]: filters.start_paid,
+        [Op.lte]: filters.end_paid,
+      };
+    } else if (filters.start_paid) {
       where["paidoff_at"] = { [Op.gte]: filters.start_paid };
-    if (filters.end_paid) where["paidoff_at"] = { [Op.lte]: filters.end_paid };
+    } else if (filters.end_paid) {
+      where["paidoff_at"] = { [Op.lte]: filters.end_paid };
+    }
     if (filters.status) where["status"] = { [Op.like]: filters.status };
     if (filters.nis_prefix)
       where["$student.nis$"] = { [Op.like]: `${filters.nis_prefix}%` };
     if (filters.post_payment_id)
       where["$studentpaymentbill.payment_post_id$"] = filters.post_payment_id;
-    if (filters.pos)
-      where["$studentpaymentbill.paymentpost.id$"] = filters.pos;
+    if (filters.pos) where["$studentpaymentbill.paymentpost.id$"] = filters.pos;
     if (filters.class_id) {
       const students = await StudentClass.findAll({
         where: {
@@ -292,24 +314,22 @@ async groupByStatus(search, filters) {
           {
             model: Students,
             as: "student",
-            attributes: [], 
+            attributes: [],
           },
           {
-            model: PaymentBills, 
+            model: PaymentBills,
             as: "studentpaymentbill",
             attributes: [],
             include: [
               {
                 model: PaymentPosts,
                 as: "paymentpost",
-                attributes: [], 
+                attributes: [],
               },
             ],
           },
         ],
-        group: [
-          "status", 
-        ],
+        group: ["status"],
       });
 
       return result;

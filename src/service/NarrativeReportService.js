@@ -412,55 +412,57 @@ generateContents = async (doc, data) => {
     return currentY; // No new page needed, return currentY as is
   };
 
-  data.narrative_categories.forEach((item, index) => {
-    // Check for specific headers based on category
-    if (item.category.toLowerCase().trim().includes("tahsin")) {
-      doc.image(gradeHeader2Path, 459, 150, { width: 85 });
-    } else if (item.category.toLowerCase().trim().includes("english")) {
-      doc.image(gradeHeader3Path, 459, 157, { width: 85 });
-    }
+ data.narrative_categories.forEach((item, index) => {
+  // Check for specific headers based on category
+  if (item.category.toLowerCase().trim().includes("tahsin")) {
+    doc.image(gradeHeader2Path, 459, 150, { width: 85 });
+  } else if (item.category.toLowerCase().trim().includes("english")) {
+    doc.image(gradeHeader3Path, 459, 157, { width: 85 });
+  }
 
-    // Ensure new page for categories (except the first one if it fits)
-    if (index !== 0) {
-      // Always add page for subsequent categories
-      currentY = ensureNewPage(
-        doc,
-        data,
-        701, // Force new page for subsequent categories
-        item.category.toLowerCase().trim().includes("tahsin")
-          ? "tahsin"
-          : "default"
-      );
-    } else {
-      // For the first category, only add page if it doesn't fit the initial space
-      currentY = ensureNewPage(
-        doc,
-        data,
-        currentY,
-        item.category.toLowerCase().trim().includes("tahsin")
-          ? "tahsin"
-          : "default"
-      );
-    }
+  // Ensure new page for categories (except the first one if it fits)
+  if (index !== 0) {
+    // Always add page for subsequent categories
+    currentY = ensureNewPage(
+      doc,
+      data,
+      701, // Force new page for subsequent categories
+      item.category.toLowerCase().trim().includes("tahsin")
+        ? "tahsin"
+        : "default"
+    );
+  } else {
+    // For the first category, only add page if it doesn't fit the initial space
+    currentY = ensureNewPage(
+      doc,
+      data,
+      currentY,
+      item.category.toLowerCase().trim().includes("tahsin")
+        ? "tahsin"
+        : "default"
+    );
+  }
 
-    doc.font("Helvetica-Bold").fontSize(12).text(item.category, 50, currentY);
-    doc
-      .moveTo(450, currentY + 12)
-      .lineTo(50, currentY + 12)
-      .lineWidth(1.5)
-      .strokeColor("black")
-      .stroke();
-    doc
-      .moveTo(550, currentY + 12)
-      .lineTo(50, currentY + 12)
-      .lineWidth(0.5)
-      .strokeColor("black")
-      .stroke();
+  doc.font("Helvetica-Bold").fontSize(12).text(item.category, 50, currentY);
+  doc
+    .moveTo(450, currentY + 12)
+    .lineTo(50, currentY + 12)
+    .lineWidth(1.5)
+    .strokeColor("black")
+    .stroke();
+  doc
+    .moveTo(550, currentY + 12)
+    .lineTo(50, currentY + 12)
+    .lineWidth(0.5)
+    .strokeColor("black")
+    .stroke();
 
-    // Tingkatkan posisi Y untuk persiapan menambahkan subkategori
-    currentY += 25;
+  // Tingkatkan posisi Y untuk persiapan menambahkan subkategori
+  currentY += 25;
 
-    item.narrative_sub_categories.forEach((sub_cat) => {
+  item.narrative_sub_categories.forEach((sub_cat) => {
+    // Tambahkan kondisi untuk memeriksa sub_cat.narrative_reports
+    if (sub_cat.narrative_reports && sub_cat.narrative_reports.length > 0) {
       currentY = ensureNewPage(doc, data, currentY); // Check for new page before sub-category title
 
       doc
@@ -520,38 +522,39 @@ generateContents = async (doc, data) => {
       });
 
       currentY += 15; // Tingkatkan posisi Y untuk subkategori berikutnya
-    });
-
-    // Tingkatkan posisi Y setelah menambahkan semua subkategori untuk kategori saat ini
-    currentY += 10; // Anda bisa menyesuaikan jarak antara kategori dengan subkategori
-
-    if (item.narrative_category_comments.comments) {
-      currentY = ensureNewPage(doc, data, currentY + 50, "comment"); // Ensure new page, adding extra space for the comment section title
-      doc
-        .font("Helvetica-BoldOblique")
-        .fontSize(10)
-        .text("Komentar :", 50, currentY);
-
-      currentY += 20;
-
-      const commentTextOptions = { align: "justify", width: 500 }; // Define options for comments
-      doc
-        .font("Helvetica")
-        .fontSize(10)
-        .text(
-          item.narrative_category_comments.comments,
-          50,
-          currentY,
-          commentTextOptions
-        );
-
-      currentY +=
-        doc.heightOfString(
-          item.narrative_category_comments.comments,
-          commentTextOptions
-        ) + 20; // Update currentY
-    }
+    } // Akhir dari kondisi if (sub_cat.narrative_reports)
   });
+
+  // Tingkatkan posisi Y setelah menambahkan semua subkategori untuk kategori saat ini
+  currentY += 10; // Anda bisa menyesuaikan jarak antara kategori dengan subkategori
+
+  if (item.narrative_category_comments.comments) {
+    currentY = ensureNewPage(doc, data, currentY + 50, "comment"); // Ensure new page, adding extra space for the comment section title
+    doc
+      .font("Helvetica-BoldOblique")
+      .fontSize(10)
+      .text("Komentar :", 50, currentY);
+
+    currentY += 20;
+
+    const commentTextOptions = { align: "justify", width: 500 }; // Define options for comments
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .text(
+        item.narrative_category_comments.comments,
+        50,
+        currentY,
+        commentTextOptions
+      );
+
+    currentY +=
+      doc.heightOfString(
+        item.narrative_category_comments.comments,
+        commentTextOptions
+      ) + 20; // Update currentY
+  }
+});
 
   // --- BAGIAN BARU: KOMENTAR UMUM DAN TANDA TANGAN DI HALAMAN TERPISAH ---
   // Paksa penambahan halaman baru untuk bagian komentar umum dan tanda tangan

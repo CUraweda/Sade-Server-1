@@ -280,6 +280,7 @@ class NarrativeReportDao extends SuperDao {
       where: { class_id: levParams, semester: semester },
     });
 
+    console.log("Signers: ", signers);
     const { head, facilitator } = signers || {};
 
     const result = {

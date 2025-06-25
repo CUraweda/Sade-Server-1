@@ -694,7 +694,7 @@ generateNumberReportTabel = async (data) => {
     maximumFractionDigits: 2,
   });
 
-  const predefinedOrder = ['PAI', 'PKN', 'IND', 'MTK', 'IPA', 'IPS', 'KES', 'PENJAS', 'ING'];
+  const predefinedOrder = ['PAI', 'PAK', 'PKN', 'IND', 'MTK', 'IPA', 'IPS', 'KES', 'PENJAS', 'ING'];
 
   let allSubjectsFromDB = await this.subjectDao.getAll(data.level);
   if (!allSubjectsFromDB || allSubjectsFromDB.length < 1) {

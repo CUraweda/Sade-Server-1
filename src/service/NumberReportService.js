@@ -30,6 +30,8 @@ class NumberReportService {
       let message = "Number Report successfully added.";
 
       reqBody["uid"] = this.formatUID(reqBody);
+      console.log(reqBody);
+      
       let data = await this.numberReportDao.create(reqBody);
 
       if (!data) {

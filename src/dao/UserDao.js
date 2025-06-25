@@ -115,8 +115,7 @@ class UserDao extends SuperDao {
   async findByResetToken(resetToken) {
     return User.findOne({
       where: {
-        reset_token: resetToken,
-        reset_token_exp: { [Op.gt]: Date.now() },
+        reset_token: resetToken
       },
     });
   }

@@ -8,6 +8,7 @@ const { userConstant } = require("../config/constant");
 const config = require("../config/config");
 const EmailHelper = require("../helper/EmailHelper");
 const crypto = require("crypto");
+const { log } = require("console");
 
 class UserService {
   constructor() {
@@ -233,14 +234,14 @@ class UserService {
     const token = crypto.randomBytes(20).toString("hex");
     const resetToken = crypto.createHash("sha256").update(token).digest("hex"); // hash the token
 
-    const resetTokenExp = new Date(Date.now() + 10 * 60 * 1000);
+    const resetTokenExp = new Date(Date.now() + 10 * 60 * 2000);
 
     await this.userDao.updateWhere(
       { reset_token: resetToken, reset_token_exp: resetTokenExp },
       { email: body.email }
     );
 
-    const url = config.webUrl + `/reset-password/${token}`; //Link web to reset password
+    const url = config.webUrl + `/reset-password/${resetToken}`; //Link web to reset password
     const mailBody = "./src/reset.html";
 
     // send email
@@ -262,10 +263,11 @@ class UserService {
     const message = "Password reset successfully!";
     const token = body.token;
 
-    const resetToken = crypto.createHash("sha256").update(token).digest("hex"); // hash the token
-
-    const user = await this.userDao.findByResetToken(resetToken);
-
+    console.log("Reset Token:", token);
+    
+    const user = await this.userDao.findByResetToken(token);
+    console.log("User found:", user);
+    
     if (!user) {
       return responseHandler.returnError(
         httpStatus.NOT_FOUND,
@@ -277,7 +279,7 @@ class UserService {
 
     await this.userDao.updateWhere(
       { password: pass },
-      { reset_token: resetToken }
+      { reset_token: token }
     );
 
     return responseHandler.returnSuccess(httpStatus.OK, message, {});

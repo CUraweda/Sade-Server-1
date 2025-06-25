@@ -7,23 +7,15 @@ const handlebars = require("handlebars");
 const fs = require("fs");
 
 const transporter = nodemailer.createTransport({
-  //? GMAIL CONFIG
-  service: "gmail",
+  host: "srv170.niagahoster.com", // SMTP host
+  port: 465, // SMTP port
+  secure: true, // Use SSL
   auth: {
-    user: config.email.account,
-    pass: config.email.password
+    user: "no-reply@curaweda.com",
+    pass: "CurawedaPalagan125@"
   }
-
-  //? SMTP CONFIG
-  // host: config.email.host,
-  // port: config.email.port,
-  // secure: true,
-  // auth: {
-  //   // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-  //   user: config.email.account,
-  //   pass: config.email.password,
-  // },
 });
+
 
 var readHTMLFile = function (path, callback) {
   fs.readFile(path, { encoding: "utf-8" }, function (err, html) {

@@ -228,7 +228,6 @@ class NumberReportService {
     const message = "Number Report successfully exported!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester, true);
-    console.log(rel);
 
     if (rel?.note) {
       return responseHandler.returnError(
@@ -661,33 +660,126 @@ class NumberReportService {
       .text(data.form_teacher?.signature_name || '', 350, 670, { align: "center", width: 180 });
   };
 
-  generateNumberReportTabel = async (data) => {
-    const formatter = new Intl.NumberFormat("id-ID", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
-    let subjects = await this.subjectDao.getAll(data.level)
-    if (!subjects || subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
-    subjects.forEach((subject, i) => {
-      if (!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
-      if (!rowsData[subject.code][1]) {
-        rowsData[subject.code].push(subject.name)
-        rowsData[subject.code].push(formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0),)
-        rowsData[subject.code].push("0,00")
-        rowsData[subject.code].push("nol")
-      }
-    })
-    for (let item of data.number_reports) {
-      if (rowsData[item.subject_code]) {
-        rowsData[item.subject_code][2] = item.threshold
-        rowsData[item.subject_code][3] = item.grade
-        rowsData[item.subject_code][4] = item.grade_text
+  // generateNumberReportTabel = async (data) => {
+  //   const formatter = new Intl.NumberFormat("id-ID", {
+  //     minimumFractionDigits: 2,
+  //     maximumFractionDigits: 2,
+  //   });
+  //   let rowsData = { PAI: [1], PKN: [2], IND: [3], MTK: [4], IPA: [5], IPS: [6], KES: [7], PENJAS: [8], ING: [9] }
+  //   let subjects = await this.subjectDao.getAll(data.level)
+  //   if (!subjects || subjects.length < 1) subjects = await this.subjectDao.findAll({ order: [['id', 'asc']] })
+  //   subjects.forEach((subject, i) => {
+  //     if (!rowsData[subject.code]) rowsData[subject.code] = [Object.keys(rowsData).length + 1]
+  //     if (!rowsData[subject.code][1]) {
+  //       rowsData[subject.code].push(subject.name)
+  //       rowsData[subject.code].push(formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0),)
+  //       rowsData[subject.code].push("0,00")
+  //       rowsData[subject.code].push("nol")
+  //     }
+  //   })
+  //   for (let item of data.number_reports) {
+  //     if (rowsData[item.subject_code]) {
+  //       rowsData[item.subject_code][2] = item.threshold
+  //       rowsData[item.subject_code][3] = item.grade
+  //       rowsData[item.subject_code][4] = item.grade_text
+  //     }
+  //   }
+
+  //   return { rowsData }
+  // }
+
+generateNumberReportTabel = async (data) => {
+  const formatter = new Intl.NumberFormat("id-ID", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const predefinedOrder = ['PAI', 'PKN', 'IND', 'MTK', 'IPA', 'IPS', 'KES', 'PENJAS', 'ING'];
+
+  let allSubjectsFromDB = await this.subjectDao.getAll(data.level);
+  if (!allSubjectsFromDB || allSubjectsFromDB.length < 1) {
+    allSubjectsFromDB = await this.subjectDao.findAll({ order: [['id', 'asc']] });
+  }
+
+  const subjectDetailMap = new Map();
+  allSubjectsFromDB.forEach(subject => {
+    subjectDetailMap.set(subject.code, subject);
+  });
+
+  const validReportMap = new Map();
+  for (let item of data.number_reports) {
+    // Pastikan item.grade adalah angka sebelum membandingkannya atau menyimpannya
+    const gradeAsNumber = parseFloat(item.grade);
+    if (gradeAsNumber !== 0 && item.grade_text !== "nol") {
+      validReportMap.set(item.subject_code, {
+          ...item,
+          grade: gradeAsNumber // Simpan sebagai angka di map
+      });
+    }
+  }
+
+  const finalRowsData = {};
+  let currentNo = 1;
+
+  for (const subjectCode of predefinedOrder) {
+    const subject = subjectDetailMap.get(subjectCode);
+
+    if (subject) {
+      if (validReportMap.has(subjectCode)) {
+        const report = validReportMap.get(subjectCode);
+
+        // Langsung parseFloat untuk report.grade sebelum diformat
+        const gradeFormatted = formatter.format(parseFloat(report.grade));
+        const thresholdFormatted = formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0);
+
+        finalRowsData[subjectCode] = [
+          currentNo,
+          subject.name,
+          thresholdFormatted,
+          gradeFormatted,
+          report.grade_text,
+        ];
+        currentNo++;
       }
     }
-
-    return { rowsData }
   }
+
+  for (const subject of allSubjectsFromDB) {
+    if (!predefinedOrder.includes(subject.code)) {
+      if (validReportMap.has(subject.code)) {
+        const report = validReportMap.get(subject.code);
+
+        // Langsung parseFloat untuk report.grade sebelum diformat
+        const gradeFormatted = formatter.format(parseFloat(report.grade));
+        const thresholdFormatted = formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0);
+
+        finalRowsData[subject.code] = [
+          currentNo,
+          subject.name,
+          thresholdFormatted,
+          gradeFormatted,
+          report.grade_text,
+        ];
+        currentNo++;
+      }
+    }
+  }
+
+  const orderedFinalRowsData = {};
+  const keysInOrder = [];
+
+  for(const key in finalRowsData) {
+      keysInOrder.push({ code: key, no: finalRowsData[key][0] });
+  }
+
+  keysInOrder.sort((a, b) => a.no - b.no);
+
+  keysInOrder.forEach(item => {
+      orderedFinalRowsData[item.code] = finalRowsData[item.code];
+  });
+
+  return { rowsData: orderedFinalRowsData };
+};
 
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";

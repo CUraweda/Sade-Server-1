@@ -279,6 +279,7 @@ class NumberReportDao extends SuperDao {
       order: [[{ model: Subjects }, 'id', 'ASC']],
     });
 
+    
     if( strict && reports.length < 1) return { status: false, note: "Number Report Tidak Ditemukan" }
 
     // Extracting necessary information

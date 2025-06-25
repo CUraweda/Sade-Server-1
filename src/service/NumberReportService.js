@@ -228,6 +228,7 @@ class NumberReportService {
     const message = "Number Report successfully exported!";
 
     let rel = await this.numberReportDao.getByStudentId(id, semester, true);
+    console.log(rel);
 
     if (rel?.note) {
       return responseHandler.returnError(

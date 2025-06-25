@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const NumberReportDao = require("../dao/NumberReportDao");
 const StudentReportDao = require("../dao/StudentReportDao");
-const SubjectDao = require('../dao/SubjectDao')
+const SubjectDao = require("../dao/SubjectDao");
 const responseHandler = require("../helper/responseHandler");
 const logger = require("../config/logger");
 const { userConstant } = require("../config/constant");
@@ -18,20 +18,20 @@ class NumberReportService {
   constructor() {
     this.numberReportDao = new NumberReportDao();
     this.studentReportDao = new StudentReportDao();
-    this.subjectDao = new SubjectDao()
+    this.subjectDao = new SubjectDao();
   }
 
   formatUID = (data) => {
-    return `${data['student_report_id']}|${data['subject_id']}`
-  }
+    return `${data["student_report_id"]}|${data["subject_id"]}`;
+  };
 
   createNumberReport = async (reqBody) => {
     try {
       let message = "Number Report successfully added.";
 
-      reqBody['uid'] = this.formatUID(reqBody)
+      reqBody["uid"] = this.formatUID(reqBody);
       let data = await this.numberReportDao.create(reqBody);
-      
+
       if (!data) {
         message = "Failed to create Number Report.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
@@ -51,14 +51,14 @@ class NumberReportService {
     try {
       let message = "Number Report successfully added.";
 
-      const create = reqBody.map(data => {
-        data['uid'] = this.formatUID(data);
-        return this.numberReportDao.updateOrCreate(data, { uid: data['uid'] });
+      const create = reqBody.map((data) => {
+        data["uid"] = this.formatUID(data);
+        return this.numberReportDao.updateOrCreate(data, { uid: data["uid"] });
       });
-    
+
       const results = await Promise.all(create);
-    
-      if (!results || results.some(result => !result)) {
+
+      if (!results || results.some((result) => !result)) {
         message = "Failed to create Number Report.";
         return responseHandler.returnError(httpStatus.BAD_REQUEST, message);
       }
@@ -171,7 +171,6 @@ class NumberReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-
   showNumberReportByStudentId = async (id, semester) => {
     const message = "Number Report successfully retrieved!";
 
@@ -231,7 +230,8 @@ class NumberReportService {
 
     if (rel?.note) {
       return responseHandler.returnError(
-        httpStatus.UNPROCESSABLE_ENTITY, rel.note
+        httpStatus.UNPROCESSABLE_ENTITY,
+        rel.note
       );
     }
 
@@ -244,7 +244,7 @@ class NumberReportService {
       semester
     );
 
-    rel['signed_at'] = signedDate
+    rel["signed_at"] = signedDate;
     const pdfFile = await this.generatePdf(rel, dir);
 
     if (pdfFile) {
@@ -429,7 +429,7 @@ class NumberReportService {
     doc.rect(350, posY, 200, 17).lineWidth(0.5).stroke(); // Huruf
     doc.text("Huruf", 350, 242, { align: "center", width: 200 });
 
-    const { rowsData } = await this.generateNumberReportTabel(data)
+    const { rowsData } = await this.generateNumberReportTabel(data);
     const dataTable = {
       headers: [
         {
@@ -638,7 +638,7 @@ class NumberReportService {
 
     posY += 20;
     moment.locale("id"); // Set locale to Indonesian
-    const formattedDate = moment(data['signed_at']).format("DD MMMM YYYY");
+    const formattedDate = moment(data["signed_at"]).format("DD MMMM YYYY");
     doc
       .font("Helvetica")
       .fontSize(9)
@@ -656,8 +656,14 @@ class NumberReportService {
     posY += 70;
     doc
       .font("Helvetica")
-      .text(data.head?.signature_name || '', 50, 670, { align: "center", width: 180 })
-      .text(data.form_teacher?.signature_name || '', 350, 670, { align: "center", width: 180 });
+      .text(data.head?.signature_name || "", 50, 670, {
+        align: "center",
+        width: 180,
+      })
+      .text(data.form_teacher?.signature_name || "", 350, 670, {
+        align: "center",
+        width: 180,
+      });
   };
 
   // generateNumberReportTabel = async (data) => {
@@ -688,98 +694,122 @@ class NumberReportService {
   //   return { rowsData }
   // }
 
-generateNumberReportTabel = async (data) => {
-  const formatter = new Intl.NumberFormat("id-ID", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  generateNumberReportTabel = async (data) => {
+    // formatter akan digunakan khusus untuk threshold
+    const formatter = new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
-  const predefinedOrder = ['PAI', 'PAK', 'PKN', 'IND', 'MTK', 'IPA', 'IPS', 'KES', 'PENJAS', 'ING'];
+    const predefinedOrder = [
+      "PAI",
+      "PAK",
+      "PKN",
+      "IND",
+      "MTK",
+      "IPA",
+      "IPS",
+      "KES",
+      "PENJAS",
+      "ING",
+    ];
 
-  let allSubjectsFromDB = await this.subjectDao.getAll(data.level);
-  if (!allSubjectsFromDB || allSubjectsFromDB.length < 1) {
-    allSubjectsFromDB = await this.subjectDao.findAll({ order: [['id', 'asc']] });
-  }
-
-  const subjectDetailMap = new Map();
-  allSubjectsFromDB.forEach(subject => {
-    subjectDetailMap.set(subject.code, subject);
-  });
-
-  const validReportMap = new Map();
-  for (let item of data.number_reports) {
-    // Pastikan item.grade adalah angka sebelum membandingkannya atau menyimpannya
-    const gradeAsNumber = parseFloat(item.grade);
-    if (gradeAsNumber !== 0 && item.grade_text !== "nol") {
-      validReportMap.set(item.subject_code, {
-          ...item,
-          grade: gradeAsNumber // Simpan sebagai angka di map
+    let allSubjectsFromDB = await this.subjectDao.getAll(data.level);
+    if (!allSubjectsFromDB || allSubjectsFromDB.length < 1) {
+      allSubjectsFromDB = await this.subjectDao.findAll({
+        order: [["id", "asc"]],
       });
     }
-  }
 
-  const finalRowsData = {};
-  let currentNo = 1;
+    const subjectDetailMap = new Map();
+    allSubjectsFromDB.forEach((subject) => {
+      subjectDetailMap.set(subject.code, subject);
+    });
 
-  for (const subjectCode of predefinedOrder) {
-    const subject = subjectDetailMap.get(subjectCode);
+    const validReportMap = new Map();
+    for (let item of data.number_reports) {
+      // Grade tetap diambil apa adanya, tanpa format atau pembulatan
+      const gradeAsIs = item.grade;
 
-    if (subject) {
-      if (validReportMap.has(subjectCode)) {
-        const report = validReportMap.get(subjectCode);
-
-        // Langsung parseFloat untuk report.grade sebelum diformat
-        const gradeFormatted = formatter.format(parseFloat(report.grade));
-        const thresholdFormatted = formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0);
-
-        finalRowsData[subjectCode] = [
-          currentNo,
-          subject.name,
-          thresholdFormatted,
-          gradeFormatted,
-          report.grade_text,
-        ];
-        currentNo++;
+      // Asumsi item.grade_text "nol" adalah representasi string untuk 0
+      if (gradeAsIs !== 0 && item.grade_text !== "nol") {
+        validReportMap.set(item.subject_code, {
+          ...item,
+          grade: gradeAsIs, // Simpan nilai grade apa adanya
+        });
       }
     }
-  }
 
-  for (const subject of allSubjectsFromDB) {
-    if (!predefinedOrder.includes(subject.code)) {
-      if (validReportMap.has(subject.code)) {
-        const report = validReportMap.get(subject.code);
+    const finalRowsData = {};
+    let currentNo = 1;
 
-        // Langsung parseFloat untuk report.grade sebelum diformat
-        const gradeFormatted = formatter.format(parseFloat(report.grade));
-        const thresholdFormatted = formatter.format(subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0);
+    for (const subjectCode of predefinedOrder) {
+      const subject = subjectDetailMap.get(subjectCode);
 
-        finalRowsData[subject.code] = [
-          currentNo,
-          subject.name,
-          thresholdFormatted,
-          gradeFormatted,
-          report.grade_text,
-        ];
-        currentNo++;
+      if (subject) {
+        if (validReportMap.has(subjectCode)) {
+          const report = validReportMap.get(subjectCode);
+
+          // Grade tetap sama persis
+          const gradeFormatted = report.grade;
+
+          // Threshold tetap diformat menggunakan formatter
+          const thresholdFormatted = formatter.format(
+            subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0
+          );
+
+          finalRowsData[subjectCode] = [
+            currentNo,
+            subject.name,
+            thresholdFormatted, // Diformat
+            gradeFormatted, // Tidak diformat
+            report.grade_text,
+          ];
+          currentNo++;
+        }
       }
     }
-  }
 
-  const orderedFinalRowsData = {};
-  const keysInOrder = [];
+    for (const subject of allSubjectsFromDB) {
+      if (!predefinedOrder.includes(subject.code)) {
+        if (validReportMap.has(subject.code)) {
+          const report = validReportMap.get(subject.code);
 
-  for(const key in finalRowsData) {
+          // Grade tetap sama persis
+          const gradeFormatted = report.grade;
+
+          // Threshold tetap diformat menggunakan formatter
+          const thresholdFormatted = formatter.format(
+            subject.threshold ? parseFloat(subject.threshold.toFixed(2)) : 0
+          );
+
+          finalRowsData[subject.code] = [
+            currentNo,
+            subject.name,
+            thresholdFormatted, // Diformat
+            gradeFormatted, // Tidak diformat
+            report.grade_text,
+          ];
+          currentNo++;
+        }
+      }
+    }
+
+    const orderedFinalRowsData = {};
+    const keysInOrder = [];
+
+    for (const key in finalRowsData) {
       keysInOrder.push({ code: key, no: finalRowsData[key][0] });
-  }
+    }
 
-  keysInOrder.sort((a, b) => a.no - b.no);
+    keysInOrder.sort((a, b) => a.no - b.no);
 
-  keysInOrder.forEach(item => {
+    keysInOrder.forEach((item) => {
       orderedFinalRowsData[item.code] = finalRowsData[item.code];
-  });
+    });
 
-  return { rowsData: orderedFinalRowsData };
-};
+    return { rowsData: orderedFinalRowsData };
+  };
 
   filteredNumberReport = async (academic, semester, classId) => {
     const message = "Number report successfully retrieved!";

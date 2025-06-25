@@ -276,12 +276,12 @@ class NarrativeReportDao extends SuperDao {
       student: { full_name, nisn, nis },
     } = sClass;
 
-    const signers = await ReportSigners.findOne({
-      where: { class_id: levParams, semester: semester },
+     const signatureKepalaSekolah = await EmployeeSignature.findOne({
+      where: { is_headmaster: true, headmaster_of: level }
+    })
+    const signatureWaliKelas = await EmployeeSignature.findOne({
+      where: { is_form_teacher: true, form_teacher_class_id: class_id }
     });
-
-    console.log("Signers: ", signers);
-    const { head, facilitator } = signers || {};
 
     const result = {
       academic_year,
@@ -321,8 +321,8 @@ class NarrativeReportDao extends SuperDao {
       })),
       nar_teacher_comments: nar_teacher_comments || "",
       nar_parent_comments: nar_parent_comments || "",
-      head: head || "",
-      facilitator: facilitator || "",
+      head: signatureKepalaSekolah || "",
+      facilitator: signatureWaliKelas || "",
     };
 
     return result;

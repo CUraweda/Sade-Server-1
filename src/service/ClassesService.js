@@ -44,12 +44,7 @@ class ClassesService {
     }
 
     const updateData = await this.classesDao.updateWhere(
-      {
-        level: body.level,
-        class_name: body.class_name,
-        book_target: body.book_target,
-        waste_target: body.waste_target,
-      },
+      body,
       { id }
     );
 

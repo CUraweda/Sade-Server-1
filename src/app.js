@@ -13,9 +13,14 @@ process.env.TZ = "Asia/Jakarta";
 
 const app = express();
 
-// enable cors
-app.use(cors());
-app.options("*", cors());
+// CORS
+if (process.env.CORS_MODE === 'open') {
+  app.use(cors());
+  app.options('*', cors());
+} else {
+  app.use(cors({ origin: false }));
+  app.options('*', cors({ origin: false }));
+}
 
 // app.use(express.static(`${process.env.PWD}/public`));
 

@@ -90,12 +90,54 @@ class ReligionService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
-    const totalRows = await this.wasteOfficerDao.getCount(search);
+  async showPage(page, limit, filter, offset) {
+    const { date, iteration } = filter
+    if (iteration && date) {
+      let start_date = new Date(date)
+      let end_date = new Date(date)
+      switch (iteration) {
+        case "week":
+          const dayOfWeek = start_date.getDay();
+          const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+          start_date.setDate(start_date.getDate() + diffToMonday);
+          start_date.setHours(0, 0, 0, 0);
+          end_date = new Date(start_date);
+          end_date.setDate(start_date.getDate() + 6);
+          end_date.setHours(23, 59, 59, 999);
+          break;
+
+        case "month":
+          start_date.setDate(1);
+          start_date.setHours(0, 0, 0, 0);
+          end_date = new Date(start_date);
+          end_date.setMonth(start_date.getMonth() + 1);
+          end_date.setDate(0);
+          end_date.setHours(23, 59, 59, 999);
+          break;
+
+        case "year":
+          start_date.setMonth(0);
+          start_date.setDate(1);
+          start_date.setHours(0, 0, 0, 0);
+          end_date = new Date(start_date);
+          end_date.setFullYear(start_date.getFullYear() + 1);
+          end_date.setDate(0); 
+          end_date.setHours(23, 59, 59, 999);
+          break
+          
+        default:
+          start_date.setHours(0, 0, 0, 0);
+          end_date.setHours(23, 59, 59, 999);
+          break
+      }
+      filter.date = { start_date, end_date }
+    }
+
+    const totalRows = await this.wasteOfficerDao.getCount(filter);
     const totalPage = Math.ceil(totalRows / limit);
 
     const result = await this.wasteOfficerDao.getWasteOfficerPage(
-      search,
+      filter,
       offset,
       limit
     );

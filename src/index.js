@@ -16,7 +16,6 @@ var options = {
 }
 const server = http.createServer(app);
 // const server = https.createServer(app, options);
-
 // eslint-disable-next-line import/order
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 

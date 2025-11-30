@@ -2,7 +2,6 @@ const httpStatus = require("http-status");
 const AnnouncementService = require("../service/AnnouncementService");
 const logger = require("../config/logger");
 const ClassesService = require("../service/ClassesService");
-const upploadAnnouncementFile = require("../middlewares/uploadAnnouncementFile");
 const Joi = require("joi");
 const path = require("path");
 const fs = require("fs");
@@ -22,34 +21,12 @@ class AnnouncementController {
 
   create = async (req, res) => {
     try {
-      await upploadAnnouncementFile(req, res);
-
-      const formData = {
-        ...req.body,
-        file_path: req.file?.path ?? null,
-        file_type: req.file?.mimetype ?? null,
-      };
-
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
-      console.log(error)
-      
-      if (error) {
-        const errorMessage = error.details
-        .map((details) => {
-          return details.message;
-        })
-        .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
+      if (req.file) {
+        req.body.file_path = req.file.path
+        req.body.file_type = req.file.mimetype
       }
-      console.log("MASUK",req.body)
 
-      const resData = await this.announcementService.createAnnouncement(
-        formData
-      );
+      const resData = await this.announcementService.createAnnouncement(req.body);
 
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
@@ -60,39 +37,16 @@ class AnnouncementController {
 
   update = async (req, res) => {
     try {
-      await upploadAnnouncementFile(req, res);
+      const { id } = req.params
 
-      var file = req.file ? req.file : null;
-      let formData;
-
-      if (file)
-        formData = {
-          ...req.body,
-          file_path: req.file?.path ?? null,
-          file_type: req.file?.mimetype ?? null,
-        };
-      else formData = { ...req.body };
-
-      const { error } = schema.validate(formData, {
-        abortEarly: false,
-        allowUnknown: true,
-        stripUnknown: true,
-      });
-
-      if (error) {
-        const errorMessage = error.details
-          .map((details) => {
-            return details.message;
-          })
-          .join(", ");
-        return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
+      if (req.file) {
+        req.body.file_path = req.file.path
+        req.body.file_type = req.file.mimetype
       }
-
-      var id = req.params.id;
 
       const resData = await this.announcementService.updateAnnouncement(
         id,
-        formData
+        req.body
       );
 
       res.status(resData.statusCode).send(resData.response);
@@ -126,7 +80,7 @@ class AnnouncementController {
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
-  };
+  }
 
   showBetween = async (req, res) => {
     try {
@@ -155,21 +109,6 @@ class AnnouncementController {
       const search = req.query.search_query || "";
       const offset = limit * page;
       const { start_date, end_date, class_id, with_assign } = req.query;
-  
-      let class_ids = [];
-      if (employee && with_assign == "Y") {
-        const empClasses = await this.classService.showPage(
-          0,
-          undefined,
-          { search: "", employee_id: employee.id },
-          0
-        );
-        class_ids =
-          empClasses.response?.data?.result
-            ?.map((c) => c.id ?? "")
-            .filter((c) => c != "") ?? [];
-      }
-      const int_class_id = parseInt(class_id, 10)
       const resData = await this.announcementService.showPage(
         page,
         limit,
@@ -178,17 +117,18 @@ class AnnouncementController {
         {
           start_date,
           end_date,
-          int_class_id,  
-          class_ids
+          class_id,
+          with_assign,
+          employee
         }
       );
-  
+
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
-  };  
+  };
 
   delete = async (req, res) => {
     try {

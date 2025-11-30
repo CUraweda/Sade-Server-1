@@ -120,6 +120,16 @@ class AchievementController {
     }
   };
 
+  showTotalStudent = async (req, res) => {
+    try {
+      const resData = await this.achievementService.showTotalData(req.query)
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  }
+
   showTopOneByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
@@ -142,7 +152,7 @@ class AchievementController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { class_id, with_assign, academic } = req.query
+      const { class_id, with_assign, academic, start_date, end_date } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -158,7 +168,8 @@ class AchievementController {
         {
           class_id,
           class_ids,
-          academic
+          academic,
+          start_date, end_date
         }
       );
 

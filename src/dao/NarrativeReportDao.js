@@ -13,6 +13,7 @@ const NarrativeDesc = models.narrativedesc;
 const NarrativeComment = models.narrativecomment;
 const StudentReports = models.studentreports;
 const ReportSigners = models.reportsigners;
+const EmployeeSignature = models.employeesignature;
 
 class NarrativeReportDao extends SuperDao {
   constructor() {
@@ -232,6 +233,7 @@ class NarrativeReportDao extends SuperDao {
     const { nar_teacher_comments, nar_parent_comments } = sReportData || {};
 
     const levParams = sClass.class_id || 0;
+    const level = sClass.class.level || "";
 
     const nCategories = await NarrativeCategory.findAll({
       where: { class_id: levParams },
@@ -276,11 +278,18 @@ class NarrativeReportDao extends SuperDao {
       student: { full_name, nisn, nis },
     } = sClass;
 
-    const signers = await ReportSigners.findOne({
-      where: { class_id: levParams, semester: semester },
+    // const signers = await ReportSigners.findOne({
+    //   where: { class_id: levParams, semester: semester },
+    // });
+
+    const signatureKepalaSekolah = await EmployeeSignature.findOne({
+      where: { is_headmaster: true, headmaster_of: level },
+    });
+    const signatureWaliKelas = await EmployeeSignature.findOne({
+      where: { is_form_teacher: true, form_teacher_class_id: levParams },
     });
 
-    const { head, facilitator } = signers || {};
+    // const { head, facilitator } = signers || {};
 
     const result = {
       academic_year,
@@ -320,8 +329,8 @@ class NarrativeReportDao extends SuperDao {
       })),
       nar_teacher_comments: nar_teacher_comments || "",
       nar_parent_comments: nar_parent_comments || "",
-      head: head || "",
-      facilitator: facilitator || "",
+      head: signatureKepalaSekolah || "",
+      facilitator: signatureWaliKelas || "",
     };
 
     return result;

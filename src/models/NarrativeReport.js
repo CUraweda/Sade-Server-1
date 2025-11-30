@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       student_report_id: DataTypes.INTEGER,
       narrative_desc_id: DataTypes.INTEGER,
       grade: DataTypes.INTEGER,
-    },
+    }, 
     {
       sequelize,
       modelName: "narrativereport",

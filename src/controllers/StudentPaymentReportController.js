@@ -72,7 +72,7 @@ class StudentPaymentReportController {
         const limit = parseInt(req.query.limit) || 10;
         const search = req.query.search_query || "";
         const offset = limit * page;
-        const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix } = req.query;
+        const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix, pos } = req.query;
 
         const resData = await this.studentPaymentReportService.showPage(
             page,
@@ -86,7 +86,8 @@ class StudentPaymentReportController {
               start_paid,
               end_paid,
               status,
-              nis_prefix
+              nis_prefix,
+              pos
             }
         );
 
@@ -96,10 +97,38 @@ class StudentPaymentReportController {
         res.status(httpStatus.BAD_GATEWAY).send(e);
         }
     };
+
+
+    groupByStatus = async (req, res) => {
+      try {
+        const search = req.query.search_query || "";
+        const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix, pos } = req.query;
+
+        const resData = await this.studentPaymentReportService.groupByStatus(
+            search,
+            {
+              payment_category_id,
+              class_id,
+              student_id,
+              start_paid,
+              end_paid,
+              status,
+              nis_prefix,
+              pos
+            }
+        );
+
+        res.status(resData.statusCode).send(resData.response);
+        } catch (e) {
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+        }
+    };
+    
     exportAll = async (req, res) => {
       try {
           const search = req.query.search_query || "";
-          const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix } = req.query;
+          const { payment_category_id, class_id, student_id, start_paid, end_paid, status, nis_prefix , pos} = req.query;
   
           const buffer = await this.studentPaymentReportService.exportPage(
             search, 
@@ -110,7 +139,8 @@ class StudentPaymentReportController {
               start_paid,
               end_paid,
               status,
-              nis_prefix
+              nis_prefix,
+              pos
             }
           );
 

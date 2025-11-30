@@ -12,17 +12,17 @@ router.put("/update/:id", auth([1, 3, 6]), templatesController.update);
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   templatesController.show
 );
 
 router.get(
   "/show-by-code/:code",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   templatesController.showByCode
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), templatesController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), templatesController.showAll);
 
 router.delete("/delete/:id", auth([1, 3, 6]), templatesController.delete);
 

@@ -11,17 +11,19 @@ class AnnouncementDao extends SuperDao {
   constructor() {
     super(Announcement);
   }
-  
+
   async findByClass(id) {
     return Announcement.findAll({
       where: {
-          class_id: id
+        class_id: id
       },
       order: [['date_start', 'DESC']]
-  });
- }  
+    });
+  }
 
   async getCount(search, filters) {
+    const { class_ids, start_date, end_date, class_id } = filters
+    const dates = [formatDateForSQL(new Date(start_date)), formatDateForSQL(new Date(end_date))];
     const where = {
       [Op.or]: [
         {
@@ -30,45 +32,23 @@ class AnnouncementDao extends SuperDao {
           },
         },
       ],
-    };
-  
-    if (filters.start_date && filters.end_date) {
-      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))];
-      where[Op.and] = [
-        {
+      [Op.and]: [
+        ...((start_date && end_date) && [{
           date_start: { [Op.between]: dates },
           date_end: { [Op.between]: dates },
-        },
-      ];
-    }
-  
-      
-    if (filters.int_class_id) {
-      where[Op.and] = where[Op.and] || [];
-      where[Op.and].push(
-        Sequelize.literal(`JSON_CONTAINS(class_ids, '[${filters.int_class_id}]')`)
-      );
-    }
-  
-    // Optional: Filtering by multiple class_ids, if needed
-    // if (filters.class_ids?.length) {
-    //   where[Op.and] = where[Op.and] || [];
-    //   filters.class_ids.forEach((classId) => {
-    //     where[Op.and].push({
-    //       class_ids: {
-    //         [Op.contains]: [classId],
-    //       },
-    //     });
-    //   });
-    // }
-  
+        }]),
+        { class_id: { [Op.in]: class_ids } },
+      ]
+    };
+
     return Announcement.count({
       where,
     });
   }
 
   async getAnnouncementPage(search, offset, limit, filters) {
-    console.log("AMAN 4")         
+    const { class_ids, start_date, end_date, class_id } = filters
+    const dates = [formatDateForSQL(new Date(start_date)), formatDateForSQL(new Date(end_date))];
     const where = {
       [Op.or]: [
         {
@@ -77,35 +57,31 @@ class AnnouncementDao extends SuperDao {
           },
         },
       ],
+      [Op.and]: [
+        ...((start_date && end_date) && [{
+          date_start: { [Op.between]: dates },
+          date_end: { [Op.between]: dates },
+        }]),
+        {
+          [Op.or]: [
+            ...(class_id != "0" ? [{class_id: { [Op.in]: class_ids } }] : [{class_id: null}] ),
+            ...(!class_id ? [{ class_id: null }] : [])
+          ]
+        }
+      ]
     };
-
-    if (filters.start_date && filters.end_date) {
-      const dates = [formatDateForSQL(new Date(filters.start_date)), formatDateForSQL(new Date(filters.end_date))];
-      where[Op.or] = {
-        date_start: { [Op.between]: dates },
-        date_end: { [Op.between]: dates },
-      };
-    }
-
-    if (filters.int_class_id) {
-      where[Op.and] = where[Op.and] || [];
-      where[Op.and].push(
-        Sequelize.literal(`JSON_CONTAINS(class_ids, '[${filters.int_class_id}]')`)
-      );
-    }
-  
-
-    // if (filters.class_ids?.length) {
-    //   where[Op.or] = filters.class_ids.map((classId) => 
-    //     Sequelize.literal(`JSON_CONTAINS(class_ids, '["${classId}"]')`)
-    //   );
-    // }
 
     return Announcement.findAll({
       where,
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
+      include: [
+        {
+          model: Classes,
+          required: false
+        }
+      ]
     });
   }
 
@@ -114,29 +90,35 @@ class AnnouncementDao extends SuperDao {
     const endDate = new Date(end + " 23:59:59");
 
     const where = {
-      [Op.or]: {
-        date_start: {
-          [Op.between]: [startDate, endDate],
+      [Op.and]: [
+        {
+          date_start: {
+            [Op.lte]: endDate,
+          },
         },
-        date_end: {
-          [Op.between]: [startDate, endDate],
-        },
-      }
+        {
+          date_end: {
+            [Op.gte]: startDate,
+          },
+        }
+      ]
     }
+    
 
     if (classId) {
-      where[Op.and] = [
+      where[Op.and].push(
         {
           [Op.or]: [
             { class_id: null },
             { class_id: classId }
           ]
         }
-      ];
-    } 
+      )
+    }
 
     return Announcement.findAll({
       where,
+      order: [["date_start", "DESC"]]
     });
   }
 }

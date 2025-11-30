@@ -24,29 +24,30 @@ router.put(
 
 router.get(
   "/show/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentClassController.show
 );
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
+  isStudentParentValid("params", "id"),
   studentClassController.showByStudent
 )
 
 router.get(
   "/show-by-class/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentClassController.showByClass
 );
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentClassController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), studentClassController.showAll);
 
 router.delete("/delete/:id", auth([1, 3, 6]), studentClassController.delete);
 
 router.get(
   "/show-by-level/:level",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentClassController.showLevel
 );
 

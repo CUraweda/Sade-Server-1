@@ -48,8 +48,8 @@ const schemaUpdate = Joi.object({
 class StudentTaskController {
   constructor() {
     this.studentTaskService = new StudentTaskService();
-    this.studentReportService = new StudentReportService()
-    this.classService = new ClassesService()
+    this.studentReportService = new StudentReportService();
+    this.classService = new ClassesService();
   }
 
   create = async (req, res) => {
@@ -172,7 +172,7 @@ class StudentTaskController {
     try {
       var id = req.params.id;
       const cat = req.query.cat || "";
-      const academic = req.query.academic
+      const academic = req.query.academic;
 
       const resData = await this.studentTaskService.showStudentTaskByStudentId(
         id,
@@ -189,19 +189,26 @@ class StudentTaskController {
 
   showAll = async (req, res) => {
     try {
-      const { employee } = req.user
+      const { employee } = req.user;
       const page = parseInt(req.query.page) || 0;
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { class_id, with_assign, academic } = req.query
+      const { class_id, with_assign, academic } = req.query;
 
-      let class_ids = []
+      let class_ids = [];
       if (employee && with_assign == "Y") {
-        const empClasses = await this.classService.showPage(0, undefined, { search: "", employee_id: employee.id }, 0)
-        class_ids = empClasses.response?.data?.result?.map(c => c.id ?? "").filter(c => c != "") ?? []
+        const empClasses = await this.classService.showPage(
+          0,
+          undefined,
+          { search: "", employee_id: employee.id },
+          0
+        );
+        class_ids =
+          empClasses.response?.data?.result
+            ?.map((c) => c.id ?? "")
+            .filter((c) => c != "") ?? [];
       }
-
 
       const resData = await this.studentTaskService.showPage(
         page,
@@ -211,7 +218,7 @@ class StudentTaskController {
         {
           class_id,
           class_ids,
-          academic
+          academic,
         }
       );
 
@@ -243,7 +250,6 @@ class StudentTaskController {
 
       const formData = { ...req.body, down_file };
 
-
       var id = req.params.id;
 
       const resData = await this.studentTaskService.updateStudentTask(
@@ -270,32 +276,33 @@ class StudentTaskController {
         });
       }
 
-      
       // Check if file exists
       if (fs.existsSync(filePath)) {
         if (
-          filePath.includes("_reports") && 
-          (
-            req.user?.dataValues?.role_id == 8 || 
-            req.user?.dataValues?.role_id == 7
-          )
+          filePath.includes("_reports") &&
+          (req.user?.dataValues?.role_id == 8 ||
+            req.user?.dataValues?.role_id == 7)
         ) {
-          let key = "", value = filePath
-  
-          if (req.query.student_id) { 
-            key = "$studentclass.student_id$"
-            value = req.query.student_id
-          } else if (filePath.includes("number_reports")) key = "number_path"
-          else if (filePath.includes("portofolio_reports")) key = "portofolio_path"
-          else if (filePath.includes("narrative_reports")) key = "narrative_path";
+          let key = "",
+            value = filePath;
+
+          if (req.query.student_id) {
+            key = "$studentclass.student_id$";
+            value = req.query.student_id;
+          } else if (filePath.includes("number_reports")) key = "number_path";
+          else if (filePath.includes("portofolio_reports"))
+            key = "portofolio_path";
+          else if (filePath.includes("narrative_reports"))
+            key = "narrative_path";
 
           if (key) {
-            const checkAccess = await this.studentReportService.checkReportAccess(key, value)
+            const checkAccess =
+              await this.studentReportService.checkReportAccess(key, value);
             if (!checkAccess) {
               return res.status(httpStatus.FORBIDDEN).send({
                 status: false,
                 code: httpStatus.FORBIDDEN,
-                message: 'Report is locked',
+                message: "Report is locked",
               });
             }
           }

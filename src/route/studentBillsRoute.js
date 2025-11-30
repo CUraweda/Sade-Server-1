@@ -4,6 +4,7 @@ const StudentBillsValidator = require("../validator/StudentBillsValidator")
 
 const router = express.Router()
 const auth = require("../middlewares/auth")
+const isStudentParentValid = require("../middlewares/StudentParentValid")
 
 const studentBillsController = new StudentBillsController()
 const studentBillsValidator = new StudentBillsValidator()
@@ -44,18 +45,24 @@ router.put(
 
 router.get(
     "/",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6,11, 13]),
     studentBillsController.showAll
 )
 router.get(
+    "/get-for-report",
+    auth([13]),
+    studentBillsController.showForReport
+)
+router.get(
     "/get-by-id/:id",
-    auth([1, 2, 3, 6]),
+    auth([1, 2, 3, 6,11, 13]),
     studentBillsController.showById
 )
 
 router.get(
     "/get-by-student-id/:id",
-    auth([1, 2, 3, 6, 8]),
+    auth([1, 2, 3, 6,11, 13, 8]),
+    isStudentParentValid("params", "id"),
     studentBillsController.showByStudentId
 )
 

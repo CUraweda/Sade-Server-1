@@ -1,8 +1,10 @@
-name: CD
+name: Production CD
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -16,13 +18,14 @@ jobs:
       - name: Deploy using ssh
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          key: ${{ secrets.PROD_PRIVATE_KEY }}
           port: 22
           debug: true
           script: |
             cd production/Sade-Server-1
             git pull origin main
             npm i
+            npx sequelize db:migrate 
             pm2 restart 0

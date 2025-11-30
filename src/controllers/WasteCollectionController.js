@@ -70,6 +70,17 @@ class WasteCollectionController {
     }
   };
   
+  showRecapType = async (req, res) => {
+    try{
+      const resData = await this.wasteCollectionService.showRecapByType(req.query)
+      
+      res.status(resData.statusCode).send(resData.response);
+    }catch(e){
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);    
+    }
+  }
+  
   showByFilter = async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 0;

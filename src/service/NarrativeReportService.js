@@ -21,6 +21,8 @@ class NarrativeReportService {
     try {
       let message = "Narrative Report successfully added.";
 
+      console.log("reqBody", reqBody);
+
       let data = await this.narrativeReportDao.create(reqBody);
 
       if (!data) {
@@ -40,7 +42,6 @@ class NarrativeReportService {
 
   updateNarrativeReport = async (id, body) => {
     const message = "Narrative Report successfully updated!";
-
 
     let rel = await this.narrativeReportDao.findById(id);
 
@@ -180,8 +181,16 @@ class NarrativeReportService {
 
   exportReportByStudentId = async (id, semester, reportId) => {
     let message = "Narrative Report successfully exported!";
-    if (!semester) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Please specify Semester Query");
-    if (!reportId) return responseHandler.returnError(httpStatus.BAD_REQUEST, "Please specify Report ID Query");
+    if (!semester)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Please specify Semester Query"
+      );
+    if (!reportId)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Please specify Report ID Query"
+      );
 
     let rel = await this.narrativeReportDao.getByStudentId(id, semester);
 
@@ -200,7 +209,8 @@ class NarrativeReportService {
     const pdfFile = await this.generatePdf(rel, dir);
 
     await this.studentReportDao.updateWhere(
-      { narrative_path: pdfFile }, { id: reportId }
+      { narrative_path: pdfFile },
+      { id: reportId }
     );
 
     return responseHandler.returnSuccess(httpStatus.OK, message, {
@@ -316,11 +326,10 @@ class NarrativeReportService {
       .text(textNisn, textX_Nisn - 10, textY_Nisn + 165);
   };
 
+  // generateHeader
   generateHeader = async (doc, data, type) => {
-    // doc.addPage();
     doc.page.margins = { top: 20, bottom: 20, left: 40, right: 40 };
 
-    // Load the image
     const imagePath = "src/images/kop_sade.png";
     const image = doc.openImage(imagePath);
 
@@ -332,34 +341,30 @@ class NarrativeReportService {
 
     const gradeHeader3Path = "src/images/grade-header-3.png";
     const gradeHeader3 = doc.openImage(gradeHeader3Path);
-    // Calculate the width of A4 paper with margins
+
     const width =
       doc.page.width - doc.page.margins.left - doc.page.margins.right;
-
-    // Calculate the height proportionally to maintain aspect ratio
     const height = (image.height / image.width) * width;
 
-    // Set the image at the top of the page
     const x = doc.page.margins.left;
-    const y = doc.page.margins.top; // Set y to the top margin
+    const y = doc.page.margins.top;
 
-    // Draw the image onto the PDF document
     doc.image(image, x, y, { width });
 
-    doc.moveTo(50, 111); // starting point x, y
-    doc.lineTo(550, 111); // ending point x, y
+    doc.moveTo(50, 111);
+    doc.lineTo(550, 111);
     doc.lineWidth(1);
     doc.strokeColor("black");
     doc.stroke();
 
-    doc.moveTo(50, 111); // starting point x, y
-    doc.lineTo(275, 111); // ending point x, y
+    doc.moveTo(50, 111);
+    doc.lineTo(275, 111);
     doc.lineWidth(2);
     doc.strokeColor("black");
     doc.stroke();
 
-    doc.moveTo(350, 111); // starting point x, y
-    doc.lineTo(550, 111); // ending point x, y
+    doc.moveTo(350, 111);
+    doc.lineTo(550, 111);
     doc.lineWidth(2);
     doc.strokeColor("black");
     doc.stroke();
@@ -378,248 +383,292 @@ class NarrativeReportService {
       .text("Rapor Narasi Semester " + data.semester, 50, 150)
       .text("Tahun Ajaran " + data.academic_year, 50, 170)
       .text(data.class_name, 50, 190);
+
+    // Penyesuaian posisi Y untuk gambar header grade
+    // Nilai 140 adalah percobaan, sesuaikan lagi jika belum pas
+    const gradeHeaderY = 140;
     if (type === "default") {
-      doc.image(gradeHeader1, 459, 160, { width: 85 });
+      doc.image(gradeHeader1, 459, gradeHeaderY, { width: 85 });
     } else if (type === "tahsin") {
-      doc.image(gradeHeader2, 459, 150, { width: 85 });
+      doc.image(gradeHeader2, 459, gradeHeaderY, { width: 85 });
     } else if (type === "english") {
-      doc.image(gradeHeader3, 459, 157, { width: 85 });
+      doc.image(gradeHeader3, 459, gradeHeaderY + 7, { width: 85 }); // English mungkin sedikit berbeda posisinya
     }
   };
+// generateContents
+generateContents = async (doc, data) => {
+  console.log("generateContents called with data:", data);
 
-  generateContents = async (doc, data) => {
-    let currentY = 220; // Tentukan posisi awal untuk kategori pertama
-    const gradeHeader2Path = "src/images/grade-header-2.png";
-    const gradeHeader3Path = "src/images/grade-header-3.png";
+  let currentY = 220; // Posisi Y awal konten setelah header
 
-    data.narrative_categories.forEach((item, index) => {
-      if (item.category.toLowerCase().trim().includes("tahsin")) {
-        // doc.rect(459, 160, 85, 85).fill("white");
-        doc.image(gradeHeader2Path, 459, 150, { width: 85 });
-      } else if (item.category.toLowerCase().trim().includes("english")) {
-        doc.image(gradeHeader3Path, 459, 157, { width: 85 });
+  const ensureNewPage = (doc, data, currentY, headerType = "default") => {
+    const pageBottomMargin = 70; // Margin bawah halaman
+    if (currentY > (doc.page.height - pageBottomMargin)) {
+      doc.addPage();
+      this.generateHeader(doc, data, headerType);
+      return 220; // Kembali ke Y awal konten setelah header
+    }
+    return currentY;
+  };
+
+   const drawNarrativeTable = (doc, tableData, startY, columnWidths) => {
+    let y = startY;
+    const startX = 50;
+    const cellPadding = 2; 
+    const rowMinHeight = 15;
+
+    doc.font("Helvetica-Bold").fontSize(10); // Font untuk header tabel
+    let xColHeader = startX;
+
+    const headerTextY = y + cellPadding;
+
+    const currentDescColWidth = columnWidths[0] - (2 * cellPadding);
+    const safeCurrentDescColWidth = (isNaN(currentDescColWidth) || currentDescColWidth < 0) ? 390 : currentDescColWidth;
+    
+    doc.text("Deskripsi", xColHeader + cellPadding, headerTextY, { width: safeCurrentDescColWidth, align: 'left' });
+    xColHeader += columnWidths[0];
+
+    const gradingColStart = 459;
+    const singleGradingColWidth = 85 / 3;
+
+    let headerRowHeight = doc.heightOfString("Deskripsi", { width: safeCurrentDescColWidth }) + (2 * cellPadding);
+    if (headerRowHeight < 25) {
+        headerRowHeight = 25;
+    }
+
+    doc.moveTo(startX, y + headerRowHeight)
+       .lineTo(startX + columnWidths[0] + 85, y + headerRowHeight)
+       .lineWidth(0.5)
+       .strokeColor("black")
+       .stroke();
+    
+    y += headerRowHeight;
+
+
+    tableData.forEach((row, rowIndex) => {
+      const rowDesc = String(row.desc || ''); 
+
+      const currentDescColWidthForData = columnWidths[0] - (2 * cellPadding);
+      const safeCurrentDescColWidthForData = (isNaN(currentDescColWidthForData) || currentDescColWidthForData < 0) ? 390 : currentDescColWidthForData;
+
+      const descTextHeight = doc.heightOfString(rowDesc, { width: safeCurrentDescColWidthForData });
+      let actualRowHeight = descTextHeight + (2 * cellPadding);
+      if (actualRowHeight < rowMinHeight) {
+        actualRowHeight = rowMinHeight;
       }
 
-      if (currentY > 700 || index !== 0) {
-        doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-        if (item.category.toLowerCase().trim().includes("tahsin")) {
-          this.generateHeader(doc, data, "tahsin");
+      y = ensureNewPage(doc, data, y + actualRowHeight, 'default'); 
+
+      let currentRowStartY = y;
+
+      doc.font("Helvetica").fontSize(10); 
+      doc.text(rowDesc, startX + cellPadding, currentRowStartY + cellPadding, { width: safeCurrentDescColWidthForData, align: 'justify' });
+      
+      doc.font("./src/fonts/fontawesome-webfont.ttf").fontSize(10);
+      const iconYOffset = currentRowStartY + (actualRowHeight / 2) - (10 / 2); 
+
+      doc.text(row.gradeIcons[0], gradingColStart, iconYOffset, { width: singleGradingColWidth, align: 'center' });
+      doc.text(row.gradeIcons[1], gradingColStart + singleGradingColWidth, iconYOffset, { width: singleGradingColWidth, align: 'center' });
+      doc.text(row.gradeIcons[2], gradingColStart + (2 * singleGradingColWidth), iconYOffset, { width: singleGradingColWidth, align: 'center' });
+      
+      doc.font("Helvetica").fontSize(10); 
+
+      doc.moveTo(startX, currentRowStartY + actualRowHeight)
+         .lineTo(startX + columnWidths[0] + 85, currentRowStartY + actualRowHeight)
+         .lineWidth(0.5)
+         .strokeColor("black")
+         .stroke();
+
+      y += actualRowHeight;
+    });
+
+    return y;
+  };
+
+  const categoriesToDisplay = data.narrative_categories.filter((item) => {
+    return (
+      item.narrative_sub_categories &&
+      item.narrative_sub_categories.some(
+        (sub_cat) =>
+          sub_cat.narrative_reports && sub_cat.narrative_reports.length > 0
+      )
+    );
+  });
+
+  const narrativeColumnWidths = [400, 50, 50, 50];
+
+  categoriesToDisplay.forEach((item, index) => {
+    const currentHeaderType = item.category.toLowerCase().trim().includes("tahsin")
+      ? "tahsin"
+      : item.category.toLowerCase().trim().includes("english")
+      ? "english"
+      : "default";
+
+    const minHeightForNewCategory = 20 + 18 + 25 + 10 + 10; 
+    if (index !== 0 || currentY + minHeightForNewCategory > (doc.page.height - doc.page.margins.bottom)) {
+      doc.addPage();
+      this.generateHeader(doc, data, currentHeaderType);
+      currentY = 220; 
+    } else {
+        if (index !== 0) { 
+             currentY += 20; // Jeda antar kategori jika di halaman yang sama
+        }
+    }
+    
+    doc.font("Helvetica-Bold").fontSize(12).text(item.category, 50, currentY);
+    doc.moveTo(50, currentY + 15)
+       .lineTo(550, currentY + 15)
+       .lineWidth(1.5)
+       .strokeColor("black")
+       .stroke();
+    
+
+    item.narrative_sub_categories.forEach((sub_cat, subIndex) => {
+      if (sub_cat.narrative_reports && sub_cat.narrative_reports.length > 0) {
+       
+        let requiredSpaceForSubCategoryTitle = 8; 
+        let requiredSpaceForNarrativeTableHeader = 10;
+
+        if (subIndex === 0) {
+            currentY += 8; 
+            const totalRequired = requiredSpaceForSubCategoryTitle + requiredSpaceForNarrativeTableHeader + 5; // +5 untuk margin minimal
+            currentY = ensureNewPage(doc, data, currentY + totalRequired, currentHeaderType);
+
         } else {
-          this.generateHeader(doc, data, "default");
+          
+            currentY += 10; 
+            const totalRequired = requiredSpaceForSubCategoryTitle + requiredSpaceForNarrativeTableHeader + 5;
+            currentY = ensureNewPage(doc, data, currentY + totalRequired, currentHeaderType);
         }
-        currentY = 220; // Set posisi awal untuk halaman baru
-      }
+       
+        doc.font("Helvetica-Bold").fontSize(10).text(sub_cat.sub_category, 50, currentY); 
 
-      doc.font("Helvetica-Bold").fontSize(12).text(item.category, 50, currentY);
-      doc
-        .moveTo(450, currentY + 12)
-        .lineTo(50, currentY + 12)
-        .lineWidth(1.5)
-        .strokeColor("black")
-        .stroke();
-      doc
-        .moveTo(550, currentY + 12)
-        .lineTo(50, currentY + 12)
-        .lineWidth(0.5)
-        .strokeColor("black")
-        .stroke();
-
-      // Tingkatkan posisi Y untuk persiapan menambahkan subkategori
-      currentY += 25;
-
-      item.narrative_sub_categories.forEach((sub_cat, index) => {
-        if (currentY > 700) {
-          doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-          this.generateHeader(doc, data, "default");
-          currentY = 220; // Set posisi awal untuk halaman baru
-        }
-
-        doc
-          .font("Helvetica-Bold")
-          .fontSize(11)
-          .text(sub_cat.sub_category, 50, currentY);
-
-        doc
-          .moveTo(550, currentY + 12)
-          .lineTo(50, currentY + 12)
-          .lineWidth(0.5)
-          .strokeColor("black")
-          .stroke();
-
-        sub_cat.narrative_reports.forEach((report, index) => {
-          if (currentY > 700) {
-            doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-            this.generateHeader(doc, data, "default");
-            currentY = 220; // Set posisi awal untuk halaman baru
-          }
-
-          const textOptions = { width: 400, align: "justify" };
-          doc
-            .font("Helvetica")
-            .fontSize(10)
-            .text(report.desc, 50, currentY + 20, textOptions);
-
-          let grade = "                ";
+        doc.moveTo(50, currentY + 14)
+           .lineTo(550, currentY + 14)
+           .lineWidth(0.5)
+           .strokeColor("black")
+           .stroke();
+        
+        currentY += 16; 
+        const narrativeTableRows = sub_cat.narrative_reports.map(report => {
+          let gradeIcons = ["", "", ""];
           switch (report.grade) {
             case 1:
-              grade = "                ";
+              gradeIcons = ["", "", ""];
               break;
             case 2:
-              grade = "                ";
+              gradeIcons = ["", "", ""];
               break;
             case 3:
-              grade = "                ";
+              gradeIcons = ["", "", ""];
               break;
           }
-          doc
-            .font("./src/fonts/fontawesome-webfont.ttf")
-            .fontSize(10)
-            .text(grade, 450, currentY + 20, {
-              align: "center",
-            });
-
-          const remainingLines =
-            Math.ceil(doc.heightOfString(report.desc, textOptions)) / 10; // Hitung jumlah baris yang tersisa
-          // console.log(remainingLines);
-          // console.log(report.desc.length);
-          if (remainingLines > 1) {
-            currentY += remainingLines * 12.5; // Tingkatkan posisi Y dengan jumlah baris yang tersisa
-          } else if (report.desc.length > 84) {
-            currentY += 25; // Handling jika tidak terdeteksi sebagai 2 baris, maka di cek kembali jumlah karakternya jika memenuhi kriteria maka dikali 2
-          } else {
-            currentY += 15; // Tingkatkan posisi Y ke baris berikutnya
-          }
-
-          doc
-            .moveTo(550, currentY + 17)
-            .lineTo(50, currentY + 17)
-            .lineWidth(0.5)
-            .strokeColor("black")
-            .stroke();
+          return {
+            desc: report.desc,
+            gradeIcons: gradeIcons,
+          };
         });
 
-        // Tingkatkan posisi Y untuk subkategori berikutnya
-        currentY += 25;
-      });
-
-      // Tingkatkan posisi Y setelah menambahkan semua subkategori untuk kategori saat ini
-      currentY += 10; // Anda bisa menyesuaikan jarak antara kategori dengan subkategori
-      if (item.narrative_category_comments.comments) {
-        doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-        this.generateHeader(doc, data, "comment");
-        currentY = 220; // Set posisi awal untuk halaman baru
-
-        doc
-          .font("Helvetica-BoldOblique")
-          .fontSize(10)
-          .text("Komentar :", 50, currentY);
-
-        currentY += 20;
-
-        doc
-          .font("Helvetica")
-          .fontSize(10)
-          .text(item.narrative_category_comments.comments, 50, currentY, {
-            align: "justify",
-          });
+        currentY = drawNarrativeTable(doc, narrativeTableRows, currentY, narrativeColumnWidths);
+        
+        currentY += 10; 
       }
     });
 
-    if (data.nar_teacher_comments) {
-      doc.addPage();
-      this.generateHeader(doc, data, "comment");
-      currentY = 220; // Set posisi awal untuk halaman baru
+    currentY += 5; 
 
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(14)
-        .text("KOMENTAR UMUM", 50, currentY);
-
-      currentY += 20;
-
+    if (item.narrative_category_comments.comments) {
+      currentY = ensureNewPage(doc, data, currentY + 30, "comment"); 
       doc
         .font("Helvetica-BoldOblique")
         .fontSize(10)
-        .text("Komentar Guru :", 50, currentY);
+        .text("Komentar :", 50, currentY);
 
-      currentY += 20;
+      currentY += 15; 
+
+      const commentTextOptions = { align: "justify", width: 500 };
+      const commentHeight = doc.heightOfString(item.narrative_category_comments.comments, commentTextOptions);
 
       doc
         .font("Helvetica")
         .fontSize(10)
-        .text(data.nar_teacher_comments, 50, currentY, {
-          align: "justify",
-        });
+        .text(
+          item.narrative_category_comments.comments,
+          50,
+          currentY,
+          commentTextOptions
+        );
+
+      currentY += commentHeight + 15;
     }
+  });
+  
+ doc.addPage();
+this.generateHeader(doc, data, "comment");
+currentY = 220; 
 
-    if (data.nar_parent_comments) {
-      doc.addPage();
-      this.generateHeader(doc, data, "comment");
-      currentY = 220; // Set posisi awal untuk halaman baru
+const generalCommentTextOptions = { width: 500, align: "justify" };
 
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(14)
-        .text("KOMENTAR UMUM", 50, currentY);
+// Tulis komentar
+if (data.nar_teacher_comments || data.nar_parent_comments) {
+  doc.font("Helvetica-Bold").fontSize(14).text("KOMENTAR UMUM", 50, currentY);
+  currentY += 20; // Sedikit mengurangi spasi setelah judul
+}
 
-      currentY += 20;
+if (data.nar_teacher_comments) {
+  doc.font("Helvetica-BoldOblique").fontSize(10).text("Komentar Guru :", 50, currentY);
+  currentY += 12; // Jarak setelah label komentar guru
+  const teacherCommentHeight = doc.heightOfString(data.nar_teacher_comments, generalCommentTextOptions);
+  doc.font("Helvetica")
+     .fontSize(10)
+     .text(
+       data.nar_teacher_comments,
+       50,
+       currentY,
+       generalCommentTextOptions
+     );
+  currentY += teacherCommentHeight + 5; // Mengurangi spasi setelah komentar guru
+}
 
-      doc
-        .font("Helvetica-BoldOblique")
-        .fontSize(10)
-        .text("Komentar Orang Tua :", 50, currentY);
+if (data.nar_parent_comments) {
+  if (data.nar_teacher_comments) {
+    currentY += 5; // Mengurangi spasi antara komentar guru dan orang tua
+  }
 
-      currentY += 20;
+  doc.font("Helvetica-BoldOblique").fontSize(10).text("Komentar Orang Tua :", 50, currentY);
+  currentY += 12; // Jarak setelah label komentar orang tua
+  const parentCommentHeight = doc.heightOfString(data.nar_parent_comments, generalCommentTextOptions);
+  doc.font("Helvetica")
+     .fontSize(10)
+     .text(
+       data.nar_parent_comments,
+       50,
+       currentY,
+       generalCommentTextOptions
+     );
+  currentY += parentCommentHeight + 5; // Mengurangi spasi setelah komentar orang tua
+}
 
-      doc
-        .font("Helvetica")
-        .fontSize(10)
-        .text(data.nar_parent_comments, 50, currentY, {
-          align: "justify",
-        });
-    }
-    // doc.addPage();
-    // this.generateHeader(doc, data, "comment");
-    // currentY = 220; // Set posisi awal untuk halaman baru
-    const remainingLines1 =
-      Math.ceil(doc.heightOfString(data.nar_parent_comments)) / 10; // Hitung jumlah baris yang tersisa
+// Tanda tangan - langsung ditempel di bawah komentar dengan jarak minimal
+currentY += 20; // Penyesuaian spasi awal untuk tanda tangan. Nilai ini mungkin perlu penyesuaian lebih lanjut.
 
-    if (remainingLines1 > 1) {
-      currentY += remainingLines1 * 12.5; // Tingkatkan posisi Y dengan jumlah baris yang tersisa
-    } else if (data.nar_parent_comments.length > 84) {
-      currentY += 25; // Handling jika tidak terdeteksi sebagai 2 baris, maka di cek kembali jumlah karakternya jika memenuhi kriteria maka dikali 2
-    } else {
-      currentY += 15; // Tingkatkan posisi Y ke baris berikutnya
-    }
+// Pastikan tanda tangan tidak keluar dari halaman
+const signatureHeight = 40; // Tinggi yang dibutuhkan untuk bagian tanda tangan
+if (currentY + signatureHeight > doc.page.height - 50) {
+  // Jika tidak cukup ruang, naikkan sedikit posisi tanda tangan
+  currentY = doc.page.height - 50 - signatureHeight;
+}
 
-    if (currentY > 650) {
-      doc.addPage(); // Tambahkan halaman baru jika currentY melebihi 700
-      this.generateHeader(doc, data, "comment");
-      currentY = 220; // Set posisi awal untuk halaman baru
-    }
+// Tulis tanda tangan
+doc.font("Helvetica").fontSize(10).text("Kepala Sekolah", 70, currentY);
+doc.font("Helvetica").fontSize(10).text("Fasilitator", 320, currentY);
 
-    doc
-      .font("Helvetica")
-      .fontSize(10)
-      .text("Kepala Sekolah", 70, currentY, { width: 250, align: "justify" });
+currentY += 12; // Mengurangi spasi antara label dan nama tanda tangan
 
-    doc
-      .font("Helvetica")
-      .fontSize(10)
-      .text("Fasilitator", 320, currentY, { width: 250, align: "justify" });
+doc.font("Helvetica-Bold").fontSize(10).text(data.head.signature_name, 70, currentY);
+doc.font("Helvetica-Bold").fontSize(10).text(data.facilitator.signature_name, 320, currentY);
 
-    currentY += 70;
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(10)
-      .text(data.head, 70, currentY, { width: 250, align: "justity" });
-
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(10)
-      .text(data.facilitator, 320, currentY, { width: 250, align: "justity" });
-  };
+};
 }
 
 module.exports = NarrativeReportService;

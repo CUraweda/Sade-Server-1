@@ -1,6 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const { Op } = require("sequelize");
+const { Op, literal } = require("sequelize");
 const { required } = require("joi");
 
 const StudentClass = models.studentclass;
@@ -9,6 +9,7 @@ const User = models.user
 const Classes = models.classes;
 const UserAccess = models.useraccess
 const Reports = models.studentreports;
+const StudentAttendance = models.studentattendance
 
 class StudentClassDao extends SuperDao {
   constructor() {
@@ -39,21 +40,32 @@ class StudentClassDao extends SuperDao {
       ]
     })
   }
-  async getByClasses(class_id, academic_year) {
+  async getByClasses(class_id, filter) {
+    const { date } = filter
     const where = {
-      class_id: class_id,
+      class_id,
       is_active: "Ya",
     };
-
-    if (academic_year) where["academic_year"] = academic_year;
+    const include = [{ model: Students }]
+    if(date) {
+      include.push({
+        model: StudentAttendance,
+        where: {
+          [Op.and]: [
+            { att_date: { [Op.gte]: `${date}T00:00:00.000Z` } },
+            { att_date: { [Op.lte]: `${date}T23:59:59.999Z` } },
+          ]
+        },
+        required: false,
+      })
+    }
 
     return StudentClass.findAll({
-      where,
-      include: [
-        {
-          model: Students,
-        },
-      ],
+      where, include,
+      ...(date && {
+        group: ['id'],
+        having: literal('COUNT(studentattendances.id) = 0')
+      }),
       order: [
         [{ model: Students, as: 'student' }, 'full_name', 'ASC'],
       ],

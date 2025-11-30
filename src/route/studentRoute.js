@@ -31,16 +31,22 @@ router.post(
   studentController.importJSON
 )
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), studentController.show);
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), studentController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), studentController.showAll);
 
 router.delete("/delete/:id", auth([1, 3]), studentController.delete);
 
 router.get(
   "/show-nis/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   studentController.showNis
 );
+
+router.get(
+  "/export",
+   auth([1, 3]),
+  studentController.export
+)
 
 module.exports = router;

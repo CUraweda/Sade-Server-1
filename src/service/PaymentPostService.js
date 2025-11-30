@@ -73,27 +73,46 @@ class PaymentPostService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  async showPage(page, limit, search, offset) {
+  async showPage(page, limit, search, offset, startDate, endDate) {
     const totalRows = await this.paymentPostDao.getCount(search);
     const totalPage = Math.ceil(totalRows / limit);
 
-    const result = await this.paymentPostDao.getPaymentPostPage(
-      search,
-      offset,
-      limit
-    );
+    try {
+      const result = await this.paymentPostDao.getPaymentPostPage(
+        search,
+        offset,
+        limit,
+        startDate,
+        endDate
+      );
+  
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Payment post successfully retrieved.",
+        {
+          result: result,
+          page: page,
+          limit: limit,
+          totalRows: totalRows,
+          totalPage: totalPage,
+        }
+      );
+    } catch (error) {
+      logger.error(error);
+      console.log(error);
+      
+      return responseHandler.returnError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Failed to retrieve payment posts."
+      );
+    }
+  }
 
-    return responseHandler.returnSuccess(
-      httpStatus.OK,
-      "Payment post successfully retrieved.",
-      {
-        result: result,
-        page: page,
-        limit: limit,
-        totalRows: totalRows,
-        totalPage: totalPage,
-      }
-    );
+  showPaymentTotalPOS = async () =>  {
+    const result = await this.paymentPostDao.getPaymentTotalByPOS()
+    if (!result) return responseHandler.returnSuccess(httpStatus.OK,"Payment post not found!");
+
+    return responseHandler.returnSuccess(httpStatus.OK, "Payment Pos total successfully retrived", result);
   }
 
   deletePaymentPost = async (id) => {

@@ -1,6 +1,7 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
+const { formatDateForSQL } = require("../helper/utils");
 
 const Overview = models.overviews;
 const Classes = models.classes
@@ -23,7 +24,7 @@ class OverviewDao extends SuperDao {
         }
       ],
     });
-    
+
     if (!result) {
       result = await Overview.findOne({
         where: {
@@ -37,7 +38,7 @@ class OverviewDao extends SuperDao {
         ],
       });
     }
-  
+
     return result;
   }
 
@@ -71,6 +72,7 @@ class OverviewDao extends SuperDao {
   }
 
   async getCount(search, filters) {
+    const { start_date, end_date } = filters
     const where = {
       [Op.or]: [
         {
@@ -100,17 +102,18 @@ class OverviewDao extends SuperDao {
         },
       ],
     }
-    
+
     if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
     if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }
     if (filters.academic) where["period"] = filters.academic
-    
+
     return Overview.count({
       where
     });
   }
 
   async getOverviewPage(search, offset, limit, filters) {
+    const { start_date, end_date } = filters
     const where = {
       [Op.or]: [
         {
@@ -139,6 +142,13 @@ class OverviewDao extends SuperDao {
           },
         },
       ],
+      ...((start_date && end_date) && {
+        [Op.and]: [
+          {
+            created_at: { [Op.between]: [start_date, end_date] },
+          }
+        ]
+      })
     }
 
     if (filters.class_ids?.length) where["class_id"] = { [Op.in]: filters.class_ids }

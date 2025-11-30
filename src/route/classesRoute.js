@@ -22,9 +22,9 @@ router.put(
   classesController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), classesController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11, 13]), classesController.show);
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 9, 10]), classesController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 9, 10, 11, 13]), classesController.showAll);
 
 router.delete("/delete/:id", auth([1, 3]), classesController.delete);
 

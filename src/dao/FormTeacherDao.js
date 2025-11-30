@@ -46,28 +46,28 @@ class FormTeacherDao extends SuperDao {
         }
       ]
     }
-    
+
     if (academic_year) {
       conditions.academic_year = {
-          [Op.like]: academic_year,
+        [Op.like]: academic_year,
       };
     }
 
     if (is_active !== undefined) {
-        conditions.is_active = {
-            [Op.eq]: is_active,
-        };
+      conditions.is_active = {
+        [Op.eq]: is_active,
+      };
     }
-    
+
     return FormTeacher.count({
       where: conditions,
       include: [
-          {
-              model: Employees,
-          },
-          {
-              model: Classes,
-          },
+        {
+          model: Employees,
+        },
+        {
+          model: Classes,
+        },
       ],
     });
   }
@@ -93,33 +93,39 @@ class FormTeacherDao extends SuperDao {
         }
       ]
     }
-    
+
     if (academic_year) {
       conditions.academic_year = {
-          [Op.like]: academic_year,
+        [Op.like]: academic_year,
       };
     }
 
     if (is_active !== undefined) {
-        conditions.is_active = {
-            [Op.eq]: is_active,
-        };
+      conditions.is_active = {
+        [Op.eq]: is_active,
+      };
     }
-    
+
     return FormTeacher.findAll({
       where: conditions,
       include: [
-          {
-              model: Employees,
-          },
-          {
-              model: Classes,
-          },
+        {
+          model: Employees,
+        },
+        {
+          model: Classes,
+        },
       ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
     });
+  }
+
+  async getAllAssigned(employee_id) {
+    return FormTeacher.findAll({
+      where: { employee_id, is_active: true }
+    })
   }
 }
 module.exports = FormTeacherDao;

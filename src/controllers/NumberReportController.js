@@ -6,6 +6,7 @@ const ClassesService = require("../service/ClassesService");
 
 const path = require("path");
 const fs = require("fs");
+const { sign } = require("crypto");
 
 class NumberReportController {
   constructor() {
@@ -161,10 +162,12 @@ class NumberReportController {
     try {
       var id = req.params.id;
       const semester = req.query.semester || 1;
+      const signedDate = req.query.date ? new Date(req.query.date) : new Date()
 
       const resData = await this.numberReportService.exportReportByStudentId(
         id,
-        semester
+        semester,
+        signedDate
       );
 
 

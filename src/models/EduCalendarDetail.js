@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      EduCalendarDetail.belongsTo(models.employees, {
+        foreignKey: "teacher_id",
+      });
       EduCalendarDetail.belongsTo(models.educalendar, {
         foreignKey: "edu_id",
       });
@@ -22,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       end_date: DataTypes.DATE,
       agenda: DataTypes.STRING,
       color: DataTypes.STRING,
+      only_teacher: DataTypes.BOOLEAN 
     },
     {
       sequelize,
@@ -32,3 +36,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return EduCalendarDetail;
 };
+ 

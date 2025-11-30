@@ -122,7 +122,8 @@ class WasteCollectionService {
         class_id: class_id || null,
         start_date: start_date || null,
         end_date: end_date || null,
-        weight: weight || null
+        weight: weight || null,
+        search
     };
     const totalRows = await this.wasteCollectionDao.getFilteredCount(filterOptions);
     const totalPage = Math.ceil(totalRows / limit);
@@ -172,6 +173,13 @@ class WasteCollectionService {
 
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
+  
+  showRecapByType = async (filter) => {
+    const rel = await this.wasteCollectionDao.getRecapType(filter)
+    if (!rel) return responseHandler.returnSuccess(httpStatus.OK,"Waste Collection not found!",{});
+  
+    return responseHandler.returnSuccess(httpStatus.OK, "Waste Collection Recap Successfully Retrived", rel);
+  }
 
   showRecapStudentInClass = async (id) => {
     const message = "Waste Collection successfully retrieved!";

@@ -4,6 +4,7 @@ const ParentValidator = require("../validator/ParentValidator");
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const isStudentParentValid = require("../middlewares/StudentParentValid");
 
 const parentController = new ParentController();
 const parentValidator = new ParentValidator();
@@ -31,13 +32,14 @@ router.put(
   parentController.update
 );
 
-router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), parentController.show);
+router.get("/show/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), parentController.show);
 
-router.get("/show-by-userid/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), parentController.showByUserId);
+router.get("/show-by-userid/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), parentController.showByUserId);
 
 router.get(
   "/show-by-student/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
+  isStudentParentValid("params", "id"),
   parentController.showByStudentId
 );
 
@@ -45,7 +47,7 @@ router.get("/show-by-name/:name", auth([1, 4, 8]), parentController.showByName)
 
 router.put("/attach-user/:id", auth([1, 4, 8]), parentValidator.parentAttachValidator, parentController.update)
 
-router.get("/", auth([1, 2, 3, 4, 5, 6, 8]), parentController.showAll);
+router.get("/", auth([1, 2, 3, 4, 5, 6, 8,11]), parentController.showAll);
 
 router.delete("/delete/:id", auth([1, 3]), parentController.delete);
 

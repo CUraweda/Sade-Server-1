@@ -1,6 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
-const {  Op, fn, col } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 
 const WasteOfficer = models.wasteofficer;
 const Student = models.students;
@@ -11,7 +11,7 @@ class WasteOfficerDao extends SuperDao {
     super(WasteOfficer);
   }
 
-  async getCountByDate (date) {
+  async getCountByDate(date) {
     return WasteOfficer.count({
       where: {
         assignment_date: {
@@ -21,7 +21,7 @@ class WasteOfficerDao extends SuperDao {
     })
   }
 
-  async findByAssignmentDate (date, page, limit, search, offset) {
+  async findByAssignmentDate(date, page, limit, search, offset) {
     try {
       return WasteOfficer.findAll({
         where: {
@@ -32,26 +32,27 @@ class WasteOfficerDao extends SuperDao {
         attributes: ['id', 'name', 'assignment_date'],
         include: [
           {
-              model: Student,
-              as: 'student',
-              attributes: ["id", "nis", "full_name"]
+            model: Student,
+            as: 'student',
+            attributes: ["id", "nis", "full_name"]
           },
           {
-              model: Class,
-              as: 'class',
-              attributes: ["id","level", "class_name"]
+            model: Class,
+            as: 'class',
+            attributes: ["id", "level", "class_name"]
           }
-      ],
-      offset: offset,
-      limit: limit,
-      order: [["id", "DESC"]],
+        ],
+        offset: offset,
+        limit: limit,
+        order: [["id", "DESC"]],
       });
     } catch (error) {
       throw new Error(`Error in findByAssignmentDate DAO: ${error.message}`);
     }
   }
 
-  async getCount(search) {
+  async getCount(filter) {
+    const { search, date, class_id } = filter
     return WasteOfficer.count({
       where: {
         [Op.or]: [
@@ -81,65 +82,70 @@ class WasteOfficerDao extends SuperDao {
             },
           },
         ],
+        ...(class_id && { class_id }),
+        ...(date && { created_at: { [Op.between]: [date.start_date, date.end_date] } }),
       },
       include: [
-          {
-              model: Student,
-              as: 'student',
-              attributes: ["id", "nis", "full_name"]
-          },
-          {
-              model: Class,
-              as: 'class',
-              attributes: ["id","level", "class_name"]
-          }
+        {
+          model: Student,
+          as: 'student',
+          attributes: ["id", "nis", "full_name"]
+        },
+        {
+          model: Class,
+          as: 'class',
+          attributes: ["id", "level", "class_name"]
+        }
       ]
     });
   }
 
-  async getWasteOfficerPage(search, offset, limit) {
+  async getWasteOfficerPage(filter, offset, limit) {
+    const { search, date, class_id } = filter
     return WasteOfficer.findAll({
-        where: {
-          [Op.or]: [
-            {
-              "$class.class_name$": {
-                [Op.like]: "%" + search + "%",
-              },
+      where: {
+        [Op.or]: [
+          {
+            "$class.class_name$": {
+              [Op.like]: "%" + search + "%",
             },
-            {
-              "$student.full_name$": {
-                [Op.like]: "%" + search + "%",
-              },
+          },
+          {
+            "$student.full_name$": {
+              [Op.like]: "%" + search + "%",
             },
-            {
-              name: {
-                [Op.like]: "%" + search + "%",
-              },
+          },
+          {
+            name: {
+              [Op.like]: "%" + search + "%",
             },
-            {
-              class_name: {
-                [Op.like]: "%" + search + "%",
-              },
+          },
+          {
+            class_name: {
+              [Op.like]: "%" + search + "%",
             },
-            {
-              assignment_date: {
-                [Op.like]: "%" + search + "%",
-              },
+          },
+          {
+            assignment_date: {
+              [Op.like]: "%" + search + "%",
             },
-          ],
-        },
-        include: [
-            {
-                model: Student,
-                as: 'student',
-                attributes: ["id", "nis", "full_name"]
-            },
-            {
-                model: Class,
-                as: 'class',
-                attributes: ["id","level", "class_name"]
-            }
+          },
         ],
+        ...(class_id && { class_id }),
+        ...(date && { assignment_date: { [Op.between]: [date.start_date, date.end_date] } }),
+      },
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          attributes: ["id", "nis", "full_name"]
+        },
+        {
+          model: Class,
+          as: 'class',
+          attributes: ["id", "level", "class_name"]
+        }
+      ],
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],

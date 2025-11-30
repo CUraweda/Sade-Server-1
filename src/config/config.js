@@ -75,10 +75,10 @@ module.exports = {
     password: envVar.REDIS_PASSWORD,
   },
   email: {
-    host: envVar.SMTP_HOST,
-    port: envVar.SMTP_PORT,
+    host: envVar.EMAIL_HOST,
+    port: envVar.EMAIL_PORT,
     account: envVar.EMAIL_ACCOUNT,
-    password: envVar.PASSWORD,
-    subject: envVar.SUBJECT,
+    password: envVar.EMAIL_PASSWORD,
+    subject: envVar.EMAIL_SUBJECT,
   },
 };

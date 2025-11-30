@@ -155,8 +155,8 @@ class StudentReportFileController {
 
   showByStudent = async (req, res) => {
     try {
-      const studentId = req.params.student_id
-      const {academic = "", semester = "", search_query = ""} = req.query
+      const studentId = req.params.student_id;
+      const { academic = "", semester = "", search_query = "" } = req.query;
 
       const resData = await this.studentReportFileController.showPage(
         0,
@@ -166,15 +166,17 @@ class StudentReportFileController {
           search: search_query,
           student_id: studentId,
           academic,
-          semester
+          semester,
         }
-      )
-      res.status(resData.statusCode).send({...resData.response, data: resData.response.data.result});
-    } catch(e) {
+      );
+      res
+        .status(resData.statusCode)
+        .send({ ...resData.response, data: resData.response.data.result });
+    } catch (e) {
       logger.error(e);
-      res.status(httpStatus.BAD_GATEWAY).send(e);      
+      res.status(httpStatus.BAD_GATEWAY).send(e);
     }
-  }
+  };
 
   delete = async (req, res) => {
     try {

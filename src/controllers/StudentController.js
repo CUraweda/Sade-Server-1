@@ -118,6 +118,23 @@ class StudentController {
       res.status(httpStatus.BAD_GATEWAY).send(e);
     }
   };
+
+
+  export = async (req, res) => {
+    try {
+        const search = req.query.search_query || "";
+
+        const buffer = await this.studentService.exportPage(search);
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Ekspor Data Siswa.xlsx');
+
+        res.status(httpStatus.OK).send(buffer);
+    } catch (e) {
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
 }
 
 module.exports = StudentController;

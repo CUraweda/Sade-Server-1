@@ -22,8 +22,9 @@ class SubjectController {
     try {
       var id = req.params.id;
 
+      console.log("req.body", req.body);
       const resData = await this.subjectService.updateSubject(id, req.body);
-
+      
       res.status(resData.statusCode).send(resData.response);
     } catch (e) {
       logger.error(e);

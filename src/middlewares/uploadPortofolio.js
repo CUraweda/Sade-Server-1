@@ -37,7 +37,7 @@ var fileFilter = function (req, file, cb) {
 //maximum file size is 1Mb
 const uploadFile = multer({
   storage: storage,
-  limits: { fileSize: 5000000 },
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: fileFilter,
 }).single("file");
 

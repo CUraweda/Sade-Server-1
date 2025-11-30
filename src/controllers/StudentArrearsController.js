@@ -68,11 +68,21 @@ class StudentArrearsController {
         );
 
         res.status(resData.statusCode).send(resData.response);
-        } catch (e) {
+      } catch (e) {
         logger.error(e);
         res.status(httpStatus.BAD_GATEWAY).send(e);
-        }
+      }
     };
+    
+    showReport = async (req, res) => {
+      try{
+        const resData = await this.studentArrearsService.getReportBill()
+        res.status(resData.statusCode).send(resData.response);
+      }catch(e){
+        logger.error(e);
+        res.status(httpStatus.BAD_GATEWAY).send(e);
+      }
+    }
     exportAll = async (req, res) => {
       try {
           const search = req.query.search_query || "";

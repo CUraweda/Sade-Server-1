@@ -48,6 +48,8 @@ class SubjectService {
         level: body.level,
         code: body.code,
         name: body.name,
+        threshold: body.threshold,
+
       },
       { id }
     );

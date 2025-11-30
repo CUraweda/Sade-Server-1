@@ -23,14 +23,14 @@ router.post("/refresh-token", authController.refreshTokens);
 router.post("/logout", authController.logout);
 router.put(
   "/change-password",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   userValidator.changePasswordValidator,
   authController.changePassword
 );
 router.post("/verify-email/:id", authController.verifyMail);
 router.put(
   "/update-profile/:id",
-  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+  auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
   authController.update
 );
 router.post(
@@ -45,4 +45,10 @@ router.post(
   userValidator.resetPasswordValidator,
   authController.resetPassword
 );
+router.post(
+  "/admin-reset-pass",
+  auth([1]),
+  userValidator.resetPasswordAdminValidator,
+  authController.resetPasswordAdmin
+)
 module.exports = router;

@@ -13,14 +13,19 @@ process.env.TZ = "Asia/Jakarta";
 
 const app = express();
 
-// enable cors
-app.use(cors());
-app.options("*", cors());
+// CORS
+if (process.env.CORS_MODE === 'open') {
+  app.use(cors());
+  app.options('*', cors());
+} else {
+  app.use(cors({ origin: false }));
+  app.options('*', cors({ origin: false }));
+}
 
 // app.use(express.static(`${process.env.PWD}/public`));
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "10mb" }));
 
 // jwt authentication
 app.use(passport.initialize());
@@ -31,7 +36,7 @@ app.get("/", async (req, res) => {
   res.status(200).send(`Congratulations! API is working in port ${process.env.PORT}`);
 });
 app.use("/api", routes);
-app.use("/public", express.static(path.join(__dirname, '../public')));
+app.use("/public", express.static(path.join(__dirname, '../')));
 
 
 // send back a 404 error for any unknown api request

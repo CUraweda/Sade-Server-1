@@ -8,6 +8,7 @@ const Students = models.students;
 const PaymentBills = models.studentpaymentbills
 const PaymentPosts = models.paymentpost;
 const StudentClass = models.studentclass
+const Student = models.students
 
 class StudentBillsDao extends SuperDao {
     constructor() {
@@ -19,17 +20,17 @@ class StudentBillsDao extends SuperDao {
         }
 
         if (filters.cycle) {
-            if (filters.cycle == 'bulanan') 
-                where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.like]: 'bulanan'} 
+            if (filters.cycle == 'bulanan')
+                where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.like]: 'bulanan' }
             else if (filters.cycle == 'non-bulanan')
-               where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.notLike]: 'bulanan'} 
-        } 
+                where["$studentpaymentbill.paymentpost.billing_cycle$"] = { [Op.notLike]: 'bulanan' }
+        }
         if (filters.status) where['status'] = { [Op.like]: filters.status }
 
         return StudentBills.findAll({
-          where,
-          order: [["id", "DESC"]],
-          include: [
+            where,
+            order: [["id", "DESC"]],
+            include: [
                 {
                     model: PaymentBills,
                     as: 'studentpaymentbill',
@@ -52,22 +53,22 @@ class StudentBillsDao extends SuperDao {
     }
     async findById(id) {
         return StudentBills.findAll({
-          where: {
-            id: id,
-          },
-          order: [["id", "DESC"]],
-          include: [
-              {
-                  model: Students,
-                  as: 'student',
-                  attributes: ["id", "nis", "full_name", "class"]
-              },
-              {
-                  model: PaymentBills,
-                  as: 'studentpaymentbill',
-                //   attributes: ["id","student_id"]
-              }
-          ]
+            where: {
+                id: id,
+            },
+            order: [["id", "DESC"]],
+            include: [
+                {
+                    model: Students,
+                    as: 'student',
+                    attributes: ["id", "nis", "full_name", "class"]
+                },
+                {
+                    model: PaymentBills,
+                    as: 'studentpaymentbill',
+                    //   attributes: ["id","student_id"]
+                }
+            ]
         });
     }
     async getCount(search, billId, classId) {
@@ -103,18 +104,18 @@ class StudentBillsDao extends SuperDao {
                 {
                     model: PaymentBills,
                     as: 'studentpaymentbill',
-                    attributes: ["id","name"]
+                    attributes: ["id", "name"]
                 }
             ]
         })
     }
-    async getStudentBillsPage(search,offset,limit, billId, classId) {
+    async getStudentBillsPage(search, offset, limit, billId, classId) {
         const where = {
             [Op.or]: [
-                {"$student.full_name$": {[Op.like]: "%" + search + "%"}},
-                {evidence_path: {[Op.like]: "%" + search + "%"}},
-                {paidoff_at: {[Op.like]: "%" + search + "%"}},
-                {status: {[Op.like]: "%" + search + "%"}},
+                { "$student.full_name$": { [Op.like]: "%" + search + "%" } },
+                { evidence_path: { [Op.like]: "%" + search + "%" } },
+                { paidoff_at: { [Op.like]: "%" + search + "%" } },
+                { status: { [Op.like]: "%" + search + "%" } },
             ]
         }
 
@@ -163,9 +164,9 @@ class StudentBillsDao extends SuperDao {
 
         const ands = []
 
-        if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: formatDateForSQL(filters.start_date) }})
-        if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: formatDateForSQL(filters.end_date) }})
-        if (filters.post_payment_id) ands.push({ '$studentpaymentbill.payment_post_id$': filters.post_payment_id  })
+        if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: formatDateForSQL(filters.start_date) } })
+        if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: formatDateForSQL(filters.end_date) } })
+        if (filters.post_payment_id) ands.push({ '$studentpaymentbill.payment_post_id$': filters.post_payment_id })
 
         where[Op.and] = ands
 
@@ -182,7 +183,7 @@ class StudentBillsDao extends SuperDao {
                 [fn('SUM', col('studentpaymentbill.total')), 'sum']
             ],
         })
-    } 
+    }
 
     async getIncomeGroupByDate(filters = {}) {
         const where = {
@@ -191,8 +192,8 @@ class StudentBillsDao extends SuperDao {
 
         const ands = []
 
-        if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: filters.start_date }})
-        if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: filters.end_date }})
+        if (filters.start_date) ands.push({ paidoff_at: { [Op.gte]: filters.start_date } })
+        if (filters.end_date) ands.push({ paidoff_at: { [Op.lte]: filters.end_date } })
         if (filters.post_payment_id) ands.push({ '$studentpaymentbill.payment_post_id$': filters.post_payment_id })
 
         where[Op.and] = ands
@@ -212,7 +213,7 @@ class StudentBillsDao extends SuperDao {
             ],
             group: ['paidoff_date']
         })
-    } 
+    }
     async getRecentPaidOffBills(start_date, limit = 5, filters) {
         const where = {
             paidoff_at: {
@@ -241,6 +242,34 @@ class StudentBillsDao extends SuperDao {
             ],
             limit,
             order: [["updated_at", "DESC"]],
+        })
+    }
+    async getDataReport(filter) {
+        const { search, post_id, start_date, end_date } = filter
+        return StudentBills.findAll({
+            where: {
+                [Op.or]: [
+                    { "$student.full_name$": { [Op.like]: `%${search}%` } },
+                    { "$student.nis$": { [Op.like]: `%${search}%` } },
+                    { status: { [Op.like]: `%${search}%` } },
+                ],
+                ...(post_id && { "$studentpaymentbill.payment_post_id$": post_id }),
+                ...((start_date && end_date) && { paidoff_at: { [Op.between]: [start_date, end_date] } })
+            },
+            include: [
+                {
+                    model: PaymentBills,
+                    required: false,
+                    include: {
+                        model: PaymentPosts,
+                        required: false
+                    }
+                },
+                {
+                    model: Student,
+                    required: false,
+                }
+            ]
         })
     }
 }

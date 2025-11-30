@@ -3,6 +3,8 @@ const models = require("../models");
 const { Op } = require("sequelize");
 
 const Achievement = models.achievements;
+const Student = models.students
+const StudentClass = models.studentclass
 
 class AchievementDao extends SuperDao {
   constructor() {
@@ -51,6 +53,9 @@ class AchievementDao extends SuperDao {
           include: [
             {
               model: models.studentclass,
+              include: [
+                { model: models.classes }
+              ],
               required: classIds.length > 0,
               ...(classIds.length && {
                 where: {
@@ -64,6 +69,28 @@ class AchievementDao extends SuperDao {
         }
       ],
     });
+  }
+
+  async getTotalStudent(filter) {
+    const { class_id } = filter
+    return Achievement.findAll({
+      ...(class_id && {
+        include: [
+          {
+            model: Student,
+            required: true,
+            include: [
+              {
+                model: StudentClass,
+                where: { class_id, is_active: "Y" },
+                required: true
+              }
+            ]
+          }
+        ],
+      }),
+      group: ['student_id']
+    })
   }
 
   async getAchievementPage(search, offset, limit, filters) {
@@ -83,12 +110,12 @@ class AchievementDao extends SuperDao {
               [Op.like]: "%" + search + "%",
             },
           },
-          // {
-          //   "$student.full_name$": {
-          //     [Op.like]: "%" + search + "%",
-          //   },
-          // },
         ],
+        ...((classIds.length > 0) && {
+          "$student.full_name$": {
+            [Op.like]: "%" + search + "%",
+          },
+        }),
         ...(academic && { "$student.studentclass.academic_year$": academic })
       },
       include: [
@@ -99,6 +126,9 @@ class AchievementDao extends SuperDao {
           include: [
             {
               model: models.studentclass,
+              inlcude: {
+                model: models.classes
+              },
               attributes: ["academic_year"],
               required: classIds.length > 0,
               ...(classIds.length && {

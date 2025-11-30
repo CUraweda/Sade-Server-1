@@ -1,7 +1,6 @@
 const SuperDao = require("./SuperDao");
 const models = require("../models");
 const { Op } = require("sequelize");
-const { required } = require("joi");
 
 const User = models.user;
 const Employee = models.employees
@@ -14,6 +13,7 @@ const SubjectXtra = models.subjectextra
 const Headmaster = models.headmaster
 const Students = models.students
 const UserAccess = models.useraccess
+const EmployeeSignature = models.employeesignature
 
 class UserDao extends SuperDao {
   constructor() {
@@ -89,6 +89,10 @@ class UserDao extends SuperDao {
                 }
               ]
             },
+            {
+              model: EmployeeSignature,
+              required: false
+            }
           ]
         }
       ]
@@ -111,8 +115,7 @@ class UserDao extends SuperDao {
   async findByResetToken(resetToken) {
     return User.findOne({
       where: {
-        reset_token: resetToken,
-        reset_token_exp: { [Op.gt]: Date.now() },
+        reset_token: resetToken
       },
     });
   }
@@ -201,6 +204,10 @@ class UserDao extends SuperDao {
                 }
               ]
             },
+            {
+              model: EmployeeSignature,
+              required: false
+            }
           ]
         }
       ]

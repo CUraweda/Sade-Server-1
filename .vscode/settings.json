@@ -1,0 +1,8 @@
+{
+  "eslint.enable": false,
+  "prettier.enable": false,
+
+  // optional: stop VSCode from auto-formatting at all
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": null
+}

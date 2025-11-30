@@ -4,6 +4,7 @@ const MonthlyValidator = require("../validator/MonthlyValidator");
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const isStudentParentValid = require("../middlewares/StudentParentValid");
 
 const monthlyController = new MonthlyController();
 const monthlyValidator = new MonthlyValidator();
@@ -32,6 +33,7 @@ router.put(
 router.get(
   "/show-by-student/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
+  isStudentParentValid("params", "id"),
   monthlyController.show
 );
 

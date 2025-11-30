@@ -4,6 +4,7 @@ const ParentValidator = require("../validator/ParentValidator");
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const isStudentParentValid = require("../middlewares/StudentParentValid");
 
 const parentController = new ParentController();
 const parentValidator = new ParentValidator();
@@ -38,6 +39,7 @@ router.get("/show-by-userid/:id", auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]), pare
 router.get(
   "/show-by-student/:id",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
+  isStudentParentValid("params", "id"),
   parentController.showByStudentId
 );
 

@@ -4,6 +4,7 @@ const StudentClassValidator = require("../validator/StudentClassValidator");
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const isStudentParentValid = require("../middlewares/StudentParentValid");
 
 const studentClassController = new StudentClassController();
 const studentClassValidator = new StudentClassValidator();

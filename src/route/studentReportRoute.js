@@ -4,6 +4,7 @@ const StudentReportValidator = require("../validator/StudentReportValidator");
 
 const router = express.Router();
 const auth = require("../middlewares/auth");
+const isStudentParentValid = require("../middlewares/StudentParentValid");
 
 const studentReportController = new StudentReportController();
 const studentReportValidator = new StudentReportValidator();
@@ -43,12 +44,14 @@ router.get(
 router.get(
   "/show-by-student",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
+  isStudentParentValid("query", "id"),
   studentReportController.showByStudentId
 );
 
 router.get(
   "/show-by-student-details",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),
+  isStudentParentValid("query", "id"),
   studentReportController.showByStudentIdDetails
 );
 

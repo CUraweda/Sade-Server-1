@@ -4,6 +4,7 @@ const StudentBillsValidator = require("../validator/StudentBillsValidator")
 
 const router = express.Router()
 const auth = require("../middlewares/auth")
+const isStudentParentValid = require("../middlewares/StudentParentValid")
 
 const studentBillsController = new StudentBillsController()
 const studentBillsValidator = new StudentBillsValidator()
@@ -61,6 +62,7 @@ router.get(
 router.get(
     "/get-by-student-id/:id",
     auth([1, 2, 3, 6,11, 13, 8]),
+    isStudentParentValid("params", "id"),
     studentBillsController.showByStudentId
 )
 

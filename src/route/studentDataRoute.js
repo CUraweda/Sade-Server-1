@@ -4,6 +4,7 @@ const StudentDataValidator = require("../validator/StudentDataValidator")
 
 const router = express.Router()
 const auth = require("../middlewares/auth")
+const isStudentParentValid = require("../middlewares/StudentParentValid")
 
 const studentDataController = new StudentDataController()
 const studentDataValidator = new StudentDataValidator()
@@ -31,6 +32,7 @@ router.get(
 router.get(
     "/get-by-student-id/:id",
     auth([1, 2, 3, 6]),
+    isStudentParentValid("params", "id"),
     studentDataController.showByStudentId
 )
 
@@ -44,5 +46,5 @@ router.delete(
     "/delete/:id",
     auth([1, 3, 6]),
     studentDataController.delete
-  );
+);
 module.exports = router

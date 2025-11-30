@@ -13,17 +13,20 @@ const isStudentParentValid = (source, source_key) => {
     const dao = new SuperDao(UserAccess);
     const studentId = req[source][source_key];
 
-    const check = await dao.getCountByWhere({
-      user_id: req.user.id,
-      student_id: studentId,
-    });
-
-    if (!check)
-      return res.status(httpStatus.FORBIDDEN).json({
-        status: false,
-        code: httpStatus.FORBIDDEN,
-        message: "Akses ke data siswa lain diblokir",
+    if (req.user.role_id == 7 || req.user.role_id == 8) {
+      const check = await dao.getCountByWhere({
+        user_id: req.user.id,
+        student_id: studentId,
       });
+
+      if (!check)
+        return res.status(httpStatus.FORBIDDEN).json({
+          status: false,
+          code: httpStatus.FORBIDDEN,
+          message: "Akses ke data siswa lain diblokir",
+        });
+    }
+
 
     next();
   };

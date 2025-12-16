@@ -165,7 +165,7 @@ class StudentReportDao extends SuperDao {
     return StudentReport.findAll({
       where: {
         "$studentclass.student_id$": id,
-        "$studentclass.is_active$": "Ya",
+        // "$studentclass.is_active$": "Ya",
         ...(academic && { "$studentclass.academic_year$": academic }),
         semester: semester,
       },

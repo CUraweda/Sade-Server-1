@@ -32,7 +32,7 @@ class NumberReportService {
       reqBody["uid"] = this.formatUID(reqBody);
       console.log(reqBody);
       
-      let data = await this.numberReportDao.create(reqBody);
+      let data = await this.numberReportDao.updateOrCreate(reqBody, {uid: reqBody["uid"]});
 
       if (!data) {
         message = "Failed to create Number Report.";

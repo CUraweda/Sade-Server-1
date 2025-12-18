@@ -239,7 +239,7 @@ class NumberReportDao extends SuperDao {
       ],
     });
 
-    if( strict && personality.length < 1) return { status: false, note: "Student Personality Tidak Ditemukan" }
+    // if( strict && personality.length < 1) return { status: false, note: "Student Personality Tidak Ditemukan" }
 
     const attendance = await this.studentAttendance.getRecapByStudentId(
       id,

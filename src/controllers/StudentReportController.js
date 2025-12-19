@@ -11,6 +11,8 @@ class StudentReportController {
 
   create = async (req, res) => {
     try {
+      // TEMP: force access true
+      req.body.student_access = true
       const resData = await this.studentReportService.createStudentReport(
         req.body
       );
@@ -26,6 +28,8 @@ class StudentReportController {
     try {
       var id = req.params.id;
 
+      // TEMP: force access true
+      req.body.student_access = true
       const resData = await this.studentReportService.updateStudentReport(
         id,
         req.body

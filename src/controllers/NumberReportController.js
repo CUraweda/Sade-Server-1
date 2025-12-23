@@ -76,7 +76,7 @@ class NumberReportController {
       const limit = parseInt(req.query.limit) || 10;
       const search = req.query.search_query || "";
       const offset = limit * page;
-      const { academic, semester, class_id, subject_id, with_assign } = req.query
+      const { academic, semester, class_id, subject_id, with_assign, report_id } = req.query
 
       let class_ids = []
       if (employee && with_assign == "Y") {
@@ -90,7 +90,7 @@ class NumberReportController {
         search,
         offset,
         {
-          academic, semester, class_id, subject_id, class_ids
+          academic, semester, class_id, subject_id, class_ids, report_id
         }
       );
 

@@ -52,7 +52,7 @@ class NumberReportDao extends SuperDao {
   }
 
   async getCount(search, filters) {
-    const { academic, semester, class_id, class_ids, subject_id } = filters
+    const { academic, semester, class_id, class_ids, subject_id, report_id } = filters
 
     const where = {
       [Op.or]: [
@@ -98,6 +98,8 @@ class NumberReportDao extends SuperDao {
     if (class_ids?.length) where["$studentreport.studentclass.class_id$"] = { [Op.in]: class_ids }
 
     if (class_id) where["$studentreport.studentclass.class_id$"] = class_id;
+    
+    if (report_id) where["student_report_id"] = +report_id
 
     return NumberReport.count({
       where,
@@ -130,7 +132,7 @@ class NumberReportDao extends SuperDao {
   }
   
   async getNumberReportPage(search, offset, limit, filters) {
-    const { academic, semester, class_id, class_ids, subject_id } = filters
+    const { academic, semester, class_id, class_ids, subject_id, report_id } = filters
 
     const where = {
       [Op.or]: [
@@ -172,6 +174,7 @@ class NumberReportDao extends SuperDao {
     if (academic) where["$studentreport.studentclass.academic_year$"] = academic
     if (class_ids?.length) where["$studentreport.studentclass.class_id$"] = { [Op.in]: class_ids }
     if (class_id) where["$studentreport.studentclass.class_id$"] = class_id;
+    if (report_id) where["student_report_id"] = +report_id
 
     return NumberReport.findAll({
       where,

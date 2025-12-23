@@ -21,7 +21,7 @@ class StudentReportDao extends SuperDao {
   async getCount(search, filters) {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
-      // [Op.or]: [
+      [Op.or]: [
       // {
       //   nar_parent_comments: {
       //     [Op.like]: "%" + search + "%",
@@ -32,7 +32,12 @@ class StudentReportDao extends SuperDao {
       //     [Op.like]: "%" + search + "%",
       //   },
       // },
-      // ],
+        {
+          ["$studentclass.student.full_name$"]: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
     }
 
     if (academic) where["$studentclass.academic_year$"] = academic
@@ -68,7 +73,7 @@ class StudentReportDao extends SuperDao {
   async getStudentReportPage(search, offset, limit, filters) {
     const { semester, academic, student_access, class_id, class_ids } = filters
     const where = {
-      // [Op.or]: [
+      [Op.or]: [
       // {
       //   nar_parent_comments: {
       //     [Op.like]: "%" + search + "%",
@@ -79,7 +84,12 @@ class StudentReportDao extends SuperDao {
       //     [Op.like]: "%" + search + "%",
       //   },
       // },
-      // ],
+        {
+          ["$studentclass.student.full_name$"]: {
+            [Op.like]: "%" + search + "%",
+          },
+        },
+      ],
     }
     if (academic) where["$studentclass.academic_year$"] = academic
 

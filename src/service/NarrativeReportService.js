@@ -134,10 +134,10 @@ class NarrativeReportService {
     return responseHandler.returnSuccess(httpStatus.OK, message, rel);
   };
 
-  showNarrativeReportByStudentId = async (id, semester) => {
+  showNarrativeReportByStudentId = async (id, semester, academic) => {
     const message = "Narrative Report successfully retrieved!";
 
-    let rel = await this.narrativeReportDao.getByStudentId(id, semester);
+    let rel = await this.narrativeReportDao.getByStudentId(id, semester, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(
@@ -179,7 +179,7 @@ class NarrativeReportService {
     }
   };
 
-  exportReportByStudentId = async (id, semester, reportId) => {
+  exportReportByStudentId = async (id, semester, reportId, academic) => {
     let message = "Narrative Report successfully exported!";
     if (!semester)
       return responseHandler.returnError(
@@ -192,7 +192,7 @@ class NarrativeReportService {
         "Please specify Report ID Query"
       );
 
-    let rel = await this.narrativeReportDao.getByStudentId(id, semester);
+    let rel = await this.narrativeReportDao.getByStudentId(id, semester, academic);
 
     if (!rel) {
       return responseHandler.returnSuccess(

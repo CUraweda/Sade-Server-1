@@ -92,11 +92,13 @@ class NarrativeReportController {
     try {
       var id = req.params.id;
       const semester = req.query.semester;
+      const academic = req.query.academic;
 
       const resData =
         await this.narrativeReportService.showNarrativeReportByStudentId(
           id,
-          semester
+          semester,
+          academic
         );
 
       res.status(resData.statusCode).send(resData.response);
@@ -123,12 +125,13 @@ class NarrativeReportController {
   exportByStudentId = async (req, res) => {
     try {
       var id = req.params.id;
-      const { semester, report_id } = req.query
+      const { semester, report_id, academic } = req.query
 
       const resData = await this.narrativeReportService.exportReportByStudentId(
         id,
         semester,
-        report_id
+        report_id,
+        academic
       );
 
       res.status(resData.statusCode).send(resData.response);

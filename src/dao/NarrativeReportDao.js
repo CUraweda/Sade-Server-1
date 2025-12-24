@@ -206,10 +206,11 @@ class NarrativeReportDao extends SuperDao {
     });
   }
 
-  async getByStudentId(id, semester) {
+  async getByStudentId(id, semester, academic = '2025/2026') {
     const sClass = await StudentClass.findOne({
       where: {
         id: id,
+        academic_year: academic
         //  is_active: "Ya" 
       },
       include: [

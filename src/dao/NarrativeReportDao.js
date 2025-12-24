@@ -208,7 +208,10 @@ class NarrativeReportDao extends SuperDao {
 
   async getByStudentId(id, semester) {
     const sClass = await StudentClass.findOne({
-      where: { id: id, is_active: "Ya" },
+      where: {
+        id: id,
+        //  is_active: "Ya" 
+      },
       include: [
         {
           model: Students,
@@ -233,7 +236,7 @@ class NarrativeReportDao extends SuperDao {
     const { nar_teacher_comments, nar_parent_comments } = sReportData || {};
 
     const levParams = sClass.class_id || 0;
-    const level = sClass.class.level || "";
+    const level = sClass.class?.level || "";
 
     const nCategories = await NarrativeCategory.findAll({
       where: { class_id: levParams },
@@ -254,29 +257,29 @@ class NarrativeReportDao extends SuperDao {
 
     const nComments = sRepId
       ? await NarrativeComment.findAll({
-          where: {
-            "$studentreport.id$": sRepId,
+        where: {
+          "$studentreport.id$": sRepId,
+        },
+        include: [
+          {
+            model: StudentReports,
+            include: [
+              {
+                model: StudentClass,
+                attributes: ["id", "academic_year", "student_id", "class_id"],
+              },
+            ],
           },
-          include: [
-            {
-              model: StudentReports,
-              include: [
-                {
-                  model: StudentClass,
-                  attributes: ["id", "academic_year", "student_id", "class_id"],
-                },
-              ],
-            },
-          ],
-        })
+        ],
+      })
       : [];
 
-    const {
-      academic_year,
-      student_id,
-      class: { class_name },
-      student: { full_name, nisn, nis },
-    } = sClass;
+    // const {
+    //   academic_year,
+    //   student_id,
+    //   class: { class_name = "" } = {},
+    //   student: { full_name = "", nisn = "", nis = "" } = {},
+    // } = sClass ?? {};
 
     // const signers = await ReportSigners.findOne({
     //   where: { class_id: levParams, semester: semester },
@@ -292,13 +295,13 @@ class NarrativeReportDao extends SuperDao {
     // const { head, facilitator } = signers || {};
 
     const result = {
-      academic_year,
-      class_name,
-      student_id,
+      academic_year: sClass?.academic_year,
+      class_name: sClass?.class?.class_name,
+      student_id: sClass?.student_id,
       semester,
-      full_name,
-      nisn,
-      nis,
+      full_name: sClass?.student?.full_name,
+      nisn: sClass?.student?.nisn,
+      nis: sClass?.student?.nis,
       narrative_categories: nCategories.map((nCategory) => ({
         id: nCategory.id,
         category: nCategory.category,

@@ -98,7 +98,7 @@ class NumberReportDao extends SuperDao {
     if (class_ids?.length) where["$studentreport.studentclass.class_id$"] = { [Op.in]: class_ids }
 
     if (class_id) where["$studentreport.studentclass.class_id$"] = class_id;
-    
+
     if (report_id) where["student_report_id"] = +report_id
 
     return NumberReport.count({
@@ -130,7 +130,7 @@ class NumberReportDao extends SuperDao {
       ],
     });
   }
-  
+
   async getNumberReportPage(search, offset, limit, filters) {
     const { academic, semester, class_id, class_ids, subject_id, report_id } = filters
 
@@ -209,17 +209,17 @@ class NumberReportDao extends SuperDao {
     });
   }
 
-  async getByStudentId(id, semester, strict = false) {
+  async getByStudentId(id, semester, strict = false, academic = '2025/2026') {
     const formatter = new Intl.NumberFormat("id-ID", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
 
     const student = await Students.findOne({ where: { id } })
-    if(!student) return { status: false, note: "Student Tidak Ditemukan" }
-    
+    if (!student) return { status: false, note: "Student Tidak Ditemukan" }
+
     const personality = await StudentPersonality.findAll({
-      where: { "$studentclass.student.id$": id },
+      where: { "$studentclass.student.id$": id, "$studentclass.academic_year$": academic },
       include: [
         {
           model: Personality,
@@ -246,14 +246,16 @@ class NumberReportDao extends SuperDao {
 
     const attendance = await this.studentAttendance.getRecapByStudentId(
       id,
-      semester
+      semester,
+      academic
     );
 
     const reports = await NumberReport.findAll({
       where: {
         "$studentreport.studentclass.student.id$": id,
+        "$studentreport.studentclass.academic_year$": academic,
         "$studentreport.semester$": semester,
-    },
+      },
       include: [
         {
           model: StudentReports,
@@ -264,7 +266,7 @@ class NumberReportDao extends SuperDao {
               include: [
                 {
                   model: Students,
-                  attributes: ["id", "nis", "nisn","full_name", "level", "gender"],
+                  attributes: ["id", "nis", "nisn", "full_name", "level", "gender"],
                 },
                 {
                   model: Classes,
@@ -282,42 +284,43 @@ class NumberReportDao extends SuperDao {
       order: [[{ model: Subjects }, 'id', 'ASC']],
     });
 
-    
-    if( strict && reports.length < 1) return { status: false, note: "Number Report Tidak Ditemukan" }
+
+    if (strict && reports.length < 1) return { status: false, note: "Number Report Tidak Ditemukan" }
 
     // Extracting necessary information
-    const {
-      studentreport: {
-        studentclass: {
-          class_id = 0,
-          academic_year = "",
-          class: { class_name } = {},
-          student: { full_name, nisn, nis, level } = {},
-        } = {},
-      } = {},
-    } = reports[0] || {};
+    // const {
+    //   studentreport: {
+    //     studentclass: {
+    //       class_id = 0,
+    //       academic_year = "",
+    //       class: { class_name } = {},
+    //       student: { full_name, nisn, nis, level } = {},
+    //     } = {},
+    //   } = {},
+    // } = reports[0] || {};
+    const { studentreport } = reports[0] || {}
 
     // const signers = await ReportSigners.findAll({
     //   where: { class_id: class_id },
     // });
 
     const signatureKepalaSekolah = await EmployeeSignature.findOne({
-      where: { is_headmaster: true, headmaster_of: level }
+      where: { is_headmaster: true, headmaster_of: studentreport?.studentclass?.student?.level ?? '' }
     })
     const signatureWaliKelas = await EmployeeSignature.findOne({
-      where: { is_form_teacher: true, form_teacher_class_id: class_id }
+      where: { is_form_teacher: true, form_teacher_class_id: studentreport?.studentclass?.class_id ?? '' }
     })
 
     // if(strict && signers.length < 1) return { status: false, note: "Signers Tidak Ditemukan" }
     // Formatting the result
     const result = {
-      full_name,
-      nisn,
-      level,
-      nis,
-      class: class_name,
+      full_name: studentreport?.studentclass?.student?.full_name ?? '',
+      nisn: studentreport?.studentclass?.student?.nisn ?? '',
+      level: studentreport?.studentclass?.student?.level ?? '',
+      nis: studentreport?.studentclass?.student?.nis ?? '',
+      class: studentreport?.studentclass?.class?.class_name ?? '',
       semester,
-      academic_year,
+      academic_year: studentreport?.studentclass?.academic_year ?? '',
       number_reports: reports.map((report) => ({
         student_report_id: report.studentreport.id,
         subject_id: report.subject.id,

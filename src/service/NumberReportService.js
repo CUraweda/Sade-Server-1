@@ -31,8 +31,8 @@ class NumberReportService {
 
       reqBody["uid"] = this.formatUID(reqBody);
       console.log(reqBody);
-      
-      let data = await this.numberReportDao.updateOrCreate(reqBody, {uid: reqBody["uid"]});
+
+      let data = await this.numberReportDao.updateOrCreate(reqBody, { uid: reqBody["uid"] });
 
       if (!data) {
         message = "Failed to create Number Report.";
@@ -225,10 +225,10 @@ class NumberReportService {
     }
   };
 
-  exportReportByStudentId = async (id, semester, signedDate) => {
+  exportReportByStudentId = async (id, semester, signedDate, academic) => {
     const message = "Number Report successfully exported!";
 
-    let rel = await this.numberReportDao.getByStudentId(id, semester, true);
+    let rel = await this.numberReportDao.getByStudentId(id, semester, true, academic);
 
     if (rel?.note) {
       return responseHandler.returnError(
@@ -243,7 +243,8 @@ class NumberReportService {
 
     const studentRepData = await this.studentReportDao.getByStudentId(
       id,
-      semester
+      semester,
+      academic
     );
 
     rel["signed_at"] = signedDate;

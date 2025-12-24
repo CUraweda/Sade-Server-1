@@ -158,7 +158,7 @@ class StudentAttendanceDao extends SuperDao {
       semester: semester,
       status: status,
       "$studentclass.student_id$": studentId,
-      "$studentclass.is_active$": "Ya",
+      // "$studentclass.is_active$": "Ya",
     };
 
     if (academic !== undefined) whereClause["$studentclass.academic_year$"] = academic;

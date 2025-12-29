@@ -511,6 +511,7 @@ generateContents = async (doc, data) => {
   };
 
   const categoriesToDisplay = data.narrative_categories.filter((item) => {
+  // const categoriesToDisplay = [].filter((item) => {
     return (
       item.narrative_sub_categories &&
       item.narrative_sub_categories.some(
@@ -632,59 +633,64 @@ generateContents = async (doc, data) => {
 this.generateHeader(doc, data, "comment");
 currentY = 220; 
 
-const generalCommentTextOptions = { width: 500, align: "justify" };
+  const generalCommentTextOptions = { width: 500, align: "justify" };
+  const commentPageTopY = 220;
 
-// Tulis komentar
-if (data.nar_teacher_comments || data.nar_parent_comments) {
-  doc.font("Helvetica-Bold").fontSize(14).text("KOMENTAR UMUM", 50, currentY);
-  currentY += 20; // Sedikit mengurangi spasi setelah judul
-}
+  const handleCommentPageAdded = () => {
+    this.generateHeader(doc, data, "comment");
+    doc.x = 50;
+    doc.y = commentPageTopY;
+    doc.font("Helvetica").fontSize(10)
+  };
 
-if (data.nar_teacher_comments) {
-  doc.font("Helvetica-BoldOblique").fontSize(10).text("Komentar Guru :", 50, currentY);
-  currentY += 12; // Jarak setelah label komentar guru
-  const teacherCommentHeight = doc.heightOfString(data.nar_teacher_comments, generalCommentTextOptions);
-  doc.font("Helvetica")
-     .fontSize(10)
-     .text(
-       data.nar_teacher_comments,
-       50,
-       currentY,
-       generalCommentTextOptions
-     );
-  currentY += teacherCommentHeight + 5; // Mengurangi spasi setelah komentar guru
-}
+  const writeCommentText = (text) => {
+    doc.on("pageAdded", handleCommentPageAdded);
+    doc.text(text, 50, currentY, generalCommentTextOptions);
+    doc.removeListener("pageAdded", handleCommentPageAdded);
+    currentY = doc.y;
+  };
 
-if (data.nar_parent_comments) {
-  if (data.nar_teacher_comments) {
-    currentY += 5; // Mengurangi spasi antara komentar guru dan orang tua
+  if (data.nar_teacher_comments || data.nar_parent_comments) {
+    currentY = ensureNewPage(doc, data, currentY + 20, "comment");
+    doc.font("Helvetica-Bold").fontSize(14).text("KOMENTAR UMUM", 50, currentY);
+    currentY = doc.y + 6;
   }
 
-  doc.font("Helvetica-BoldOblique").fontSize(10).text("Komentar Orang Tua :", 50, currentY);
-  currentY += 12; // Jarak setelah label komentar orang tua
-  const parentCommentHeight = doc.heightOfString(data.nar_parent_comments, generalCommentTextOptions);
-  doc.font("Helvetica")
-     .fontSize(10)
-     .text(
-       data.nar_parent_comments,
-       50,
-       currentY,
-       generalCommentTextOptions
-     );
-  currentY += parentCommentHeight + 5; // Mengurangi spasi setelah komentar orang tua
+  if (data.nar_teacher_comments) {
+    currentY = ensureNewPage(doc, data, currentY + 12, "comment");
+    doc
+      .font("Helvetica-BoldOblique")
+      .fontSize(10)
+      .text("Komentar Guru :", 50, currentY);
+    currentY = doc.y + 4;
+    doc.font("Helvetica").fontSize(10);
+    writeCommentText(data.nar_teacher_comments);
+    currentY += 5;
+  }
+
+  if (data.nar_parent_comments) {
+    if (data.nar_teacher_comments) {
+      currentY += 5;
+    }
+
+    currentY = ensureNewPage(doc, data, currentY + 12, "comment");
+    doc
+      .font("Helvetica-BoldOblique")
+      .fontSize(10)
+      .text("Komentar Orang Tua :", 50, currentY);
+    currentY = doc.y + 4;
+    doc.font("Helvetica").fontSize(10);
+    writeCommentText(data.nar_parent_comments);
+    currentY += 5;
+  }
+
+currentY += 20
+
+if (currentY + 120 > (doc.page.height - 50)) {
+  doc.addPage()
+  currentY = 50
 }
 
-// Tanda tangan - langsung ditempel di bawah komentar dengan jarak minimal
-currentY += 20; // Penyesuaian spasi awal untuk tanda tangan. Nilai ini mungkin perlu penyesuaian lebih lanjut.
-
-// Pastikan tanda tangan tidak keluar dari halaman
-const signatureHeight = 120; // Tinggi yang dibutuhkan untuk bagian tanda tangan
-if (currentY + signatureHeight > doc.page.height - 50) {
-  // Jika tidak cukup ruang, naikkan sedikit posisi tanda tangan
-  currentY = doc.page.height - 50 - signatureHeight;
-}
-
-// Tulis tanda tangan
 doc.font("Helvetica").fontSize(10).text("Kepala Sekolah", 70, currentY);
 doc.font("Helvetica").fontSize(10).text("Fasilitator", 320, currentY);
 

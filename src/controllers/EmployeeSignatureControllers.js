@@ -1,5 +1,16 @@
 const httpStatus = require("http-status");
+const Joi = require("joi");
 const EmployeeSignatureService = require("../service/EmployeeSignatureService");
+const uploadEmployeeSignature = require("../middlewares/uploadEmployeeSignature");
+
+const schemaAddMine = Joi.object({
+    signature_name: Joi.string().required(),
+    is_headmaster: Joi.boolean().default(false),
+    headmaster_of: Joi.string(),
+    is_form_teacher: Joi.boolean().default(false),
+    form_teacher_class_id: Joi.number(),
+});
+
 
 class EmployeeSignatureController {
     constructor() {
@@ -48,9 +59,31 @@ class EmployeeSignatureController {
     
     addMine = async (req, res) => {
         try{
-            // if (!req.file) res.status(httpStatus.UNPROCESSABLE_ENTITY).send("Please provide an image");
-            // req.body['signature_path'] = req.file.path
-            const resData = await this.employeeSignatureService.createMine(req.user?.employee, req.body)
+            await uploadEmployeeSignature(req, res);
+            if (res.headersSent) {
+                return;
+            }
+            
+            var signature_path = req.file ? req.file.path : undefined;
+
+            const formData = { ...req.body, signature_path };
+
+            const { error } = schemaAddMine.validate(formData, {
+                abortEarly: false,
+                allowUnknown: true,
+                stripUnknown: true,
+            });
+
+            if (error) {
+                const errorMessage = error.details
+                    .map((details) => {
+                        return details.message;
+                    })
+                    .join(", ");
+                return res.status(httpStatus.BAD_REQUEST).send(errorMessage);
+            }
+
+            const resData = await this.employeeSignatureService.createMine(req.user?.employee, formData)
             
             res.status(resData.statusCode).send(resData.response);
         }catch(e){

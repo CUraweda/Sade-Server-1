@@ -30,7 +30,7 @@ router.post(
 
 router.post(
     "/add-mine",
-    employeeSignatureValidator.addMineValidator,
+    // employeeSignatureValidator.addMineValidator,
     auth([1, 2, 3, 4, 5, 6, 9, 10, 11]),
     employeeSignatureController.addMine
 );

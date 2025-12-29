@@ -141,6 +141,35 @@ class NarrativeReportController {
     }
   };
 
+  exportByStudentIdPreview = async (req, res) => {
+    try {
+      var id = req.params.id;
+      const { semester, report_id, academic } = req.query
+
+      const resData = await this.narrativeReportService.exportReportByStudentIdPreview(
+        id,
+        semester,
+        report_id,
+        academic
+      );
+
+      if (Buffer.isBuffer(resData)) {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          'inline; filename="narrative-report.pdf"'
+        );
+        res.setHeader("Content-Length", resData.length);
+        return res.status(httpStatus.OK).send(resData);
+      }
+
+      res.status(resData.statusCode).send(resData.response);
+    } catch (e) {
+      logger.error(e);
+      res.status(httpStatus.BAD_GATEWAY).send(e);
+    }
+  };
+
   filtered = async (req, res) => {
     try {
       const academic = req.query.academic || "";

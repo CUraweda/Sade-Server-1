@@ -218,6 +218,33 @@ class NarrativeReportService {
     });
   };
 
+  exportReportByStudentIdPreview = async (id, semester, reportId, academic) => {
+    if (!semester)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Please specify Semester Query"
+      );
+    if (!reportId)
+      return responseHandler.returnError(
+        httpStatus.BAD_REQUEST,
+        "Please specify Report ID Query"
+      );
+
+    let rel = await this.narrativeReportDao.getByStudentId(id, semester, academic);
+
+    if (!rel) {
+      return responseHandler.returnSuccess(
+        httpStatus.OK,
+        "Narrative Report not found!",
+        {}
+      );
+    }
+
+    const pdfBuffer = await this.generatePdfBuffer(rel);
+
+    return pdfBuffer;
+  };
+
   generatePdf = async (data, path) => {
     const rnd = Date.now();
     const outputFilename = rnd + "_" + data.full_name + ".pdf";
@@ -242,6 +269,22 @@ class NarrativeReportService {
     doc.end();
     // return data;
     return outputFileName;
+  };
+
+  generatePdfBuffer = async (data) => {
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      const doc = new PDFDocument({ size: "A4", margin: 50 });
+
+      doc.on("data", (chunk) => chunks.push(chunk));
+      doc.on("end", () => resolve(Buffer.concat(chunks)));
+      doc.on("error", reject);
+
+      this.generateHeader(doc, data, "default");
+      this.generateContents(doc, data);
+
+      doc.end();
+    });
   };
 
   generateCover = async (doc, data) => {
@@ -397,7 +440,7 @@ class NarrativeReportService {
   };
 // generateContents
 generateContents = async (doc, data) => {
-  console.log("generateContents called with data:", data);
+  // console.log("generateContents called with data:", data);
 
   let currentY = 220; // Posisi Y awal konten setelah header
 
@@ -411,58 +454,40 @@ generateContents = async (doc, data) => {
     return currentY;
   };
 
-   const drawNarrativeTable = (doc, tableData, startY, columnWidths) => {
+  const drawNarrativeTable = (doc, tableData, startY, columnWidths) => {
     let y = startY;
     const startX = 50;
-    const cellPadding = 2; 
-    const rowMinHeight = 15;
-
-    doc.font("Helvetica-Bold").fontSize(10); // Font untuk header tabel
-    let xColHeader = startX;
-
-    const headerTextY = y + cellPadding;
-
-    const currentDescColWidth = columnWidths[0] - (2 * cellPadding);
-    const safeCurrentDescColWidth = (isNaN(currentDescColWidth) || currentDescColWidth < 0) ? 390 : currentDescColWidth;
-    
-    doc.text("Deskripsi", xColHeader + cellPadding, headerTextY, { width: safeCurrentDescColWidth, align: 'left' });
-    xColHeader += columnWidths[0];
+    const cellPadding = 4;
 
     const gradingColStart = 459;
     const singleGradingColWidth = 85 / 3;
 
-    let headerRowHeight = doc.heightOfString("Deskripsi", { width: safeCurrentDescColWidth }) + (2 * cellPadding);
-    if (headerRowHeight < 25) {
-        headerRowHeight = 25;
-    }
-
-    doc.moveTo(startX, y + headerRowHeight)
-       .lineTo(startX + columnWidths[0] + 85, y + headerRowHeight)
-       .lineWidth(0.5)
-       .strokeColor("black")
-       .stroke();
-    
-    y += headerRowHeight;
-
-
-    tableData.forEach((row, rowIndex) => {
-      const rowDesc = String(row.desc || ''); 
-
+    tableData.forEach((row) => {
+      const rowDesc = String(row.desc || '').trim(); 
+      
       const currentDescColWidthForData = columnWidths[0] - (2 * cellPadding);
       const safeCurrentDescColWidthForData = (isNaN(currentDescColWidthForData) || currentDescColWidthForData < 0) ? 390 : currentDescColWidthForData;
-
-      const descTextHeight = doc.heightOfString(rowDesc, { width: safeCurrentDescColWidthForData });
-      let actualRowHeight = descTextHeight + (2 * cellPadding);
-      if (actualRowHeight < rowMinHeight) {
-        actualRowHeight = rowMinHeight;
-      }
-
+      
+      doc.font("Helvetica").fontSize(10);
+      const lineGap = 2;
+      const textOptions = { width: safeCurrentDescColWidthForData, align: 'justify', lineGap };
+      const descTextHeight = doc.heightOfString(rowDesc, textOptions);
+      const minContentHeight = doc.currentLineHeight() + lineGap;
+      const contentHeight = Math.max(descTextHeight, minContentHeight);
+      const actualRowHeight = contentHeight;
+      
       y = ensureNewPage(doc, data, y + actualRowHeight, 'default'); 
-
+      
       let currentRowStartY = y;
-
-      doc.font("Helvetica").fontSize(10); 
-      doc.text(rowDesc, startX + cellPadding, currentRowStartY + cellPadding, { width: safeCurrentDescColWidthForData, align: 'justify' });
+      
+      const fontMetrics = doc._font;
+      const fontSize = doc._fontSize;
+      const ascent = fontMetrics?.ascender ? (fontMetrics.ascender / 1000) * fontSize : 0;
+      const descent = fontMetrics?.descender ? Math.abs((fontMetrics.descender / 1000) * fontSize) : 0;
+      const verticalAdjust = (ascent - descent) / 2;
+      const textYOffset = currentRowStartY + cellPadding + ((contentHeight - descTextHeight) / 2) - verticalAdjust;
+      doc.font("Helvetica").fontSize(10);
+      doc.text(rowDesc, startX + cellPadding, textYOffset, textOptions);
       
       doc.font("./src/fonts/fontawesome-webfont.ttf").fontSize(10);
       const iconYOffset = currentRowStartY + (actualRowHeight / 2) - (10 / 2); 
@@ -473,8 +498,8 @@ generateContents = async (doc, data) => {
       
       doc.font("Helvetica").fontSize(10); 
 
-      doc.moveTo(startX, currentRowStartY + actualRowHeight)
-         .lineTo(startX + columnWidths[0] + 85, currentRowStartY + actualRowHeight)
+      doc.moveTo(startX, currentRowStartY + actualRowHeight + 6)
+         .lineTo(startX + columnWidths[0] + 85, currentRowStartY + actualRowHeight + 6)
          .lineWidth(0.5)
          .strokeColor("black")
          .stroke();

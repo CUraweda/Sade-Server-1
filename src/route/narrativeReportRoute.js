@@ -46,6 +46,12 @@ router.get(
   narrativeReportController.exportByStudentId
 );
 
+// router.get(
+//   "/generate-preview/:id",
+//   // auth([1, 3, 6, 8]),
+//   narrativeReportController.exportByStudentIdPreview
+// );
+
 router.get(
   "/filter-by-params",
   auth([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11]),

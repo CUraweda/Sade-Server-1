@@ -678,7 +678,7 @@ if (data.nar_parent_comments) {
 currentY += 20; // Penyesuaian spasi awal untuk tanda tangan. Nilai ini mungkin perlu penyesuaian lebih lanjut.
 
 // Pastikan tanda tangan tidak keluar dari halaman
-const signatureHeight = 40; // Tinggi yang dibutuhkan untuk bagian tanda tangan
+const signatureHeight = 120; // Tinggi yang dibutuhkan untuk bagian tanda tangan
 if (currentY + signatureHeight > doc.page.height - 50) {
   // Jika tidak cukup ruang, naikkan sedikit posisi tanda tangan
   currentY = doc.page.height - 50 - signatureHeight;
@@ -688,7 +688,25 @@ if (currentY + signatureHeight > doc.page.height - 50) {
 doc.font("Helvetica").fontSize(10).text("Kepala Sekolah", 70, currentY);
 doc.font("Helvetica").fontSize(10).text("Fasilitator", 320, currentY);
 
-currentY += 12; // Mengurangi spasi antara label dan nama tanda tangan
+const headSignaturePath = data.head?.signature_path || null;
+  const facilitatorSignaturePath = data.facilitator?.signature_path || null;
+const hasHeadSignature =
+  headSignaturePath && fs.existsSync(headSignaturePath);
+const hasFacilitatorSignature =
+  facilitatorSignaturePath && fs.existsSync(facilitatorSignaturePath);
+
+if (hasHeadSignature || hasFacilitatorSignature) {
+  const signatureImageY = currentY + 8;
+  if (hasHeadSignature) {
+    doc.image(headSignaturePath, 60, signatureImageY, { width: 100, height: 100 });
+  }
+  if (hasFacilitatorSignature) {
+    doc.image(facilitatorSignaturePath, 310, signatureImageY, { width: 100, height: 100 });
+  }
+  currentY += 100;
+} else {
+  currentY += 100; // Mengurangi spasi antara label dan nama tanda tangan
+}
 
 doc.font("Helvetica-Bold").fontSize(10).text(data.head.signature_name, 70, currentY);
 doc.font("Helvetica-Bold").fontSize(10).text(data.facilitator.signature_name, 320, currentY);

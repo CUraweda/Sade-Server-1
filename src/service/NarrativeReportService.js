@@ -464,7 +464,7 @@ generateContents = async (doc, data) => {
 
     tableData.forEach((row) => {
       const rowDesc = String(row.desc || '').trim(); 
-      
+
       const currentDescColWidthForData = columnWidths[0] - (2 * cellPadding);
       const safeCurrentDescColWidthForData = (isNaN(currentDescColWidthForData) || currentDescColWidthForData < 0) ? 390 : currentDescColWidthForData;
       
@@ -473,7 +473,7 @@ generateContents = async (doc, data) => {
       const textOptions = { width: safeCurrentDescColWidthForData, align: 'justify', lineGap };
       const descTextHeight = doc.heightOfString(rowDesc, textOptions);
       const minContentHeight = doc.currentLineHeight() + lineGap;
-      const contentHeight = Math.max(descTextHeight, minContentHeight);
+      const contentHeight = Math.max((descTextHeight - 10), (minContentHeight + 2));
       const actualRowHeight = contentHeight;
       
       y = ensureNewPage(doc, data, y + actualRowHeight, 'default'); 
@@ -490,7 +490,7 @@ generateContents = async (doc, data) => {
       doc.text(rowDesc, startX + cellPadding, textYOffset, textOptions);
       
       doc.font("./src/fonts/fontawesome-webfont.ttf").fontSize(10);
-      const iconYOffset = currentRowStartY + (actualRowHeight / 2) - (10 / 2); 
+      const iconYOffset = currentRowStartY + (actualRowHeight / 2) - 5; 
 
       doc.text(row.gradeIcons[0], gradingColStart, iconYOffset, { width: singleGradingColWidth, align: 'center' });
       doc.text(row.gradeIcons[1], gradingColStart + singleGradingColWidth, iconYOffset, { width: singleGradingColWidth, align: 'center' });
@@ -575,7 +575,7 @@ generateContents = async (doc, data) => {
            .strokeColor("black")
            .stroke();
         
-        currentY += 16; 
+        currentY += 8; 
         const narrativeTableRows = sub_cat.narrative_reports.map(report => {
           let gradeIcons = ["", "", ""];
           switch (report.grade) {

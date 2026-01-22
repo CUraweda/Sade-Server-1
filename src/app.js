@@ -36,7 +36,7 @@ if (process.env.CORS_MODE === 'open') {
     const origin = req.get('origin');
     if (!origin && isOriginMissingAllowed) return next();
     if (origin && isOriginAllowed(origin)) return next();
-    return res.status(403).json({});
+    return res.status(403).json({ message: "Forbidden" });
   });
   app.use(cors(corsOptions));
   app.options('*', cors(corsOptions));

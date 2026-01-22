@@ -18,8 +18,20 @@ if (process.env.CORS_MODE === 'open') {
   app.use(cors());
   app.options('*', cors());
 } else {
-  app.use(cors({ origin: false }));
-  app.options('*', cors({ origin: false }));
+  const allowedOriginPattern = process.env.CORS_ORIGIN_REGEX || '';
+  const allowedOriginRegex = allowedOriginPattern ? new RegExp(allowedOriginPattern, 'i') : null;
+  const corsOptions = {
+    origin(origin, cb) {
+      if (!origin) return cb(null, true);
+      if (allowedOriginRegex && allowedOriginRegex.test(origin)) return cb(null, true);
+      return cb(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-request'],
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
 }
 
 // app.use(express.static(`${process.env.PWD}/public`));

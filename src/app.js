@@ -33,6 +33,9 @@ if (process.env.CORS_MODE === 'open') {
     credentials: true,
   };
   app.use((req, res, next) => {
+    if (req.path.startsWith('/public') ) {
+      return next();
+    }
     const origin = req.get('origin');
     if (!origin && isOriginMissingAllowed) return next();
     if (origin && isOriginAllowed(origin)) return next();

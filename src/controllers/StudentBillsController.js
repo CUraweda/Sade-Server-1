@@ -77,6 +77,10 @@ class StudentBillsController {
         }
     };
 
+    paymentHook = async (req, res) => {
+      res.status(200).json({ message: "Webhook processed successfully"})
+    };
+
     showAll = async (req, res) => {
         try {
         const page = parseInt(req.query.page) || 0;

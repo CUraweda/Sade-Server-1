@@ -36,6 +36,11 @@ router.put(
     studentBillsController.confirmEvidence
 );
 
+router.post(
+    '/payment-hook',
+    studentBillsController.paymentHook
+);
+
 router.put(
     "/update/:id",
     auth([1, 2, 3, 6]),

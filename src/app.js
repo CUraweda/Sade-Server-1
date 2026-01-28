@@ -33,7 +33,7 @@ if (process.env.CORS_MODE === 'open') {
     credentials: true,
   };
   app.use((req, res, next) => {
-    if (req.path.startsWith('/public') ) {
+    if (req.path.startsWith('/public') || req.path.startsWith('/api/student-bills/payment-hook')) {
       return next();
     }
     const origin = req.get('origin');
